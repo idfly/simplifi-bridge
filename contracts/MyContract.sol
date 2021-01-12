@@ -13,18 +13,58 @@ contract MyContract is ChainlinkClient, Ownable {
   uint256 public data;
 
   /**
+     Token pool
+  */
+
+    address public tokenOfPool;
+
+  /**
    * @notice Deploy the contract with a specified address for the LINK
    * and Oracle contract addresses
    * @dev Sets the storage for the specified addresses
    * @param _link The address of the LINK token contract
    */
-  constructor(address _link) public {
+  constructor(address _link, , address _tokenOfPool) public {
+
+    tokenOfPool = _tokenOfPool;
+
     if (_link == address(0)) {
       setPublicChainlinkToken();
     } else {
       setChainlinkToken(_link);
     }
   }
+
+
+  /** 
+    The part of process 'swap'
+  */
+  function swapDeposit(address from, uint256 amount) external {
+
+      require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPDEPOSIT");
+
+      // перевод usdc c адреса alice на адрес пула в сети ethereum (перед этим она должна сделать approve)
+      IERC20(tokenOfPool).transferFrom(from, address(this), amount);
+      
+      //TODO
+      //createRequestTo(...);
+  
+  }
+
+  /** 
+    The part of process 'swap'
+  */
+  function swapWithdraw(address recipient, uint256 amount) external {
+
+      require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPWITHDRAW");
+
+      //перевод BNB c адреса пула на адрес alice в сети Binance
+      IERC20(tokenOfPool).transfer(recipient, amount);
+
+      //TODO
+      //createRequestTo(...);
+
+   }
 
   /**
    * @notice Returns the address of the LINK token
