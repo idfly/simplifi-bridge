@@ -17,8 +17,8 @@ contract MyContract is ChainlinkClient, Ownable {
      Token pool
   */
 
-    address public tokenOfPool;
-
+    address public tokenOfPool; 
+    
   /**
    * @notice Deploy the contract with a specified address for the LINK
    * and Oracle contract addresses
@@ -28,7 +28,7 @@ contract MyContract is ChainlinkClient, Ownable {
   constructor(address _link, address _tokenOfPool) public {
 
     tokenOfPool = _tokenOfPool;
-
+    
     if (_link == address(0)) {
       setPublicChainlinkToken();
     } else {
@@ -37,25 +37,42 @@ contract MyContract is ChainlinkClient, Ownable {
   }
 
 
+  /*function addLiquidity(address from, address _tokenPoolCurrent, address _tokenPoolBeyBeyond, uint256 amountA, uint256 amountB) external {
+
+      //проверки пропускаем 
+
+      // перевод usdc c адреса alice на адрес пула в сети ethereum (перед этим она должна сделать approve)
+      IERC20(_tokenPoolCurrent).transferFrom(from, address(this), amountA);
+      
+      //TODO
+      //createRequestTo(...); => пример вызова через адаптер addLiquidity(address from, address _tokenPoolCurrent, address _tokenPoolBeyBeyond, uint256 amountA, uint256 amountB) 
+  
+  }*/
+
+
   /** 
     The part of process 'swap'
   */
-  function swapDeposit(address from, uint256 amount) external {
+  function swapDeposit(uint256 amount) external {
 
       require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPDEPOSIT");
 
       // перевод usdc c адреса alice на адрес пула в сети ethereum (перед этим она должна сделать approve)
-      IERC20(tokenOfPool).transferFrom(from, address(this), amount);
+      IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount);
       
       //TODO
-      //createRequestTo(...);
+      //createRequestTo(...); => пример вызова адаптером swapWithdraw(msg.sender, amount)
   
   }
 
   /** 
     The part of process 'swap'
+    NOTE: permission onlyOwner
   */
-  function swapWithdraw(address recipient, uint256 amount) external {
+  function swapWithdraw(address recipient, uint256 amount) onlyOwner external {
+
+      //WARN рассмотреть негативный сценарий где данная функция вызывается первой из всего процесса.
+
 
       require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPWITHDRAW");
 
@@ -63,7 +80,7 @@ contract MyContract is ChainlinkClient, Ownable {
       IERC20(tokenOfPool).transfer(recipient, amount);
 
       //TODO
-      //createRequestTo(...);
+      //createRequestTo(...); - на случай коллбэка о событии транзакции в другую 
 
    }
 
