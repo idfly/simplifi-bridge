@@ -2,6 +2,7 @@ pragma solidity 0.6.6;
 
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title MyContract is an example contract which requests data from
@@ -24,7 +25,7 @@ contract MyContract is ChainlinkClient, Ownable {
    * @dev Sets the storage for the specified addresses
    * @param _link The address of the LINK token contract
    */
-  constructor(address _link, , address _tokenOfPool) public {
+  constructor(address _link, address _tokenOfPool) public {
 
     tokenOfPool = _tokenOfPool;
 
