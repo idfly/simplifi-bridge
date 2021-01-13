@@ -2,8 +2,12 @@ const MyContract = artifacts.require('MyContract')
 const DigiUToken = artifacts.require('DigiUToken')
 const {LinkToken} = require('@chainlink/contracts/truffle/v0.4/LinkToken')
 const {Oracle} = require('@chainlink/contracts/truffle/v0.6/Oracle')
+const GanacheChainlinkClient = artifacts.require('GanacheChainlinkClient')
+const fs = require('fs');
+const path = require('path');
 
 module.exports = async (deployer, network, [defaultAccount]) => {
+    const addrFile = path.join(__dirname, '..', 'build', 'addrs.env');
     // Local (development) networks need their own deployment of the LINK
     // token and the Oracle contract
     if (!network.startsWith('live')) {
@@ -13,6 +17,7 @@ module.exports = async (deployer, network, [defaultAccount]) => {
         try {
             await deployer.deploy(LinkToken, {from: defaultAccount})
             await deployer.deploy(Oracle, LinkToken.address, {from: defaultAccount})
+            await deployer.deploy(GanacheChainlinkClient, LinkToken.address);
             await deployer.deploy(DigiUToken, {from: defaultAccount})
             DigiUToken.deployed().then(
                 this.digiuToken = await DigiUToken.new({from: defaultAccount})
@@ -27,4 +32,6 @@ module.exports = async (deployer, network, [defaultAccount]) => {
         // contract automatically retrieve the correct address for you
         deployer.deploy(MyContract, '0x0000000000000000000000000000000000000000')
     }
+    fs.writeFileSync(addrFile, `LINK_CONTRACT_ADDRESS=${LinkToken.address}\nORACLE_CONTRACT_ADDRESS=${Oracle.address}\n`);
+
 }
