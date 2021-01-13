@@ -6,11 +6,13 @@ contract('MyContract', accounts => {
   const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
   const { Oracle } = require('@chainlink/contracts/truffle/v0.6/Oracle')
   const MyContract = artifacts.require('MyContract.sol')
+  const DigiUToken = artifacts.require('DigiUToken.sol')
 
   const defaultAccount = accounts[0]
   const oracleNode = accounts[1]
   const stranger = accounts[2]
   const consumer = accounts[3]
+
 
   // These parameters are used to validate the data was received
   // on the deployed oracle contract. The Job ID only represents
@@ -26,12 +28,14 @@ contract('MyContract', accounts => {
   // Represents 1 LINK for testnet requests
   const payment = web3.utils.toWei('1')
 
-  let link, oc, cc
+  let link, oc, cc, digiuToken
 
   beforeEach(async () => {
     link = await LinkToken.new({ from: defaultAccount })
     oc = await Oracle.new(link.address, { from: defaultAccount })
-    cc = await MyContract.new(link.address, { from: consumer })
+    digiuToken = await DigiUToken.new({from: defaultAccount})
+    console.log("this.digiuToken.address", digiuToken.address)
+    cc = await MyContract.new(link.address, digiuToken.address,  { from: consumer })
     await oc.setFulfillmentPermission(oracleNode, true, {
       from: defaultAccount,
     })
