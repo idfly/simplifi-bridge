@@ -1,10 +1,15 @@
-const getAddr = require('../../chainlink/get-addr');
+const getAddr = require('./get-addr');
 
-const Oracle = artifacts.require('Oracle');
+const Oracle = require('@chainlink/contracts/truffle/v0.6/Oracle')
 
 module.exports = async callback => {
-  const oracle = await Oracle.deployed();
   const accountAddr = await getAddr();
+  console.log("getAddr", accountAddr)
+  
+  let oracle = Oracle.at('0x3899e4a409E8615eA9E1739fD9eBc3E1B76B6e56');
+
+  console.log("start")
+
   console.log(`Setting fulfill permission to true for ${accountAddr}...`);
   const tx = await oracle.setFulfillmentPermission(accountAddr, true);
   console.log(`Fulfillment succeeded! Transaction ID: ${tx.tx}.`);

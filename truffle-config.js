@@ -2,16 +2,19 @@ const HDWalletProvider = require('@truffle/hdwallet-provider')
 
 module.exports = {
   networks: {
-    cldev: {
-      host: '127.0.0.1',
-      port: 8545,
-      network_id: '*',
+
+    network1: {
+     host: "127.0.0.1",
+     port: 7545,
+     network_id: "1337",
     },
-    ganache: {
-      host: '127.0.0.1',
-      port: 7545,
-      network_id: '*',
+
+    network2: {
+     host: "127.0.0.1",
+     port: 8545,
+     network_id: "1337",
     },
+
     live: {
       provider: () => {
         return new HDWalletProvider(process.env.MNEMONIC, process.env.RPC_URL)

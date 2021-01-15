@@ -3,13 +3,28 @@
   "version": "0.6.0",
   "description": "A Chainlink example in a Truffle box",
   "scripts": {
-    "compile": "npx truffle compile",
+    "compile": "belt compile all",
+    "chainlink1:logs": "docker logs digiulab_chainlink_net1_1",
+    "chainlink2:logs": "docker logs digiulab_chainlink_net2_1",
+    "chainlink1:getNodeAddr": "npx truffle exec ./scripts/get-addr.js --network network1",
+    "remix:chainlink": "npx remixd -s ./node_modules/chainlink/contracts --remix-ide https://remix.ethereum.org",
+    "remix:truffle": "npx remixd -s ./truffle/contracts --remix-ide https://remix.ethereum.org",
+    "truffle:fund-client": "npx truffle exec ./scripts/fund-client.js --network network1",
+    "truffle:init-setup": "npm run truffle:fund-client && npm run truffle:prep-node",
+    "truffle:prep-node": "npx truffle exec ./scripts/prep-node2.js --network network1",
+    "network1:start-ganache": "docker-compose up -d ganache_net1 ",
+    "network2:start-ganache": "docker-compose up -d ganache_net2 ",
+    "start": "npm run network1:start-ganache && npm run truffle:migrate-network1 && npm run network2:start-ganache && npm run truffle:migrate-network2 && npm run up:all",
+    "stop": "docker-compose down -v --remove-orphans && sudo rm -rf network2/db-data && sudo rm -rf network1/db-data",
+    "truffle:migrate-network1": "npx truffle migrate --reset --network network1",
+    "truffle:migrate-network2": "npx truffle migrate --reset --network network2",
+    "up:all": "docker-compose up -d && docker-compose ps ",
     "console:dev": "npx truffle console --network cldev",
     "console:live": "npx truffle console --network live",
     "depcheck": "echo '@chainlink/box' && depcheck --ignore-dirs=build/contracts || true",
     "solhint": "solhint ./contracts/**/*.sol",
     "lint": "yarn solhint",
-    "migrate:dev": "npx truffle migrate --reset --network cldev",
+    "migrate:dev": "npx truffle migrate --reset --network network1",
     "migrate:live": "npx truffle migrate --network live",
     "test": "NODE_ENV=test  truffle test"
   },
@@ -17,7 +32,9 @@
   "dependencies": {
     "@chainlink/contracts": "^0.0.11",
     "@openzeppelin/contracts": "^3.1.0",
-    "@truffle/hdwallet-provider": "^1.2.0"
+    "@truffle/hdwallet-provider": "^1.2.0",
+    "dotenv": "^8.2.0",
+    "link_token": "^1.0.6"
   },
   "devDependencies": {
     "@chainlink/belt": "^0.0.3",

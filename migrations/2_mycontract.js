@@ -1,13 +1,13 @@
 const MyContract = artifacts.require('MyContract')
 const DigiUToken = artifacts.require('DigiUToken')
-const {LinkToken} = require('@chainlink/contracts/truffle/v0.4/LinkToken')
+const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
 const {Oracle} = require('@chainlink/contracts/truffle/v0.6/Oracle')
 const GanacheChainlinkClient = artifacts.require('GanacheChainlinkClient')
 const fs = require('fs');
 const path = require('path');
-
+//let Oracle = artifacts.require('Oracle');
 module.exports = async (deployer, network, [defaultAccount]) => {
-    const addrFile = path.join(__dirname, '..', 'build', 'addrs.env');
+    const addrFile = path.join(__dirname, '..', 'build', `addrs_${network}.env`);
     // Local (development) networks need their own deployment of the LINK
     // token and the Oracle contract
     if (!network.startsWith('live')) {

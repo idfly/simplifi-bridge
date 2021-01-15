@@ -1,0 +1,127 @@
+version: '3.6'
+
+services:
+  ganache_net1:
+    build: ./network1/ganache
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.11
+    ports:
+     - "7545:7545"
+  chainlink_net1:
+    image: smartcontract/chainlink:0.8.18
+    command: local n -p /network1/chainlink/chainlink.pwd -a /network1/chainlink/api.pwd
+    depends_on:
+      - mypostgres_net1
+      - ganache_net1
+      - pgadmin4
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.21
+    volumes:
+      - ./network1/chainlink:/network1/chainlink
+    ports:
+     - "6688:6688"      
+    environment:
+     - ROOT=/chainlink/root
+     - LOG_LEVEL=debug
+     - ETH_CHAIN_ID=1337
+     - MIN_OUTGOING_CONFIRMATIONS=0
+     - CHAINLINK_TLS_PORT=0
+     - SECURE_COOKIES=false
+     - ALLOW_ORIGINS=*
+     - ETH_URL=ws://172.20.128.11:7545
+     - DATABASE_URL=postgresql://postgres:password@172.20.128.14:5432/chainlinkdb?sslmode=disable
+    env_file:
+    - ./build/addrs_network1.env
+  mypostgres_net1:
+    image: postgres
+    depends_on:
+      - ganache_net1    
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.14
+    volumes:
+      - ./network1/db-data/:/var/lib/postgresql/data/
+#      - ./db/init/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+#    ports:
+#     - "5432:5432"
+    environment:
+     - POSTGRES_PASSWORD=password
+     - POSTGRES_USER=postgres
+     - POSTGRES_DB=chainlinkdb
+     - PGDATA=/var/lib/postgresql/data/
+
+
+#==============================================================2-d network====================================================================
+
+  ganache_net2:
+    build: ./network2/ganache
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.12
+    ports:
+     - "8545:8545"    
+  chainlink_net2:
+    image: smartcontract/chainlink:0.8.18
+    command: local n -p /network2/chainlink/chainlink.pwd -a /network2/chainlink/api.pwd
+    depends_on:
+      - mypostgres_net2
+      - ganache_net2
+      - pgadmin4
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.22
+    volumes:
+      - ./network2/chainlink:/network2/chainlink
+    ports:
+     - "6689:6688"
+    environment:
+     - ROOT=/chainlink/root
+     - LOG_LEVEL=debug
+     - ETH_CHAIN_ID=1337
+     - MIN_OUTGOING_CONFIRMATIONS=0
+     - CHAINLINK_TLS_PORT=0
+     - SECURE_COOKIES=false
+     - ALLOW_ORIGINS=*
+     - ETH_URL=ws://172.20.128.12:8545
+     - DATABASE_URL=postgresql://postgres:password@172.20.128.15:5432/chainlinkdb?sslmode=disable
+    env_file:
+      - ./build/addrs_network2.env
+  mypostgres_net2:
+    image: postgres
+    depends_on:
+      - ganache_net2   
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.15
+    volumes:
+      - ./network2/db-data/:/var/lib/postgresql/data/
+#      - ./db/init/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+#    ports:
+#     - "5432:5433"
+    environment:
+     - POSTGRES_PASSWORD=password
+     - POSTGRES_USER=postgres
+     - POSTGRES_DB=chainlinkdb
+     - PGDATA=/var/lib/postgresql/data/     
+  pgadmin4:
+    image: dpage/pgadmin4
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.13
+    ports:
+      - "5959:80"
+    environment:
+     - PGADMIN_DEFAULT_EMAIL=brute@localhost
+     - PGADMIN_DEFAULT_PASSWORD=brute    
+    volumes:
+     - ./network1/pgadmin:/root/.pgadmin     
+networks:
+  static-network:
+    name: dev_net
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16  
+#docker-compose v3+ do not use ip_range
+#ip_range: 172.28.5.0/24
