@@ -1,6 +1,13 @@
 version: '3.6'
 
 services:
+  adapter1_net1:
+    build: ./adapter/CryptoCompareExternalAdapter
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.55
+    ports:
+     - "8081:8081"  
   ganache_net1:
     build: ./network1/ganache
     networks:
