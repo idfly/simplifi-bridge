@@ -2,6 +2,8 @@ const MyContract = artifacts.require('MyContract')
 const DigiUToken = artifacts.require('DigiUToken')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
 const {Oracle} = require('@chainlink/contracts/truffle/v0.6/Oracle')
+
+//const {Oracle} = require('/home/syi/src/DGU/Digiu.Lab/node_modules/@chainlink/contracts/abi/v0.6/Oracle')
 const GanacheChainlinkClient = artifacts.require('GanacheChainlinkClient')
 const fs = require('fs');
 const path = require('path');

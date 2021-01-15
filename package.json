@@ -26,7 +26,8 @@
     "lint": "yarn solhint",
     "migrate:dev": "npx truffle migrate --reset --network network1",
     "migrate:live": "npx truffle migrate --network live",
-    "test": "NODE_ENV=test  truffle test"
+    "test": "NODE_ENV=test  truffle test",
+    "clean": "rm -rf build/contracts"
   },
   "license": "MIT",
   "dependencies": {

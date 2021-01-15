@@ -1,7 +1,14 @@
-const Oracle = require('@chainlink/contracts/truffle/v0.6/Oracle')
+// const Oracle = require('@chainlink/contracts/truffle/v0.6/Oracle')
+
+const clUtils = require('./cl-utils');
+const Web3 = require('web3');
+const EthProvider = new Web3.providers.HttpProvider("http://127.0.0.1:7545/");
+const {Oracle} = require('@chainlink/contracts/truffle/v0.6/Oracle');
 
 const GanacheChainlinkClient = artifacts.require('GanacheChainlinkClient');
-const LinkToken = artifacts.require('LinkToken');
+const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
+
+
 let env_net1 = require('dotenv').config({ path: '../build/addrs_network1.env' })
 let env_net2 = require('dotenv').config({ path: '../build/addrs_network2.env' })
 
@@ -14,7 +21,11 @@ console.log(process.argv[5])
   console.log(`========================== TRANSFER ETH TO CHAINLINK NODE ON  ${adr} ==========================`);
 
 try {
-	const oracle = await Oracle.at(adr);
+   LinkToken.setProvider(EthProvider);
+   Oracle.setProvider(EthProvider);
+   let oracle = await Oracle.at('0xfc4c2cabf5a260ae248e86fab3c5903ba730b78b')
+   console.log(oracle.address)
+	
 
 	console.log(4)
   const accountAddr = await getAddr();
