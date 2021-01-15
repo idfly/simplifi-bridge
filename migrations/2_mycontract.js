@@ -34,6 +34,7 @@ module.exports = async (deployer, network, [defaultAccount]) => {
         // contract automatically retrieve the correct address for you
         deployer.deploy(MyContract, '0x0000000000000000000000000000000000000000')
     }
-    fs.writeFileSync(addrFile, `LINK_CONTRACT_ADDRESS=${LinkToken.address}\nORACLE_CONTRACT_ADDRESS=${Oracle.address}\n`);
+	
+    fs.writeFileSync(addrFile, `LINK_CONTRACT_ADDRESS=${LinkToken.address}\nORACLE_CONTRACT_ADDRESS=${Oracle.address}\nCLIENT_ADDRESS=${GanacheChainlinkClient.address}\n`);
 
 }
