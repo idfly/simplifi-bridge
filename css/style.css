@@ -79,6 +79,14 @@ canvas {
   }
 }
 
+.spin {
+  -webkit-transition: -webkit-transform .8s ease-in-out;
+          transition:         transform .8s ease-in-out;
+}
+
+.cursor {
+  cursor: pointer;
+}
 
 .nav-masthead .nav-link {
   padding: .25rem 0;

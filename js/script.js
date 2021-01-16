@@ -7,12 +7,27 @@ var vm = new Vue({
       accountBsc: '',
       ethChainId: '',
       bscChainId: '',
-      tokenFrom: 'Select token',
-    
+      tokenFrom: '',
+      tokenTo: '',
+      USDCbin: '<img src="./img/usdc.png" width="20" height="20"/>  USDC',
+      USDCeth: '<img src="./img/usdc.png" width="20" height="20"/>  USDC',
+      USDTeth: '<img src="./img/tether.png" width="20" height="20"/>  USDC',
+      USDTbin: '<img src="./img/tether.png" width="20" height="20"/>  USDC',
+      dLINKbin: '<img src="./img/dlink.png" width="20" height="20"/>  dLINK',
+      
     }
   })
 
+  vm.tokenFrom = vm.USDCeth;
+  vm.tokenTo = vm.USDCbin;
+
 setTimeout(checkInstall, 500);
+
+var delta =360;
+  function rotate360Deg(ele){
+      ele.style.webkitTransform="rotate("+delta+"deg)";
+      delta+=360;
+  }
 
 async function checkInstall() {
     if (window.ethereum) { 

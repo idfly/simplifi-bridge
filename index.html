@@ -14,9 +14,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
     
-    <title>Cross-Chain</title>
-   
+    
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
+  ym(71237989, "init", {
+       clickmap:true,
+       trackLinks:true,
+       accurateTrackBounce:true,
+       webvisor:true
+  });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/71237989" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+    
+    <title>Cross-Chain</title>
   </head>
   <body >
     <canvas style = "z-index: -1;"></canvas>
@@ -76,11 +91,8 @@
             </svg> Demo</a>
           </div>
          
-      
     </div>
-   
   </div>
-
 </div>
 
 
@@ -97,7 +109,8 @@
             Trade tokens via Chainlink adapters
           </div>
         </div>
-        
+     
+     <!--FORM From-->  
     <div class="row justify-content-center mt-3">
       <div class="col-10 forms p-3 rounded-3 shadow">
     
@@ -115,13 +128,12 @@
         <div class="input-group">
           <input type="text" class="form-control" placeholder="0.0" >
           <div class="input-group-append">
-            <button class="btn btn-light p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;">
-              {{tokenFrom}}
+            <button class="btn btn-light p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" v-html = tokenFrom> 
             </button>
   
-            <div class="dropdown-menu mt-1 shadow rounded" aria-labelledby="dropdownMenuButton">
-              <span v-on:click = "tokenFrom = 'USDC'" class="dropdown-item"><img src="./img/usdc.png" width="25" height="25"/>  USDC</span>
-              <span class="dropdown-item"><img src="./img/usdc.png" width="25" height="25"/>  USDC</span>
+            <div class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuButton">
+              <span v-on:click = "tokenFrom = USDCeth" class="dropdown-item" v-html = USDCeth></span>
+              <span v-on:click = "tokenFrom = USDTeth" class="dropdown-item" v-html = USDTeth></span>
             </div>
           </div>
         </div>
@@ -132,13 +144,56 @@
       </div>
     </div>
 
+    <div class="row justify-content-center mt-2">
+      <div class = "col-2">
+        <img class="spin cursor" onclick = "rotate360Deg(this)" src="./img/chainlink.png" width="60" height="63"/>
+      </div>
+    </div>
+
+    <!--FORM To -->
+    <div class="row justify-content-center mt-2">
+      <div class="col-10 forms p-3 rounded-3 shadow">
+    
+      <div class="row p-2">
+        <div class="col ">
+          To
+        </div>
+        <div class="col text-right ">
+          Balance: 0.0000
+        </div>
+      </div>
+      <div class = "row ">
+        <div class="col">
+
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="0.0" >
+          <div class="input-group-append">
+            <button class="btn btn-light p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" v-html = tokenTo> 
+            </button>
+  
+    <div class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuButton">
+             <span v-on:click = "tokenTo = dLINKbin" class="dropdown-item" v-html = dLINKbin></span>
+            <span v-on:click = "tokenTo = USDCbin" class="dropdown-item" v-html = USDCbin></span>
+            <span v-on:click = "tokenTo = USDTbin" class="dropdown-item" v-html = USDTbin></span>
+            </div>
+  
+            
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+      </div>
+    </div>
+ 
          
           
           
         </div>
       </div>
     </div>
-<!--STATUS-->
+<!--LIQUIDITY-->
     <div class="tab-pane fade" id="pills-status" role="tabpanel" aria-labelledby="pills-status-tab">
       <div class = "row">
         <div class = "col" style = "border-radius: 10px; height: 500px; width: 500px; background-color:rgba(255, 255, 255, 0.8); box-shadow: 0 0 10px rgba(255,255,255,0.7); ">
