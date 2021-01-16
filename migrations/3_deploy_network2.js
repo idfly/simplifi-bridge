@@ -11,7 +11,7 @@ module.exports = async (deployer, network, accounts) => {
   *   Local (development) networks need their own deployment of the LINK token and the Oracle contract
   */
 
-  if (network.startsWith('network1')) {
+  if (network.startsWith('network2')) {
 
             LinkToken.setProvider(deployer.provider)
             Oracle.setProvider(deployer.provider)
@@ -28,7 +28,7 @@ module.exports = async (deployer, network, accounts) => {
               let client    = await MyContract.deployed();
 
               
-              await writeEnv(linkToken.address, oracle.address, client.address);
+              await writeEnv(linkToken.address, oracle.address, client.address, 'network2');
 
             } catch (err) {
               console.error(err)
