@@ -8,7 +8,7 @@ function getSessionCookie() {
   return new Promise((resolve, reject) => {
     const opts = {
       host: 'localhost',
-      port: '6688',
+      port: '6689',
       path: '/sessions',
       method: 'POST',
       headers: {
@@ -21,7 +21,7 @@ function getSessionCookie() {
       
       res.on('data', () => { /* DO NOTHING */ });
       res.on('end', () => {
-        resolve(res.headers["set-cookie"][0]);
+        resolve(res.headers["set-cookie"]);
       });
 
       res.on('error', (err) => {
@@ -43,7 +43,7 @@ function getAddr(sessionCookie) {
   return new Promise((resolve, reject) => {
     const opts = {
       host: 'localhost',
-      port: '6688',
+      port: '6689',
       path: '/v2/user/balances',
       method: 'GET',
       headers: {
