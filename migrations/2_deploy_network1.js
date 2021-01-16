@@ -6,7 +6,7 @@ const { writeEnv } = require('../utils/helper');
 
 
 module.exports = async (deployer, network, accounts) => {
-console.log(process.argv)
+
   /**
   *   Local (development) networks need their own deployment of the LINK token and the Oracle contract
   */
