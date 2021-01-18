@@ -4,21 +4,21 @@
 
 
 ```bash
-cd project
-truffle migrate
+$ cd project
+$ npm install
+$ truffle exec './scripts/prep-node.js' --network network1
+$ truffle exec './scripts/prep-node.js' --network network2
+$ truffle exec './scripts/fund-client.js' --network network1
+$ truffle exec './scripts/fund-client.js' --network network2
+$ truffle exec './scripts/jobID.js' --network network1  (после как получили)
+
 ```
 
 
 ## Test
 
 ```bash
-TODO
+$ truffle exec './scripts/z_test.js' --network network1  (пока так)
 ```
 
-
-1. Должны быть адреса токенов (usdc, bnb)
-2. При создании MyContract в ethereum сети необходимо указать адрес usdc
-3. При создании MyContract в binance сети необходимо указать адрес  bnb
-4. Необходимо перевести на адрес пула достаточное количество ликвидности (usdc, bnb)
-5. Пользователю которому необходимо сделать swapDeposit должен сделать usdc.approve()
-6. Вызвать функцию swapDeposit(сумма) ....далее смотри по коду
+#  НЕЗАБУДЬ ПОСЛЕ КАЖДОГО ПЕРЕДЕПЛОЯ СМАРТОВ МЕНЯЮТСЯ АДРЕСА ПУЛА И ОРАКУЛА НО В КОНТЕЙНЕР АДАПТЕРА НИКАК ПОКА `НЕ ПЕРЕДАЮТСЯ !!!!`
