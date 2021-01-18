@@ -1,0 +1,20 @@
+{
+  "name": "adapterdgu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ethereum-input-data-decoder": "0.3.0",
+    "uuid": "^7.0.2",
+    "web3": "1.2.11",
+    "request": "^2.87.0",
+    "express": "^4.16.3",
+    "nodemon": "^2.0.4",
+    "dotenv": "^8.2.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

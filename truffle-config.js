@@ -1,3 +1,4 @@
+require('dotenv').config();
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 
 module.exports = {
@@ -24,6 +25,19 @@ module.exports = {
       // Necessary due to https://github.com/trufflesuite/truffle/issues/3008
       skipDryRun: true,
     },
+
+    testnetBsc: {
+
+       provider: () => new HDWalletProvider(process.env.MNEMONIC_TESTNET, `https://data-seed-prebsc-1-s1.binance.org:8545/`),
+       network_id: 97,
+       timeoutBlocks: 200  
+    },
+    /*mainnetBsc: {
+
+       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://bsc-dataseed.binance.org/`),
+       network_id: 56,
+       timeoutBlocks: 200  
+    }*/
   },
   compilers: {
     solc: {

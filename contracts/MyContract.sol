@@ -11,24 +11,25 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * local test networks
  */
 contract MyContract is ChainlinkClient, Ownable {
+  
+
+  uint256 constant private ORACLE_PAYMENT = 1 * LINK; // 0.1 * 10 ** 18; // 0.1 LINK
+  address private oracle;
+  bytes32 private jobId;
   uint256 public data;
 
-  /**
-     Token pool
-  */
-
-    address public tokenOfPool; 
-    
+  
+  
   /**
    * @notice Deploy the contract with a specified address for the LINK
    * and Oracle contract addresses
    * @dev Sets the storage for the specified addresses
    * @param _link The address of the LINK token contract
    */
-  constructor(address _link, address _tokenOfPool) public {
+  constructor(address _link, address _oracle) public {
 
-    tokenOfPool = _tokenOfPool;
-    
+    oracle      = _oracle;
+
     if (_link == address(0)) {
       setPublicChainlinkToken();
     } else {
@@ -36,53 +37,14 @@ contract MyContract is ChainlinkClient, Ownable {
     }
   }
 
-
-  /*function addLiquidity(address from, address _tokenPoolCurrent, address _tokenPoolBeyBeyond, uint256 amountA, uint256 amountB) external {
-
-      //проверки пропускаем 
-
-      // перевод usdc c адреса alice на адрес пула в сети ethereum (перед этим она должна сделать approve)
-      IERC20(_tokenPoolCurrent).transferFrom(from, address(this), amountA);
-      
-      //TODO
-      //createRequestTo(...); => пример вызова через адаптер addLiquidity(address from, address _tokenPoolCurrent, address _tokenPoolBeyBeyond, uint256 amountA, uint256 amountB) 
-  
-  }*/
-
-
-  /** 
-    The part of process 'swap'
-  */
-  function swapDeposit(uint256 amount) external {
-
-      require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPDEPOSIT");
-
-      // перевод usdc c адреса alice на адрес пула в сети ethereum (перед этим она должна сделать approve)
-      IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount);
-      
-      //TODO
-      //createRequestTo(...); => пример вызова адаптером swapWithdraw(msg.sender, amount)
-  
+  function setJobID(bytes32 val) external onlyOwner {
+    jobId = val;
+  }
+  function setOracle(address val) external onlyOwner {
+    oracle = val;
   }
 
-  /** 
-    The part of process 'swap'
-    NOTE: permission onlyOwner
-  */
-  function swapWithdraw(address recipient, uint256 amount) onlyOwner external {
 
-      //WARN рассмотреть негативный сценарий где данная функция вызывается первой из всего процесса.
-
-
-      require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPWITHDRAW");
-
-      //перевод BNB c адреса пула на адрес alice в сети Binance
-      IERC20(tokenOfPool).transfer(recipient, amount);
-
-      //TODO
-      //createRequestTo(...); - на случай коллбэка о событии транзакции в другую 
-
-   }
 
   /**
    * @notice Returns the address of the LINK token
@@ -93,33 +55,15 @@ contract MyContract is ChainlinkClient, Ownable {
     return chainlinkTokenAddress();
   }
 
-  /**
-   * @notice Creates a request to the specified Oracle contract address
-   * @dev This function ignores the stored Oracle contract address and
-   * will instead send the request to the address specified
-   * @param _oracle The Oracle contract address to send the request to
-   * @param _jobId The bytes32 JobID to be executed
-   * @param _url The URL to fetch data from
-   * @param _path The dot-delimited path to parse of the response
-   * @param _times The number to multiply the result by
-   */
-  function createRequestTo(
-    address _oracle,
-    bytes32 _jobId,
-    uint256 _payment,
-    string memory _url,
-    string memory _path,
-    int256 _times
-  )
+
+  function createRequestTo(string memory  _selector)
     public
-    onlyOwner
     returns (bytes32 requestId)
   {
-    Chainlink.Request memory req = buildChainlinkRequest(_jobId, address(this), this.fulfill.selector);
-    req.add("url", _url);
-    req.add("path", _path);
-    req.addInt("times", _times);
-    requestId = sendChainlinkRequestTo(_oracle, req, _payment);
+    Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
+    //req.addBytes("selector", _selector);
+    req.add("selector", _selector);
+    requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);
   }
 
   /**
@@ -133,6 +77,7 @@ contract MyContract is ChainlinkClient, Ownable {
     public
     recordChainlinkFulfillment(_requestId)
   {
+    //TODO invoke pool
     data = _data;
   }
 

@@ -7,7 +7,7 @@ let env_net1 = require('dotenv').config({ path: '../build/addrs_network1.env' })
 let env_net2 = require('dotenv').config({ path: '../build/addrs_network2.env' })
 
 module.exports = async callback => {
-
+try{
   let adrOracle = process.argv[5] === 'network1' ? env_net1.parsed.ORACLE_CONTRACT_ADDRESS : process.argv[5] === 'network2' ? env_net2.parsed.ORACLE_CONTRACT_ADDRESS : '0x0';
 
   const getAddr = require('../'+process.argv[5]+'/chainlink/get-addr');
@@ -42,6 +42,6 @@ module.exports = async callback => {
   const balance       = await token.balanceOf(accountAddr);
   console.log(`Balance LINK TEKEN ON CHAINLINK NODE: ${balance.toString()}.`);
 
-
+}catch(e){console.log(e);}
   callback();
 }
