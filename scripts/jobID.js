@@ -8,11 +8,12 @@ module.exports = async callback => {
 try{
   let activeEnv = process.argv[5] === 'network1' ? env_net1 : process.argv[5] === 'network2' ? env_net2 : '0x0';
 
+
   const myContract    = await MyContract.at(activeEnv.parsed.CLIENT_ADDRESS);
-  const tx            = await myContract.setJobID(web3.utils.fromAscii("37a0d7ea3b774dcba82adc18fe9afd86"));
+  const tx            = await myContract.setJobID(await web3.utils.fromAscii("e2d13f93cb3747c89aedd4d3e3bfc5a7"));
   
 
-  console.log(`setJobID succeeded! Transaction ID: ${tx.tx}.`);
+  console.log(`setJobID succeeded! Transaction ID: ${JSON.stringify(tx)}.`);
  }catch(e){console.log(e);}
   callback();
 }

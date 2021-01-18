@@ -20,11 +20,20 @@ try{
 
 	const dexPool       = await DexPool.at(currentPool);
 	const myContract    = await MyContract.at(activeEnv.parsed.CLIENT_ADDRESS);
+
+	console.log('myContract.jobId: ', await myContract.jobId());
+	console.log('myContract.oracle: ', await myContract.oracle());
+	console.log('dexPool.myContract: ', await dexPool.myContract());
+	console.log('dexPool.util: ', await dexPool.util());
+
+	console.log('data: ', await myContract.data());
+
+
 	//const tokenAddress  = await myContract.getChainlinkToken();
 	//const token         = await LinkToken.at(tokenAddress);
 	//await myContract.transferOwnership(dexPool.address, { from: (await web3.eth.getAccounts())[0] });
 	
-    const tx = await dexPool.swapDeposit(`10000000000000000000`);
+    const tx = await dexPool.swapDeposit('100');
     console.log('Transfer succeeded! Transaction ID:', JSON.stringify(tx));
 
     

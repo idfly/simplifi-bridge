@@ -3,22 +3,19 @@ pragma solidity >=0.4.21 < 0.7.0;
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./DexPool.sol";
 
-/**
- * @title MyContract is an example contract which requests data from
- * the Chainlink network
- * @dev This contract is designed to work on multiple networks, including
- * local test networks
- */
+
 contract MyContract is ChainlinkClient, Ownable {
   
-
+  //TODO к коефиге ноды чейнлинка стоит 1 линк. Попытаться исправить
   uint256 constant private ORACLE_PAYMENT = 1 * LINK; // 0.1 * 10 ** 18; // 0.1 LINK
-  address private oracle;
-  bytes32 private jobId;
-  uint256 public data;
+  address public oracle;
+  bytes32 public jobId;
+  bytes32 public data;
 
-  
+  // requestId => recipient
+  mapping(bytes32 => address) private routeForCallback;
   
   /**
    * @notice Deploy the contract with a specified address for the LINK
@@ -56,29 +53,32 @@ contract MyContract is ChainlinkClient, Ownable {
   }
 
 
-  function createRequestTo(string memory  _selector)
+  function transmit(string memory  _selector)
     public
+    /*onlyOwner*/
     returns (bytes32 requestId)
   {
-    Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
-    //req.addBytes("selector", _selector);
+    Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.callback.selector);
     req.add("selector", _selector);
     requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);
+
+    routeForCallback[requestId] = msg.sender;
+
   }
 
   /**
-   * @notice The fulfill method from requests created by this contract
+   * @notice The callback method from requests created by transmit
    * @dev The recordChainlinkFulfillment protects this function from being called
    * by anyone other than the oracle address that the request was sent to
    * @param _requestId The ID that was generated for the request
-   * @param _data The answer provided by the oracle
+   * @param _data The answer provided by the oracle. In this case tx.
    */
-  function fulfill(bytes32 _requestId, uint256 _data)
+  function callback(bytes32 _requestId, bytes32 _data)
     public
     recordChainlinkFulfillment(_requestId)
   {
-    //TODO invoke pool
-    data = _data;
+    
+    DexPool(routeForCallback[_requestId]).setPendingRequestsDone(_requestId, _data);
   }
 
   /**

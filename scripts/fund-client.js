@@ -1,4 +1,5 @@
 const DexPool    = artifacts.require('DexPool')
+const MyContract = artifacts.require('MyContract')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken');
 
 let env_net1 = require('dotenv').config({ path: '../build/addrs_network1.env' })
@@ -15,9 +16,10 @@ module.exports = async callback => {
   console.log(`========================== TRANSFER LINKS TO ${pool} ON NETWORK ${process.argv[5]} ==========================\n`);
 
   
-  
+  const myContract    = await MyContract.at(linkadr.parsed.CLIENT_ADDRESS);
   const token         = await LinkToken.at(linkadr.parsed.LINK_CONTRACT_ADDRESS);
-  const tx            = await token.transfer(pool, `100000000000000000000`, { from: (await web3.eth.getAccounts())[0] });
+  //const tx            = await token.transfer(pool, `100000000000000000000`, { from: (await web3.eth.getAccounts())[0] });
+  const tx            = await token.transfer(myContract.address, `100000000000000000000`, { from: (await web3.eth.getAccounts())[0] });
 
   console.log(`Transfer succeeded! Transaction ID: ${tx.tx}.`);
   console.log(`Balance recepient: ${pool} is: ${(await token.balanceOf(pool)).toString()} LINK`);
