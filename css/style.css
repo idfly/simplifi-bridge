@@ -15,14 +15,45 @@ input {
   outline: 0 !important;
   box-shadow: none !important;
   border: 0 !important;
+  background: transparent  !important;
+  font-size: 20px !important;
    
 }
+
 
 .forms {
   background-color: white;
   color:cornflowerblue;
   
+}
 
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.icon2 {
+  height: 90px;
+}
+
+.logoForm {
+  position: absolute;
+  top:4px;
+  left: 4px;
+  z-index: 0;
+  opacity: 0.1;
+}
+
+.button1 {
+  width: 150px;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.button2 {
+  width: 150px;
+  border-top-right-radius: 20px !important;
+  border-bottom-right-radius: 20px !important;
 }
 
 .footer {
