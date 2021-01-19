@@ -3,6 +3,14 @@ version: '3.6'
 services:
   adapter1_net1:
     build: ./adapter/adapterdgu
+    command:
+    depends_on:
+      - mypostgres_net1
+      - ganache_net1
+      - pgadmin4
+      - chainlink_net1
+    env_file:
+    - ./env_connect_to_network_2.env
     networks:
       static-network:
         ipv4_address: 172.20.128.55
