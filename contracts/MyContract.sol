@@ -12,7 +12,7 @@ contract MyContract is ChainlinkClient, Ownable {
   uint256 constant private ORACLE_PAYMENT = 1 * LINK; // 0.1 * 10 ** 18; // 0.1 LINK
   address public oracle;
   bytes32 public jobId;
-  bytes32 public data;
+  
 
   // requestId => recipient
   mapping(bytes32 => address) private routeForCallback;
