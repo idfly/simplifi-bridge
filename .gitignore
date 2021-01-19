@@ -1,4 +1,7 @@
 #Buidler files
+/*.env
+adapter/adapterdgu/*.json
+!adapter/adapterdgu/oracle_v0.6.json
 cache
 artifacts
 node_modules

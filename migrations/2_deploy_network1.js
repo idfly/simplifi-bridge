@@ -1,3 +1,5 @@
+const { exec } = require('child_process');
+
 const MyContract    = artifacts.require('MyContract')
 const DexPool       = artifacts.require('DexPool')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
@@ -39,6 +41,14 @@ module.exports = async (deployer, network, accounts) => {
 
               
               await writeEnv(linkToken.address, oracle.address, client.address, dexPool.address);
+
+              console.log('>> Generate env for external adapter in network2  (i.e. for connect to network 1)')
+              exec(`${process.cwd()}/scripts/bash/update_env_adpter_in_network2.sh 8082 ws://172.20.128.55:7545 ${dexPool.address} ${oracle.address} `, { maxBuffer: 1024 * 100000000 }, (err, stdout, stderr) => {
+                if (err) {
+                    console.log('THROW ERROR', err);
+                    return;
+                }
+              });
 
             } catch (err) {
               console.error(err)

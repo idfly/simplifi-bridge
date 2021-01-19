@@ -22,6 +22,8 @@ let  ownerPool = null;  // opposite network
     
     dexpool   = new worker.web3.eth.Contract(dexPool.abi, process.env.POOL_ADDRESS);
     ownerPool = (await worker.web3.eth.getAccounts())[0];
+
+    console.log(`\nSTART SUCCESS\n________________________\n\nETH_URL: ${process.env.ETH_URL}\nPOOL_ADDRESS: ${process.env.POOL_ADDRESS}\nORACLE_CONTRACT_ADDRESS: ${process.env.ORACLE_CONTRACT_ADDRESS}\n\n`);
     
 
  })();

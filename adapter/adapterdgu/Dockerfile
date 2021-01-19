@@ -1,7 +1,9 @@
 FROM node:12.19.0
 
-WORKDIR /adaptordgu
-ADD . .
+COPY ./build/contracts/ ./adapterdgu/src/abi
+WORKDIR /adapterdgu
+ADD ./adapter/adapterdgu .
+
 
 
 RUN npm install
