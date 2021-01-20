@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
     
     
     <!-- Yandex.Metrika counter -->
@@ -60,11 +61,11 @@
     <div class = "col text-nowrap text-right">
       
       
-        <button class="btn btn-primary fw-bold rounded-pill pulse2 mr-1" type="button" onclick="connectEth()">
-          {{buttonEth}}
+        <button id="pulse2" class="btn btn-dark  fw-bold rounded-pill mr-1" type="button" onclick="connectEth()" >
+          <img class='icon' src="./img/metamask.png"/> {{buttonEth}}
         </button>
-        <button class="btn  btn-warning fw-bold rounded-pill pulse1 mr-1"  type="button" style = "color: indigo;" onclick="connectBsc()">
-          {{buttonBsc}}
+        <button id="pulse1" class="btn  btn-dark  fw-bold rounded-pill mr-1"  type="button" onclick="connectBsc()" >
+          <img class='icon' src="./img/bscw.png"/> {{buttonBsc}}
         </button>
         
       
@@ -124,13 +125,13 @@
         <div class="col">
 
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="0.0" v-model="amountFrom">
+          <input id="num1" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num1')" onpaste="return false;"  type="text" class="form-control" placeholder="0.0" v-model="amountFrom">
           <div class="input-group-append">
-            <button class="btn btn-light p-1 rounded" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            <button class="btn btn-light p-1 rounded" type="button" id="butfrom" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
             v-html = "'<img src=&quot./img/'+tokenFrom.icon+'&quot class=&quot icon &quot/> ' + tokenFrom.symbol"> 
             </button>
   
-            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuButton">
+            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="butfrom">
               <span  v-for="item of itemsFrom" v-on:click="setTokenFrom(item)" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
             </div>
           </div>
@@ -167,13 +168,13 @@
         <div class="col">
 
         <div class="input-group">
-          <input type="text" class="form-control " placeholder="0.0" v-model="amountTo">
+          <input id="num2" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num2')" onpaste="return false;"  type="text" class="form-control " placeholder="0.0" v-model="amountTo">
           <div class="input-group-append">
-            <button class="btn btn-light p-1 rounded" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            <button class="btn btn-light p-1 rounded" type="button" id="butto" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
             v-html = "'<img src=&quot./img/'+tokenTo.icon+'&quot class=&quot icon &quot/> ' + tokenTo.symbol"> 
             </button>
   
-            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuButton">
+            <div class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="butto">
               <span  v-for="item of itemsTo" v-on:click="setTokenTo(item)" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
             </div>
   
@@ -201,13 +202,51 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-muted" id="SwapModalLongTitle">Cross-chain swap</h5>
+        <h4 class="modal-title text-muted ml-3" id="SwapModalLongTitle">Cross-chain swap</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        ...
+      <div class="modal-body text-dark">
+        <div class="row m-1">
+           <div class="col-1 text-left">
+          <span  v-html = "'<img src=&quot./img/'+tokenFrom.icon+'&quot class=&quot icon3 &quot/>'"></span>
+          </div>
+          <div class="col-5 text-left">
+            <h4>{{vm.amountFrom}}</h4>
+          </div>
+          <div class="col-4 text-center">
+            {{vm.chainFrom.name}}
+          </div>
+          <div class="col-2 text-right">
+            <h5> {{tokenFrom.symbol}}</h5>
+          </div>
+        </div>
+
+        <div class="row ml-1">
+          <div class="col text-left">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="row m-1 mt-2">
+          <div class="col-1 text-left">
+          <span  v-html = "'<img src=&quot./img/'+tokenTo.icon+'&quot class=&quot icon3 &quot/>'"></span>
+          </div>
+          <div class="col-5 text-left">
+            <h4>{{vm.amountTo}}</h4>
+          </div>
+          <div class="col-4 text-center">
+            {{vm.chainTo.name}}
+          </div>
+          <div class="col-2 text-right">
+            <h5> {{tokenTo.symbol}}</h5>
+          </div>
+        </div>
+
+
       </div>
       <div class="modal-footer justify-content-center">
         <button type="button" class="btn btn-success shadow button1 button2">CONFIRM</button>
@@ -258,13 +297,13 @@
         <div class="col">
 
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="0.0" v-model="amountLiqEth">
+          <input id="num3" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num3')" onpaste="return false;" type="text" class="form-control" placeholder="0.0" v-model="amountLiqEth">
           <div class="input-group-append">
-            <button class="btn btn-light p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            <button class="btn btn-light p-1" type="button" id="dropdownMenuEth" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
             v-html = "'<img src=&quot./img/'+tokenLiqEth.icon+'&quot class=&quot icon &quot/> ' + tokenLiqEth.symbol"> 
             </button>
   
-            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuButton">
+            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuEth">
               <span  v-for="item of tokensEth" v-on:click="setLiqToken(item, 'eth')" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
             </div>
           </div>
@@ -301,13 +340,13 @@
         <div class="col">
 
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="0.0" v-model="amountLiqBsc">
+          <input id="num4" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num4')" onpaste="return false;" type="text" class="form-control" placeholder="0.0" v-model="amountLiqBsc">
           <div class="input-group-append">
-            <button class="btn btn-light p-1" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            <button class="btn btn-light p-1" type="button" id="dropdownMenuBsc" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
             v-html = "'<img src=&quot./img/'+tokenLiqBsc.icon+'&quot class=&quot icon &quot/> ' + tokenLiqBsc.symbol"> 
             </button>
   
-            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuButton">
+            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuBsc">
               <span  v-for="item of tokensBsc" v-on:click="setLiqToken(item, 'bsc')" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
             </div>
   
@@ -326,7 +365,7 @@
   <div class = "col text-center">
     <div class="btn-group" role="group">
       <button type="button" class="btn fw-bold btn-secondary button1 shadow"><span class="badge badge-light">1</span> APPROVE</button>
-      <button type="button" class="btn fw-bold btn-info button2 shadow" ><span class="badge badge-light">2</span> ADD LIQUIDITY</button>
+      <button type="button" class="btn fw-bold btn-info button2 shadow" ><span class="badge badge-light">2</span> SUPPLY</button>
     </div>
   </div>
 </div>
