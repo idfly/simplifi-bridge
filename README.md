@@ -1,3 +1,6 @@
+ <p align="center"><img src="https://img.shields.io/badge/status-development-yellow.svg"></p>
+ <p align="center"><a target='_blank' href = "https://digiu-lab.github.io/MarketMake/">DEMO</a></p>
+
 # **Description**
 
 The goal of our project is to create a cross-chain swap between Ethereum and Binance Smart Chain (BSC) blockchains.
@@ -16,5 +19,4 @@ You could of course do it step by step, like Binance Bridge, but let's be honest
 The project architecture includes ChainLink and Binance nodes, smart contracts, and transactions signing and sending external adapters.
 Besides, we use Uniswap technologies as the basis for decentralised swap. We will have to split the pool's smart contract logic between the two blockchains. We plan to do this separation with oracles on each blockchain side.
 
- <p align="center"><img src="https://img.shields.io/badge/status-development-yellow.svg"></p>
- <p align="center"><a target='_blank' href = "https://digiu-lab.github.io/MarketMake/">DEMO</a></p>
+
