@@ -38,11 +38,12 @@ app.use(bodyParser.json());
 app.post('/post', async function (req, res) {
     console.log('REQUEST /post', req.body);
 
+    let responseData = null;
     let data  = '0x'+req.body.data.selector;
     // for staticcall
-    if(req.body.request_type === 'get')  return await GetType(data);
+    if(req.body.data.request_type === 'get')  responseData =  await GetType(data, req.body.id);
     // for call
-    if(req.body.request_type === 'set')  return await SetType(data);
+    if(req.body.data.request_type === 'set')  responseData =  await SetType(data, req.body.id);
 
 
     console.log('RESPONSE /post ', responseData);
@@ -50,26 +51,26 @@ app.post('/post', async function (req, res) {
 });
 
 
-async function SetType(data){
+async function SetType(data, id){
 
     const tx  = await dexpool.methods.receiver(data).send({from: ownerPool});
 
     //TODO ожидание пока worker поймает из противоположной сети tx.status === true ? ОК : false === rejecteed
-    await worker.timeout(15000);
+    await worker.timeout(10000);
 
     let responseData = {};
-        responseData.jobRunID = req.body.id;
+        responseData.jobRunID = id;
         responseData.data     = {result: tx.transactionHash, tx: tx };
 
     return responseData
 
 }
 
-async function GetType(data){
+async function GetType(data, id){
 
     let response = await dexpool.methods.lowLevelGet(data).call();
     let responseData          = {};
-        responseData.jobRunID = req.body.id;
+        responseData.jobRunID = id;
         responseData.data     = {result: response};
 
     return responseData;    
@@ -107,9 +108,9 @@ app.get('/testGet', async function (req, res) {
     // the owner - his deployed smart-contract on Net2
     let ownerPool = (await worker.web3.eth.getAccounts())[0];
     // this is represents of bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('_getTest()'))));
-    let data = '0x0x49eba8f7';
+    let data = '0x49eba8f7';
     //pass 'data' for call inside smart-contracts
-    const getResult  = await dexpool.methods.lowLevelGet(data).send({from: ownerPool});
+    const getResult  = await dexpool.methods.lowLevelGet(data).call();
     
     console.log('Result staticcall ', getResult);
 
