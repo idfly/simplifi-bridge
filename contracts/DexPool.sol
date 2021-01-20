@@ -10,6 +10,9 @@ contract DexPool is Ownable {
 
   event Receive(bool success);
 
+  string constant private SET_REQUEST_TYPE = "set";
+  string constant private GET_REQUEST_TYPE = "get";
+
   uint256 public test;
   address public myContract;
   address public util;
@@ -41,7 +44,7 @@ contract DexPool is Ownable {
      bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('_setTest(uint256)'))), amount);
 
      //byte to string and send to Net2
-     bytes32 requestId = MyContract(myContract).transmit(IHexstring(util).bytesToHexString(out));
+     bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
 
      //save requestId for bind with callback requestId -> this is approve consistaency !!!!
      // hex"0x0" - in pending
@@ -50,7 +53,6 @@ contract DexPool is Ownable {
    }
 
    function setPendingRequestsDone(bytes32 requestId ,bytes32 tx_fromNet2) public {
-
       require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
 
       // transation on overside is executed. tx.status = true
@@ -91,10 +93,17 @@ contract DexPool is Ownable {
 
     test = val;
   }
+  function _getTest() public view returns (uint256)  {
+
+    require(msg.sender == address(this), "ONLY YOURSALF");
+
+    return test;
+  }
 
 
  /**
   * Receive invoke from other network through external adapter
+  * Change state smart-contrat
   *
   * NOTE: owner - it's deployer address. 
   */
@@ -103,6 +112,19 @@ contract DexPool is Ownable {
     require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
 
     emit Receive(success);
+  }
+ /**
+  * Receive invoke from other network through external adapter
+  * Staticcall (read state smart-contrat)
+  *
+  * 
+  */
+  function lowLevelGet(bytes memory b) public view returns (bytes32) {
+      (bool success, bytes memory data) = address(this).staticcall(b);
+        if (!success || data.length == 0) {
+            return '';
+        }
+      return abi.decode(data, (bytes32));
   }
 
 

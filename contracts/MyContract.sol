@@ -53,13 +53,15 @@ contract MyContract is ChainlinkClient, Ownable {
   }
 
 
-  function transmit(string memory  _selector)
+  function transmit(string memory rqt, string memory  _selector)
     public
     /*onlyOwner*/
     returns (bytes32 requestId)
   {
     Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.callback.selector);
     req.add("selector", _selector);
+    req.add("request_type", rqt);
+    
     requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);
 
     routeForCallback[requestId] = msg.sender;

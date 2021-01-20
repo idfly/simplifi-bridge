@@ -29,7 +29,7 @@
     "migrate:dev": "npx truffle migrate --reset --network network1",
     "migrate:live": "npx truffle migrate --network live",
     "test": "NODE_ENV=test  truffle test",
-    "clean": "rm -rf build/contracts && sudo rm -rf network2/db-data && sudo rm -rf network1/db-data"
+    "clean": "rm -rf build/contracts && sudo rm -rf /var/lib/postgres/network2/db-data && sudo rm -rf /var/lib/postgres/network1/db-data"
   },
   "license": "MIT",
   "dependencies": {

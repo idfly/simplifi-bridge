@@ -36,9 +36,22 @@ app.use(bodyParser.json());
  *  Получаем запрос и ходим в другую сеть 
  */
 app.post('/post', async function (req, res) {
-    console.log('/post', req.body);
+    console.log('REQUEST /post', req.body);
 
     let data  = '0x'+req.body.data.selector;
+    // for staticcall
+    if(req.body.request_type === 'get')  return await GetType(data);
+    // for call
+    if(req.body.request_type === 'set')  return await SetType(data);
+
+
+    console.log('RESPONSE /post ', responseData);
+    res.status(200).send(responseData);
+});
+
+
+async function SetType(data){
+
     const tx  = await dexpool.methods.receiver(data).send({from: ownerPool});
 
     //TODO ожидание пока worker поймает из противоположной сети tx.status === true ? ОК : false === rejecteed
@@ -47,18 +60,27 @@ app.post('/post', async function (req, res) {
     let responseData = {};
         responseData.jobRunID = req.body.id;
         responseData.data     = {result: tx.transactionHash, tx: tx };
-        
 
-    console.log('/post ', responseData);
-    res.status(200).send(responseData);
+    return responseData
+
+}
+
+async function GetType(data){
+
+    let response = await dexpool.methods.lowLevelGet(data).call();
+    let responseData          = {};
+        responseData.jobRunID = req.body.id;
+        responseData.data     = {result: response};
+
+    return responseData;    
+}
 
 
-});
-
-
-/** */
-app.get('/test', async function (req, res) {
-    console.log('/test', req.body);
+/**
+* Test call (changing state)
+*/
+app.get('/testSet', async function (req, res) {
+    console.log('/testSet', req.body);
    
     // the owner - his deployed smart-contract on Net2
     let ownerPool = (await worker.web3.eth.getAccounts())[0];
@@ -70,6 +92,26 @@ app.get('/test', async function (req, res) {
 
     // shoud be 10000000000000000000
     console.log('New value is ', await dexpool.methods.test().call());
+
+    
+    res.status(200).send({});
+
+});
+
+/**
+* Test staticcall 
+*/
+app.get('/testGet', async function (req, res) {
+    console.log('/testGet', req.body);
+   
+    // the owner - his deployed smart-contract on Net2
+    let ownerPool = (await worker.web3.eth.getAccounts())[0];
+    // this is represents of bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('_getTest()'))));
+    let data = '0x0x49eba8f7';
+    //pass 'data' for call inside smart-contracts
+    const getResult  = await dexpool.methods.lowLevelGet(data).send({from: ownerPool});
+    
+    console.log('Result staticcall ', getResult);
 
     
     res.status(200).send({});

@@ -26,18 +26,21 @@ try{
 	console.log('dexPool.myContract: ', await dexPool.myContract());
 	console.log('dexPool.util: ', await dexPool.util());
 
-	console.log('data: ', await myContract.data());
 
 
 	//const tokenAddress  = await myContract.getChainlinkToken();
 	//const token         = await LinkToken.at(tokenAddress);
 	//await myContract.transferOwnership(dexPool.address, { from: (await web3.eth.getAccounts())[0] });
 	
-    const tx = await dexPool.swapDeposit('100');
-    console.log('Transfer succeeded! Transaction ID:', JSON.stringify(tx));
+     const tx = await dexPool.swapDeposit('75');
+     console.log('Transfer succeeded! Transaction ID:', JSON.stringify(tx));
 
     
     /*let callbackdata = await myContract.data();
+    console.log('callbackdata ', callbackdata.toString());*/
+
+
+    /*let callbackdata = await dexPool.test();
     console.log('callbackdata ', callbackdata.toString());*/
 
     

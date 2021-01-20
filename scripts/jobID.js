@@ -10,7 +10,7 @@ try{
 
 
   const myContract    = await MyContract.at(activeEnv.parsed.CLIENT_ADDRESS);
-  const tx            = await myContract.setJobID(await web3.utils.fromAscii("aaf1c15e781b45dba6ca38fb9e369447"));
+  const tx            = await myContract.setJobID(await web3.utils.fromAscii("af81bbdb84a74c039dceda6d9b661f20"));
   
 
   console.log(`setJobID succeeded! Transaction ID: ${JSON.stringify(tx)}.`);

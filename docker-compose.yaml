@@ -59,7 +59,7 @@ services:
       static-network:
         ipv4_address: 172.20.128.14
     volumes:
-      - ./network1/db-data/:/var/lib/postgresql/data:z
+      - /var/lib/postgres/network1/db-data/:/var/lib/postgresql/data
 #      - ./db/init/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 #    ports:
 #     - "5432:5432"
@@ -114,7 +114,7 @@ services:
       static-network:
         ipv4_address: 172.20.128.15
     volumes:
-      - ./network2/db-data/:/var/lib/postgresql/data:z
+      - /var/lib/postgres/network2/db-data/:/var/lib/postgresql/data
 #      - ./db/init/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 #    ports:
 #     - "5432:5433"
