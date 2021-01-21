@@ -1,4 +1,5 @@
 const Web3      = require("web3");
+const config    = require("./config");
 const oracleAbi = require("../abi/oracle_v0.6.json");
 
 
@@ -13,8 +14,9 @@ class Worker {
     }
 
 
-    async connect(url) {
-        this.web3 = new Web3(new Web3.providers.WebsocketProvider(url));
+    async connect(network) {
+        if(network === 'network1' || network === 'network2') { console.log(config.networks[network].host); this.web3 = new Web3(new Web3.providers.WebsocketProvider('ws://'+ config.networks[network].host +":"+ config.networks[network].port)); };
+        if(network === 'binancetestnet' || network === 'rinkeby') { this.web3 = new Web3(config.networks[network].provider()); };
     }
 
 
@@ -47,10 +49,13 @@ class Worker {
             let block = await this.web3.eth.getBlock(blockNumber);
             //console.log("new block :", block);
             for (const transactionHash of block.transactions) {
-                let transaction = await this.web3.eth.getTransaction(transactionHash);
+                let transaction = {};
+                try{
+                transaction = await this.web3.eth.getTransaction(transactionHash);
+                }catch(e){ console.log(`error while parse tx ${transactionHash}\n`);}
                 let transactionReceipt = await this.web3.eth.getTransactionReceipt(transactionHash);
                 transaction = Object.assign(transaction, transactionReceipt);
-                //console.log("Transaction: ", transaction);
+                //console.log("Transaction: ", transactionHash);
                 // Do whatever you want here
                 this.getEvent(transaction);
             }
@@ -82,7 +87,9 @@ class Worker {
         });
         //console.log(`transaction: ${transaction.hash}, status:${transaction.status}, LOG:${transaction.decodeLogs}\n`);
         console.log(JSON.stringify(transaction)+'\n');
+           
     }
+
 }
 
 module.exports = Worker;

@@ -9,6 +9,9 @@ import "./IHexstring.sol";
 contract DexPool is Ownable {
 
   event Receive(bool success);
+  event SwapDeposit(bytes32 requestId, uint256 curBlock);
+  event SwapWithdraw(address recipient, uint256 amount);
+  event TxCompleteBothChain(bytes32 requestId, bytes32 tx_fromNet2);
 
   string constant private SET_REQUEST_TYPE = "set";
   string constant private GET_REQUEST_TYPE = "get";
@@ -22,7 +25,10 @@ contract DexPool is Ownable {
 
   address tokenOfPool;
 
-  constructor(address _tokenOfPool, address _myContract, address _util) public {
+  constructor(address _tokenOfPool,
+              address _myContract,
+              address _util ) 
+  public {
 
   	tokenOfPool = _tokenOfPool;
   	myContract  = _myContract;
@@ -33,51 +39,47 @@ contract DexPool is Ownable {
   /** 
    * The part of process 'swap'
    */
-  function swapDeposit(uint256 amount) external {
+  function swapDeposit(uint256 amount, address recipientOnNet2) external {
 
-      //TODO
-      // require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPDEPOSIT");
-      // //перевод usdc c адреса alice на адрес пула в сети ethereum (перед этим она должна сделать approve)
-      // IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount);
+    require(recipientOnNet2 != address(0), "ZERO_ADDRESS");
+    //перевод usdc(BNB) c адреса alice на адрес пула в сети ethereum(Binance)
+    IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount);
 
      //prepare
      bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('_setTest(uint256)'))), amount);
-
      //byte to string and send to Net2
      bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
-
      //save requestId for bind with callback requestId -> this is approve consistaency !!!!
      // hex"0x0" - in pending
      pendingRequests[requestId] = "0x0";
+
+     emit SwapDeposit(requestId, block.number);
      
    }
 
    function setPendingRequestsDone(bytes32 requestId ,bytes32 tx_fromNet2) public {
-      require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
 
+      require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
       // transation on overside is executed. tx.status = true
       pendingRequests[requestId] = tx_fromNet2;
 
-   }
+      emit TxCompleteBothChain(requestId, tx_fromNet2);
+  }
 
   /** 
    * The part of process 'swap'
-   * NOTE: permission onlyOwner
-   /
-  function swapWithdraw(address recipient,uint256 amount) onlyOwner external {
-
-      //WARN рассмотреть негативный сценарий где данная функция вызывается первой из всего процесса.
-
+   * 
+   */
+  function swapWithdraw(address recipient,uint256 amount) public {
 
       require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPWITHDRAW");
-
-      //перевод BNB c адреса пула на адрес alice в сети Binance
+      require(msg.sender == address(this), "ONLY YOURSELF");
+      //перевод BNB(USDC) c адреса пула на адрес alice в сети Binance(Ethereum)
       IERC20(tokenOfPool).transfer(recipient, amount);
 
-      //TODO
-      //createRequestTo(...); - на случай коллбэка о событии транзакции в другую 
+      emit SwapWithdraw(msg.sender, amount);
 
-   }*/
+   }
 
 
 
@@ -89,13 +91,13 @@ contract DexPool is Ownable {
 
   function _setTest(uint256 val) public  {
 
-    require(msg.sender == address(this), "ONLY YOURSALF");
+    require(msg.sender == address(this), "ONLY YOURSELF");
 
     test = val;
   }
   function _getTest() public view returns (uint256)  {
 
-    require(msg.sender == address(this), "ONLY YOURSALF");
+    require(msg.sender == address(this), "ONLY YOURSELF");
 
     return test;
   }

@@ -55,5 +55,15 @@ $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 - Login: alekcangp@list.ru
 - Pass: 55555555
 
+
+# ENV FOR ADAPTER
+
+### env for connect to network2
+- PORT=8081
+- LISTEN_NETWORK=network1 # network2 binancetestnet rinkeby - эту сеть будем слушать (ex: адатер ethereum'a будет слушать binance)
+- POOL_ADDRESS=0xfc7d7De344a05b96B93758723582c24D6369E877  # - эти адреса будем слушать (адреса противоположной сети)
+- ORACLE_CONTRACT_ADDRESS=0x267AD41c1810074E8b37317c3e90a516d3be910F # - эти адреса будем слушать (адреса противоположной сети)
+
+
 # NOTE
 ## DEFAULT_HTTP_TIMEOUT (Maximum time to wait for a response in the HTTP adapter. Default:15s)
