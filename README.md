@@ -19,6 +19,13 @@ You could of course do it step by step, like Binance Bridge, but let's be honest
 The project architecture includes ChainLink and Binance nodes, smart contracts, and transactions signing and sending external adapters.
 Besides, we use Uniswap technologies as the basis for decentralised swap. We will have to split the pool's smart contract logic between the two blockchains. We plan to do this separation with oracles on each blockchain side.
 
+## Use cases
+- User can swap Etereum ETH to pegged BSC ETH one-by-one 
+- User can swap a token of any type from Ethereum for any registered on BSC token 
+- Dexpool protocol can emit not present on BSC asset requested by user, the collateral of emited token is provved through Chainlink ETH-to-BTC integration.
+
+
+
 ## Architecture
 
 The prototype will include functionality
@@ -26,10 +33,10 @@ The prototype will include functionality
 - make "pair" of two assets not depending to what chain each of them belong
 - swap assets between chains with minimum rate calculations
 - developed **chainlink external adapter script** is used to  get data from external chain and change state of another chain's smart contract 
-- "bidirectional" wallet is implemented on front for better user expirience
+- "bidirectional" wallet is implemented on front for better user experience
 
 ### DexPool contract
-DexPool is deployed to both Ethereum and Binance Smart Chain networks. The methods like **swap, withdraw, addLiquidity** are implemented to be used from native chain as well as method **reciever** is used by external adapter to be call from external chain.
+DexPool is deployed to both Ethereum and Binance Smart Chain networks. The methods like **swap, withdraw, addLiquidity** are implemented to be used from native chain as well as method **reciever** is used to be called from external chain through adapter.
 
 
 
