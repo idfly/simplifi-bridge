@@ -29,7 +29,7 @@ The prototype will include functionality
 - "bidirectional" wallet is implemented on front for better user expirience
 
 ### DexPool contract
-DexPool is deployed to both Ethereum and Binance Smart Chain networks. The methods like s**swap, withdraw, addLiquidity** are implemented to be used from native chain as well as method **reciever** is used by externak adapter to be call from extarnall chain.
+DexPool is deployed to both Ethereum and Binance Smart Chain networks. The methods like **swap, withdraw, addLiquidity** are implemented to be used from native chain as well as method **reciever** is used by external adapter to be call from external chain.
 
 
 
