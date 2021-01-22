@@ -1,0 +1,11 @@
+version: '3.6'
+
+services:
+  adapter1_net1:
+    build:
+      context: ./
+      dockerfile: ./adapter/adapterdgu/Dockerfile
+    env_file:
+    - ./adapter/adapterdgu/rinkeby.env
+    ports:
+     - "10.8.0.13:8080:80"

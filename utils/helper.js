@@ -7,7 +7,7 @@ const writeEnv = async (linkToken, oracle, client_address, pool_address, network
 
     const addrFile = path.join(__dirname, '..', 'build', 'addrs_'+network+'.env');
 
-    let pool = network === 'network1' ? 'POOL1_ADDRESS' : network === 'network2' ? 'POOL2_ADDRESS' : '';
+    let pool = ['network1','rinkeby'].includes(network) ? 'POOL1_ADDRESS' : ['network2','binancetestnet'].includes(network) ? 'POOL2_ADDRESS' : '';
     
       try {
         fs.unlinkSync(addrFile);

@@ -30,7 +30,16 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: '0.6.9',
-    },
-  },
+       version: "0.6.9",    
+       docker: true,   
+       parser: "solcjs",
+       settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200
+        }
+        //evmVersion: "byzantium"
+      }
+    }
+  }
 }

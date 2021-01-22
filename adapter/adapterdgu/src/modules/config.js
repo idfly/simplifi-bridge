@@ -16,14 +16,10 @@ module.exports = {
     },
 
     binancetestnet: {
-       provider: () => new HDWalletProvider("city detect lawn theory regular leisure hire solid mansion inflict expire aerobic", `ws://95.217.104.54:8576`),
-       network_id: 97,
-       timeoutBlocks: 200  
+       provider: () => new HDWalletProvider("city detect lawn theory regular leisure hire solid mansion inflict expire aerobic", `ws://95.217.104.54:8576`)
     },
     rinkeby: {
-       provider: () => new HDWalletProvider('city detect lawn theory regular leisure hire solid mansion inflict aerobic expire', `wss://rinkeby.infura.io/ws/v3/b9e220845c084e9195c77c542a852dd7`),
-       network_id: 4,
-       timeoutBlocks: 200  
+       provider: () => new HDWalletProvider('city detect lawn theory regular leisure hire solid mansion inflict aerobic expire', `wss://rinkeby.infura.io/ws/v3/b9e220845c084e9195c77c542a852dd7`)
     }  
     
   }

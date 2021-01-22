@@ -9,7 +9,7 @@ import "./DexPool.sol";
 contract MyContract is ChainlinkClient, Ownable {
   
   //TODO к коефиге ноды чейнлинка стоит 1 линк. Попытаться исправить
-  uint256 constant private ORACLE_PAYMENT = 1 * LINK; // 0.1 * 10 ** 18; // 0.1 LINK
+  uint256 constant private ORACLE_PAYMENT =  1 * LINK;//0.1 * 10 ** 18; // 0.1 LINK    
   address public oracle;
   bytes32 public jobId;
   

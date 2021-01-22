@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./MyContract.sol";
 import "./IHexstring.sol";
 
+abstract contract ERC20 is IERC20 {}
+
 
 contract DexPool is Ownable {
 

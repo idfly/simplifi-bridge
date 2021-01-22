@@ -29,21 +29,23 @@ $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 
 ## Binance Testnet
 
-- PORT=8082
+- PORT=8081
 - ETH_URL=ws://95.217.104.54:8576
-- ORACLE_CONTRACT_ADDRESS=
+- ORACLE_CONTRACT_ADDRESS=0x8c7864014b78b7126d2d5a01f604b5af910441bc
 - POOL_ADDRESS=
 
 
 - CHAINLINK_NODE=http://168.119.111.104:6688/
-- BSC_TESTNET_LINK_CONTRACT_ADDRESS=0x84b9B910527Ad5C03A9Ca831909E21e236EA7b06
+- BSC_TESTNET_LINK_CONTRACT_ADDRESS=0x88e69c0d2d924e642965f8dd151dd2e24ba154f8
 
 
 ## Rinkeby testnet
 
+- https://rinkeby.chain.link/
+
 - PORT=8082
 - ETH_URL=wss://rinkeby.infura.io/ws/v3/b9e220845c084e9195c77c542a852dd7
-- ORACLE_CONTRACT_ADDRESS=
+- ORACLE_CONTRACT_ADDRESS=0x7AFe1118Ea78C1eae84ca8feE5C65Bc76CcF879e
 - POOL_ADDRESS=
 
 - LINK_CONTRACT_ADDRESS=0x01BE23585060835E02B77ef475b0Cc51aA1e0709
@@ -67,3 +69,16 @@ $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 
 # NOTE
 ## DEFAULT_HTTP_TIMEOUT (Maximum time to wait for a response in the HTTP adapter. Default:15s)
+
+
+# ADDRESS OWNER
+
+### RINKEBY
+
+- 0x9805E1FD9013f79b04F6cED13696F9346b70cC39
+- https://rinkeby.etherscan.io/
+
+### BINANCE TESTNET
+
+- 0x6cd6797154b7e64855bAbDB660197a4C56354518
+- https://testnet.bscscan.com/

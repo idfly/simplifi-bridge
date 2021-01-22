@@ -7,4 +7,5 @@ ADD ./adapter/adapterdgu .
 
 
 RUN npm install
+EXPOSE ${PORT}
 ENTRYPOINT ["./node_modules/.bin/nodemon", "./src/index.js"]

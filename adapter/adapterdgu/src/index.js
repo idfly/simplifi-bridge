@@ -3,7 +3,7 @@
 require('dotenv').config();
 const express    = require('express');
 const bodyParser = require('body-parser');
-console.log(process.env);
+
 const dexPool = require("./abi/DexPool.json");
 
 const Worker = require('./modules/worker');
@@ -15,7 +15,7 @@ let  ownerPool = null;  // opposite network
 (async () => {
 
     worker = new Worker();
-    //process.env.LISTEN_NETWORK = 'binancetestnet';
+    //process.env.LISTEN_NETWORK = 'rinkeby';
     await worker.connect(process.env.LISTEN_NETWORK);
     worker.monitor();
 
@@ -76,6 +76,9 @@ async function GetType(data, id){
     return responseData;    
 }
 
+app.get('/ping', async function (req, res) {
+    res.status(200).send({ping: PONG});
+});
 
 /**
 * Test call (changing state)
