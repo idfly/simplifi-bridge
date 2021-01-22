@@ -202,10 +202,10 @@ function onConnectEth() {
       vm.ethChainId = chainId; 
       refreshAccountDataEth();
     });
-
+    
     refreshAccountDataEth();
     setInterval(refreshAccountDataEth,10000);
-    allowanceEth(0)
+    allowanceEth(0);
     
   }
 
@@ -223,7 +223,7 @@ function refreshAccountDataEth() {
     (vm.chainTo.id == '0x4') ? vm.accountTo = vm.accountEth : vm.accountFrom = vm.accountEth;
     fetchSwapDataEth();
     fetchLiquidityDataEth()
-    exchButtons(1,1,'eth');
+   // exchButtons(1,1,'eth');
     document.getElementById('alerteth').innerHTML ='';
   }
 
@@ -246,13 +246,15 @@ function onConnectBsc() {
       refreshAccountDataBsc()
       allowanceBsc(0);
     });
-   
+    
     BinanceChain.on("chainChanged", (chainId) => {
       vm.bscChainId = chainId;
       refreshAccountDataBsc();
     });
 
-    refreshAccountDataBsc()
+    
+    
+    refreshAccountDataBsc();
     setInterval(refreshAccountDataBsc,10000);
     allowanceBsc(0);
     
@@ -274,9 +276,13 @@ function refreshAccountDataBsc() {
     if (vm.bscChainId != '0x61') {alertBsc(); return}
     (vm.chainTo.id == '0x61') ? vm.accountTo = vm.accountBsc : vm.accountFrom = vm.accountBsc;
     fetchSwapDataBsc();
-    fetchLiquidityDataBsc()
-    exchButtons(1,1,'bsc')
+    fetchLiquidityDataBsc();
+    
+    //exchButtons(1,1,'bsc')
+    
+
     document.getElementById('alertbsc').innerHTML ='';
+
     }
 
 
@@ -338,14 +344,14 @@ function exchButtons(a,s,chain) {
   var aa = ae*ab, ss = se*sb;//
 
   if (chain == 'amo'){
-      if (vm.amountFrom > 0) { cc = 1;} else {cc = 0 }
+      if (vm.amountFrom > 0) { cc = 1; } else { cc = 0 }
   } 
 
   if (chain == 'allo'){
     if (alloEth*alloBsc > 0) { aa = 0; ss = 1} 
 } 
   
-  if (aa == 1) document.querySelector("#approve").removeAttribute("disabled"); else {document.querySelector("#approve").setAttribute("disabled", "disabled");}
+  if (aa == 1 && alloEth*alloBsc == 0 ) document.querySelector("#approve").removeAttribute("disabled"); else {document.querySelector("#approve").setAttribute("disabled", "disabled");}
   if (ss == 1 && cc == 1) document.querySelector("#swap").removeAttribute("disabled"); else document.querySelector("#swap").setAttribute("disabled", "disabled");
 
 
@@ -361,8 +367,10 @@ function exchButtons(a,s,chain) {
       const tokenContract = new web3eth.eth.Contract(erc20abi, tok);
       if (!x) {
         tokenContract.methods.allowance(acc,serviceContractEth).call().then(function (res) {
-        alloEth = res; alert(res)
-        if (res == 0) approveTokenEth = tok; exchButtons(1,1,'allo')
+        alloEth = res; //alert(res)
+        if (res == 0) approveTokenEth = tok; 
+        exchButtons(1,1,'eth')//
+        exchButtons(1,1,'allo')
         }).catch(e=>{}); 
       }
       
@@ -372,28 +380,30 @@ function exchButtons(a,s,chain) {
         const tokenAmountToApprove = web3.toBigNumber(101010101);
         const calculatedApproveValue = web3.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
        await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
-        setTimeout(allowanceEth,5000,0) }).catch(function (e) {});
+        allowanceEth(0) }).catch(function (e) {});
       } 
       
     
   }
 
-  function allowanceBsc(x) {
+   async function allowanceBsc(x) {
     var tok,acc;
     if (vm.chainFrom.id == '0x61') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else { tok = vm.tokenTo.addr; acc = vm.accountTo; }
       const tokenContract = new web3bsc.eth.Contract(erc20abi, tok);
       if (!x) {
-        tokenContract.methods.allowance(acc,serviceContractBsc).call().then(function (res) {
+         tokenContract.methods.allowance(acc,serviceContractBsc).call().then(function (res) {
         alloBsc = res; //alert(res);
-        if (res == 0) approveTokenBsc = tok; exchButtons(1,1,'allo')
+        if (res == 0) approveTokenBsc = tok; 
+        exchButtons(1,1,'bsc')//
+        exchButtons(1,1,'allo')
         }).catch(e=>{});
       }
       if (x && alloBsc == 0) {
         const tokenDecimals = web3.toBigNumber(18);
         const tokenAmountToApprove = web3.toBigNumber(101010101);
         const calculatedApproveValue = web3.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
-        tokenContract.methods.approve(serviceContractBsc, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
-        setTimeout(allowanceBsc,5000,0) }).catch(function (e) {});  // 'Seems, insufficient balance to pay Gas'    
+        await tokenContract.methods.approve(serviceContractBsc, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
+        setTimeout(allowanceBsc,1000,0) }).catch(function (e) {});  // 'Seems, insufficient balance to pay Gas'    
   }
   
 }
@@ -406,7 +416,9 @@ function exchButtons(a,s,chain) {
   
 
   //SWAP
-
+  async function confirmSwap() {
+    if (alloEth*alloBsc == 0) {alert('Complete the approval!')}
+  }
 
 
 
