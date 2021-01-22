@@ -213,7 +213,7 @@
   <div class = "col text-center">
     <div  class="btn-group" role="group" >
       <button id="approve" type="button" class="btn fw-bold btn-secondary button1 shadow" disabled v-on:click = "approving()"><span class="badge badge-light">1</span> APPROVE</button>
-      <button id="swap" type="button" data-toggle="modal" data-target="#SwapModalCenter" class="btn fw-bold btn-info button2 shadow" disabled v-on:click = "swaping()">
+      <button id="swap" type="button" data-toggle="modal" data-target="#SwapModalCenter" class="btn fw-bold btn-info button2 shadow" disabled >
         <span class="badge badge-light">2</span> SWAP
       </button>
 
@@ -269,7 +269,7 @@
 
       </div>
       <div class="modal-footer justify-content-center">
-        <button type="button" class="btn btn-success shadow button1 button2">CONFIRM</button>
+        <button type="button" class="btn btn-success shadow button1 button2" v-on:click = "confirmSwap()">CONFIRM</button>
       </div>
     </div>
   </div>
