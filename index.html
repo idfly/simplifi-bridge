@@ -16,7 +16,7 @@
     <script src="./js/erc20abi.js"></script>
     
     
-    <!-- Yandex.Metrika counter--> 
+    <!-- Yandex.Metrika counter 
 <script type="text/javascript" >
   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
@@ -30,7 +30,7 @@
   });
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/71237989" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
- <!--/Yandex.Metrika counter -->
+ /Yandex.Metrika counter -->
     
     <title>Cross-Chain</title>
   </head>
@@ -212,8 +212,8 @@
 <div id='apsw' class="row justify-content-center mt-2">
   <div class = "col text-center">
     <div  class="btn-group" role="group" >
-      <button id="approve" type="button" class="btn fw-bold btn-secondary button1 shadow" disabled><span class="badge badge-light">1</span> APPROVE</button>
-      <button id="swap" type="button" data-toggle="modal" data-target="#SwapModalCenter" class="btn fw-bold btn-info button2 shadow" disabled>
+      <button id="approve" type="button" class="btn fw-bold btn-secondary button1 shadow" disabled v-on:click = "approving()"><span class="badge badge-light">1</span> APPROVE</button>
+      <button id="swap" type="button" data-toggle="modal" data-target="#SwapModalCenter" class="btn fw-bold btn-info button2 shadow" disabled v-on:click = "swaping()">
         <span class="badge badge-light">2</span> SWAP
       </button>
 
@@ -256,7 +256,7 @@
           <span  v-html = "'<img src=&quot./img/'+tokenTo.icon+'&quot class=&quot icon3 &quot/>'"></span>
           </div>
           <div class="col-5 text-left">
-            <h4>{{vm.amountTo*1}}</h4>
+            <h4>{{vm.amountTo}}</h4>
           </div>
           <div class="col-4 text-center">
             {{vm.chainTo.name}}

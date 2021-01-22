@@ -39,18 +39,22 @@ var vm = new Vue({
       
       amountFrom: function() {
         if (document.activeElement.id == 'num1' ) {
-        calcAmount('from')
+        calcAmount('from');
+       
         }
+        exchButtons(1,1,'amo')
       }, 
      
       amountTo: function() {
         if (document.activeElement.id == 'num2' ) {
         calcAmount('to')
         }
+        
       },
       
       tokenFrom: function() {
         calcPrice('to'); 
+        
         
         
       },
@@ -78,6 +82,8 @@ var vm = new Vue({
 
     } 
   })
+
+  var serviceContractEth = "0x5a18D011eF7b5761D427A97865fcBbfBe3b0A660", serviceContractBsc = "0x594c420e6567b4479614a5ffc5774c0a8a391452";
 
 //set default params
   //for exchange
@@ -119,7 +125,7 @@ var vm = new Vue({
     }else evt.preventDefault();
   }  
 
-setTimeout(checkInstall, 500);
+setTimeout(checkInstall, 1000);
 
 var delta =360;
   function rotate360Deg(ele){
@@ -138,13 +144,15 @@ var delta =360;
 
 function setTokenFrom(item) {
   vm.tokenFrom = item;
-  (vm.chainFrom.id == '0x61') ? refreshAccountDataBsc() : refreshAccountDataEth()
+  if (vm.chainFrom.id == '0x61') { refreshAccountDataBsc(); allowanceBsc() } else {refreshAccountDataEth(); allowanceEth()}
+  
   //getBalanceFrom()
 }
 
 function setTokenTo(item) {
   vm.tokenTo = item;
-  (vm.chainTo.id == '0x61') ? refreshAccountDataBsc() : refreshAccountDataEth()
+  if (vm.chainTo.id == '0x61') { refreshAccountDataBsc(); allowanceBsc() } else {refreshAccountDataEth(); allowanceEth()}
+  
   //getBalanceFrom()
 }
 
@@ -185,6 +193,7 @@ function onConnectEth() {
     ethereum.on("accountsChanged", (accounts) => {
       (accounts.length == 0) ? vm.accountEth = '' : vm.accountEth = accounts[0];
       refreshAccountDataEth()
+      allowanceEth(0)
     });
    
 
@@ -196,6 +205,7 @@ function onConnectEth() {
 
     refreshAccountDataEth();
     setInterval(refreshAccountDataEth,10000);
+    allowanceEth(0)
     
   }
 
@@ -234,6 +244,7 @@ function onConnectBsc() {
     BinanceChain.on("accountsChanged", (accounts) => {
       vm.accountBsc = accounts[0];
       refreshAccountDataBsc()
+      allowanceBsc(0);
     });
    
     BinanceChain.on("chainChanged", (chainId) => {
@@ -243,6 +254,8 @@ function onConnectBsc() {
 
     refreshAccountDataBsc()
     setInterval(refreshAccountDataBsc,10000);
+    allowanceBsc(0);
+    
    
   }
 
@@ -278,7 +291,6 @@ if (vm.chainTo.id == '0x61') {
    tokenContract.methods.balanceOf(vm.accountTo).call().then(function (bal) {
     vm.balanceTo = Math.round(bal*1e-10)/1e8;})
 } else {
-  
   const tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenFrom.addr);
   tokenContract.methods.balanceOf(vm.accountFrom).call().then(function (bal) {
   vm.balanceFrom = Math.round(bal*1e-10)/1e8;})
@@ -291,8 +303,8 @@ async function fetchSwapDataEth() {
   if (vm.chainTo.id == '0x4') {
     const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenTo.addr);
     tokenContract.methods.balanceOf(vm.accountTo).call().then(function (bal) {
-    vm.balanceTo = Math.round(bal*1e-10)/1e8;})
-} else {//alert(vm.tokenFrom.addr +' '+ vm.accountFrom);
+    vm.balanceTo = Math.round(bal*1e-10)/1e8;});
+} else {
   const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
   tokenContract.methods.balanceOf(vm.accountFrom).call().then(function (bal) {
   vm.balanceFrom = Math.round(bal*1e-10)/1e8;})
@@ -316,19 +328,86 @@ async function fetchLiquidityDataBsc() {
 }
 
 
-var ae = ab = se = sb = 0;
+var ae = ab = se = sb = cc =  0;
 function exchButtons(a,s,chain) {
+
   
-  if (chain == 'eth') { ae = a, se = s}
-  if (chain == 'bsc') { ab = a, sb = s}
+  if (chain == 'eth') { ae = a; se = s}
+  if (chain == 'bsc') { ab = a; sb = s}
   
-  var aa = ae*ab, ss = se*sb;
-  //alert(aa+' '+ss);
-  if (aa == 1) document.querySelector("#approve").removeAttribute("disabled"); else document.querySelector("#approve").setAttribute("disabled", "disabled");
-  if (ss == 1) document.querySelector("#swap").removeAttribute("disabled"); else document.querySelector("#swap").setAttribute("disabled", "disabled");
+  var aa = ae*ab, ss = se*sb;//
+
+  if (chain == 'amo'){
+      if (vm.amountFrom > 0) { cc = 1;} else {cc = 0 }
+  } 
+
+  if (chain == 'allo'){
+    if (alloEth*alloBsc > 0) { aa = 0; ss = 1} 
+} 
+  
+  if (aa == 1) document.querySelector("#approve").removeAttribute("disabled"); else {document.querySelector("#approve").setAttribute("disabled", "disabled");}
+  if (ss == 1 && cc == 1) document.querySelector("#swap").removeAttribute("disabled"); else document.querySelector("#swap").setAttribute("disabled", "disabled");
 
 
   }
+
+//APPROVE
+
+  var alloEth = alloBsc = 0, approveTokenBsc, approveTokenEth;
+
+  async function allowanceEth(x) {
+    var tok,acc;
+    if (vm.chainFrom.id == '0x4') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else {tok = vm.tokenTo.addr; acc = vm.accountTo;}
+      const tokenContract = new web3eth.eth.Contract(erc20abi, tok);
+      if (!x) {
+        tokenContract.methods.allowance(acc,serviceContractEth).call().then(function (res) {
+        alloEth = res; alert(res)
+        if (res == 0) approveTokenEth = tok; exchButtons(1,1,'allo')
+        }).catch(e=>{}); 
+      }
+      
+      //alert(x +' '+ alloEth +' '+ approveTokenEth);
+      if (x && alloEth == 0) {
+        const tokenDecimals = web3.toBigNumber(18);
+        const tokenAmountToApprove = web3.toBigNumber(101010101);
+        const calculatedApproveValue = web3.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
+       await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
+        setTimeout(allowanceEth,5000,0) }).catch(function (e) {});
+      } 
+      
+    
+  }
+
+  function allowanceBsc(x) {
+    var tok,acc;
+    if (vm.chainFrom.id == '0x61') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else { tok = vm.tokenTo.addr; acc = vm.accountTo; }
+      const tokenContract = new web3bsc.eth.Contract(erc20abi, tok);
+      if (!x) {
+        tokenContract.methods.allowance(acc,serviceContractBsc).call().then(function (res) {
+        alloBsc = res; //alert(res);
+        if (res == 0) approveTokenBsc = tok; exchButtons(1,1,'allo')
+        }).catch(e=>{});
+      }
+      if (x && alloBsc == 0) {
+        const tokenDecimals = web3.toBigNumber(18);
+        const tokenAmountToApprove = web3.toBigNumber(101010101);
+        const calculatedApproveValue = web3.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
+        tokenContract.methods.approve(serviceContractBsc, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
+        setTimeout(allowanceBsc,5000,0) }).catch(function (e) {});  // 'Seems, insufficient balance to pay Gas'    
+  }
+  
+}
+
+  async function approving() {
+    await allowanceEth(1);
+    allowanceBsc(1)
+
+  }
+  
+
+  //SWAP
+
+
 
 
 
