@@ -20,9 +20,9 @@ The project architecture includes ChainLink and Binance nodes, smart contracts, 
 Besides, we use Uniswap technologies as the basis for decentralised swap. We will have to split the pool's smart contract logic between the two blockchains. We plan to do this separation with oracles on each blockchain side.
 
 ## Use cases
-- User can swap any Ethereum asset to pegged BSC asset of same type
-- User can swap a token of any type from Ethereum for any existing BSC token 
-- Dexpool protocol can emit new BSC asset, the collateral is proved through Chainlink ETH-to-BTC integration
+- User can swap any Ethereum asset to pegged BSC asset of same type (for example USDT ERC20  <-> USDT BEP20)
+- User can swap a token of any type from Ethereum for any existing BSC token (ETH <-> BNB ) 
+- Dexpool protocol can emit new BSC asset, the collateral is proved through Chainlink ETH-to-BTC integration (asset is locked by contract on Ethereum side, proof is send throgh chainlink to BSC,  new pegged asset is emited on BSC and sent to user)
 
 
 
