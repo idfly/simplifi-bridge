@@ -19,4 +19,6 @@ You could of course do it step by step, like Binance Bridge, but let's be honest
 The project architecture includes ChainLink and Binance nodes, smart contracts, and transactions signing and sending external adapters.
 Besides, we use Uniswap technologies as the basis for decentralised swap. We will have to split the pool's smart contract logic between the two blockchains. We plan to do this separation with oracles on each blockchain side.
 
+## Architecture Diagram
 
+![Architecture Diagram](./img/diagram.png)
