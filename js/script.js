@@ -84,8 +84,10 @@ var vm = new Vue({
   })
 
   var serviceContractEth = "0x5a18D011eF7b5761D427A97865fcBbfBe3b0A660", serviceContractBsc = "0x594c420e6567b4479614a5ffc5774c0a8a391452";
+  var meta2 = 'Connect to MetaMask', meta1 = 'Install MetaMask';
+  var bin2 = 'Connect to Binance wallet', bin1 = 'Install Binance wallet'
 
-//set default params
+  //set default params
   //for exchange
   vm.tokenFrom = vm.tokensEth[0];
   vm.tokenTo = vm.tokensBsc[0];
@@ -167,12 +169,12 @@ function setLiqToken(item, typ) {
 async function checkInstall() {
     if (window.ethereum) { 
         window.web3eth = new Web3(ethereum);
-        vm.buttonEth = "Connect to MetaMask";
-    } else {vm.buttonEth = "Install MetaMask"}
+        vm.buttonEth = meta2;
+    } else {vm.buttonEth = meta1}
 
     if (window.BinanceChain) {
         window.web3bsc = new Web3(BinanceChain); 
-        vm.buttonBsc = "Connect to Binance wallet";
+        vm.buttonBsc = bin2;
     } else {vm.buttonBsc = "Install Binance wallet"}
 
 }
@@ -180,7 +182,7 @@ async function checkInstall() {
 //Ethereum wallet
 
 async function connectEth() {
-  if (vm.buttonEth == "Install MetaMask") {window.open("https://metamask.io/download.html"); return}
+  if (vm.buttonEth == meta1) {window.open("https://metamask.io/download.html"); return}
  await ethereum.enable();
  vm.ethChainId = await web3eth.eth.getChainId();
  const accountsEth = await web3eth.eth.getAccounts();
@@ -218,7 +220,7 @@ function onConnectEth() {
 function refreshAccountDataEth() {
   if (vm.accountEth != '') {
     vm.buttonEth = vm.accountEth.substr(0,6) + '...' + vm.accountEth.substr(38);
-  } else {vm.buttonEth = 'Connect to Metamask'}
+  } else if (window.ethereum) {vm.buttonEth = meta2} else {vm.buttonEth = meta1}
   if (vm.ethChainId != '0x4') {alertEth(); return}
     (vm.chainTo.id == '0x4') ? vm.accountTo = vm.accountEth : vm.accountFrom = vm.accountEth;
     fetchSwapDataEth();
@@ -232,7 +234,7 @@ function refreshAccountDataEth() {
 
 async function connectBsc() {
   if (vm.buttonBsc == "Install Binance wallet") {window.open("https://docs.binance.org/smart-chain/wallet/binance.html"); return}
- //await BinanceChain.enable();
+ await BinanceChain.enable();
  vm.bscChainId = await web3bsc.eth.getChainId(); //alert(vm.bscChainId);
  const accountsBsc = await web3bsc.eth.getAccounts();
  vm.accountBsc = accountsBsc[0];// alert(vm.accountBsc)
@@ -272,7 +274,7 @@ function refreshAccountDataBsc() {
     
     if (vm.accountBsc != '') {
       vm.buttonBsc = vm.accountBsc.substr(0,6) + '...' + vm.accountBsc.substr(38);
-    } else {vm.buttonBsc = 'Connect to Binance wallet'}
+     } else if (window.BinanceChain) {vm.buttonBsc = bin2} else {vm.buttonBsc = bin1}
     if (vm.bscChainId != '0x61') {alertBsc(); return}
     (vm.chainTo.id == '0x61') ? vm.accountTo = vm.accountBsc : vm.accountFrom = vm.accountBsc;
     fetchSwapDataBsc();
