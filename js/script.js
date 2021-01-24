@@ -167,8 +167,8 @@ function setLiqToken(item, typ) {
 async function checkInstall() {
     if (window.ethereum) { 
         window.web3eth = new Web3(ethereum);
-        vm.buttonEth = "Connect to Metamask";
-    } else {vm.buttonEth = "Install Metamask"}
+        vm.buttonEth = "Connect to MetaMask";
+    } else {vm.buttonEth = "Install MetaMask"}
 
     if (window.BinanceChain) {
         window.web3bsc = new Web3(BinanceChain); 
@@ -180,7 +180,7 @@ async function checkInstall() {
 //Ethereum wallet
 
 async function connectEth() {
-  if (vm.buttonEth == "Install Metamask") {window.open("https://metamask.io/download.html"); return}
+  if (vm.buttonEth == "Install MetaMask") {window.open("https://metamask.io/download.html"); return}
  await ethereum.enable();
  vm.ethChainId = await web3eth.eth.getChainId();
  const accountsEth = await web3eth.eth.getAccounts();
