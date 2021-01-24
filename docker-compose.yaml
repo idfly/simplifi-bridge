@@ -135,6 +135,22 @@ services:
      - PGADMIN_DEFAULT_PASSWORD=brute    
     volumes:
      - ./network1/pgadmin:/root/.pgadmin     
+  adapter1_net2:
+    build:
+      context: ./
+      dockerfile: ./adapter/adapterdgu/Dockerfile
+    depends_on:
+      - mypostgres_net2
+      - ganache_net2
+      - pgadmin4
+      - chainlink_net2
+    env_file:
+    - ./env_connect_to_network_1.env
+    networks:
+      static-network:
+        ipv4_address: 172.20.128.56
+    ports:
+     - "8082:8082" # for debug     
 networks:
   static-network:
     name: dev_net

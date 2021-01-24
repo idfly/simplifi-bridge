@@ -48,7 +48,7 @@ contract DexPool is Ownable {
     IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount);
 
      //prepare
-     bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('_setTest(uint256)'))), amount);
+     bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('swapWithdraw(address,uint256)'))), recipientOnNet2, amount);
      //byte to string and send to Net2
      bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
      //save requestId for bind with callback requestId -> this is approve consistaency !!!!

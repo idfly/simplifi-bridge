@@ -10,7 +10,7 @@ module.exports = async callback => {
 try{
   
       const myContract    = await MyContract.at(env.parsed.CLIENT_ADDRESS);
-      const tx            = await myContract.setJobID(await web3.utils.fromAscii("8b4c9fd066c141e2ad4931bc5533b3d3"));    
+      const tx            = await myContract.setJobID(await web3.utils.fromAscii("af81bbdb84a74c039dceda6d9b661f20"));    
       
       console.log(`>>>>>>> SET JOBID: ${myContract.address} ON NETWORK ${process.argv[5]}\ntx:${tx.tx}\n\n`);
     
@@ -18,3 +18,6 @@ try{
 }catch(e){console.log(e);}
   callback();
 }
+
+// e349165b20ef4f25a06c065cbd5f4b17 net2
+// af81bbdb84a74c039dceda6d9b661f20

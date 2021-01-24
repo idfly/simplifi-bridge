@@ -15,15 +15,15 @@ let  ownerPool = null;  // opposite network
 (async () => {
 
     worker = new Worker();
-    //process.env.LISTEN_NETWORK = 'rinkeby';
+    
     await worker.connect(process.env.LISTEN_NETWORK);
     worker.monitor();
-
     
     dexpool   = new worker.web3.eth.Contract(dexPool.abi, process.env.POOL_ADDRESS);
     ownerPool = (await worker.web3.eth.getAccounts())[0];
 
-    console.log(`\nSTART SUCCESS\n________________________\n\nLISTEN_NETWORK: ${process.env.LISTEN_NETWORK}\nPOOL_ADDRESS: ${process.env.POOL_ADDRESS}\nORACLE_CONTRACT_ADDRESS: ${process.env.ORACLE_CONTRACT_ADDRESS}\n\n`);
+    console.log(`\nSTART SUCCESS\n________________________\n\nLISTEN_NETWORK: ${process.env.LISTEN_NETWORK}\nCHAIN_ID: ${await worker.web3.eth.getChainId()}\nPOOL_ADDRESS: ${process.env.POOL_ADDRESS}\nORACLE_CONTRACT_ADDRESS: ${process.env.ORACLE_CONTRACT_ADDRESS}\n\n`);
+
     
 
  })();
@@ -55,6 +55,8 @@ async function SetType(data, id){
 
     const tx  = await dexpool.methods.receiver(data).send({from: ownerPool});
 
+    console.log(`>>>>>>>>>>>>>>> STATUS TRANSACTION: ${tx.status}`);
+
     //TODO ожидание пока worker поймает из противоположной сети tx.status === true ? ОК : false === rejecteed
     await worker.timeout(10000);
 
@@ -77,7 +79,7 @@ async function GetType(data, id){
 }
 
 app.get('/ping', async function (req, res) {
-    res.status(200).send({ping: PONG});
+    res.status(200).send({ping: "PONG"});
 });
 
 /**
