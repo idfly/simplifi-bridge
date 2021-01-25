@@ -2,6 +2,9 @@
 var vm = new Vue({
     el: '#app',
     data: {
+      chains: [{id:0x4, name:"Ethereum rinkeby", icon:"ethereum.png", web:"web3eth"}, {id:0x61, name:"BSC testnet", icon:"bsc.webp",web:"web3bsc"}],
+      tokensEth: [{symbol:"DAI",addr:"0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea",icon:"dai.webp",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
+      tokensBsc: [{symbol:"DAI",addr:"0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867",icon:"dai.webp",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
       buttonEth: '...',
       buttonBsc: '...',
       accountEth: '',
@@ -15,11 +18,8 @@ var vm = new Vue({
       amountTo: '',
       accountFrom: '',
       accountTo: '',
-      chains: [{id:0x4, name:"Ethereum rinkeby", icon:"ethereum.png", web:"web3eth"}, {id:0x61, name:"BSC testnet", icon:"bsc.webp",web:"web3bsc"}],
       chainFrom: '',
       chainTo: '',
-      tokensEth: [{symbol:"DAI",addr:"0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea",icon:"dai.webp",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
-      tokensBsc: [{symbol:"DAI",addr:"0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867",icon:"dai.webp",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
       itemsFrom:{},
       itemsTo:{},
       //Liquidity tab
@@ -127,7 +127,7 @@ var vm = new Vue({
     }else evt.preventDefault();
   }  
 
-setTimeout(checkInstall, 1000);
+setTimeout(checkInstall, 500);
 
 var delta =360;
   function rotate360Deg(ele){
@@ -166,16 +166,16 @@ function setLiqToken(item, typ) {
 }
 
 
-async function checkInstall() {
+function checkInstall() {
     if (window.ethereum) { 
         window.web3eth = new Web3(ethereum);
         vm.buttonEth = meta2;
-    } else {vm.buttonEth = meta1}
+    } else { vm.buttonEth = meta1}
 
     if (window.BinanceChain) {
         window.web3bsc = new Web3(BinanceChain); 
         vm.buttonBsc = bin2;
-    } else {vm.buttonBsc = "Install Binance wallet"}
+    } else {vm.buttonBsc = bin1}
 
 }
 
@@ -203,6 +203,7 @@ function onConnectEth() {
     ethereum.on("chainChanged", (chainId) => {
       vm.ethChainId = chainId; 
       refreshAccountDataEth();
+      allowanceEth(0)
     });
     
     refreshAccountDataEth();
@@ -252,6 +253,7 @@ function onConnectBsc() {
     BinanceChain.on("chainChanged", (chainId) => {
       vm.bscChainId = chainId;
       refreshAccountDataBsc();
+      allowanceBsc(0)
     });
 
     
