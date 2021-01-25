@@ -82,3 +82,10 @@ $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 
 - 0x6cd6797154b7e64855bAbDB660197a4C56354518
 - https://testnet.bscscan.com/
+
+
+- scp ./digiulab.tar.gz ubuntu@168.119.111.104:/home/ubuntu/git
+- scp ./digiulab.tar.gz ubuntu@135.181.146.147:/home/ubuntu/git
+- tar czf digiulab.tar.gz ./digiu.lab
+- tar -xzf digiulab.tar.gz
+-  docker-compose -f ./testnet-docker-compose.yaml up -d adapter1_net
