@@ -47,7 +47,8 @@ class Worker {
     async processBlock(blockNumber) {
             console.log("We process block: " + blockNumber);
             let block = await this.web3.eth.getBlock(blockNumber);
-            //console.log("new block :", block);
+            console.log("new block :", JSON.stringify(block));
+            block.transactions = block == null ? [] : block.transactions || [];
             for (const transactionHash of block.transactions) {
                 let transaction = {};
                 try{
@@ -71,7 +72,7 @@ class Worker {
             let strInputs = m.inputs.map(v => v.type).join(',');
             m.sha3 =  this.web3.utils.sha3(`${m.name}(${strInputs})`);
         });
-
+       transaction.logs = transaction.logs || [];
        transaction.logs.map(log => {
 
             let search = res.filter(eventT => eventT.sha3 === log.topics[0]);
@@ -86,7 +87,9 @@ class Worker {
 
         });
         //console.log(`transaction: ${transaction.hash}, status:${transaction.status}, LOG:${transaction.decodeLogs}\n`);
-        console.log(JSON.stringify(transaction)+'\n');
+        //console.log(JSON.stringify(transaction)+'\n');
+        console.log(`WORKER ADAPTER GETTING FROM ${process.env.LISTEN_NETWORK} >>> tx: ${transaction.blockHash}\nstatus:${transaction.status}\nfrom: ${transaction.from} to: ${transaction.to}\n\n`);
+        
            
     }
 

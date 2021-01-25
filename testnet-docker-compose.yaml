@@ -8,7 +8,7 @@ services:
     env_file:
     - ./env_connect_to_network_2.env
     ports:
-     - "10.8.0.13:8081:8081"
+     - "8081:8081"
   adapter1_net2:
     build:
       context: ./
@@ -16,4 +16,5 @@ services:
     env_file:
     - ./env_connect_to_network_1.env
     ports:
-     - "10.8.0.13:8082:8082"     
+#     - "10.8.0.13:8082:8082"     
+     - "8082:8082"     
