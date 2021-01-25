@@ -1,5 +1,7 @@
  <p align="center"><img src="https://img.shields.io/badge/status-development-yellow.svg"></p>
- <p align="center"><a target='_blank' href = "https://digiu-lab.github.io/MarketMake/">DEMO</a></p>
+ <p align="center">Website: <a target='_blank' href = "https://digiu-lab.github.io/MarketMake/">https://digiu-lab.github.io/MarketMake/</a></p>
+ <p align="center">ENS + IPSF website (regular browsers): <a target='_blank' href = "https://digiu.eth.link">digiu.eth.link</a></p>
+ <p align="center">ENS + IPSF website (required MetaMask): <a target='_blank' href = "https://digiu.eth">digiu.eth</a></p>
 
 # **Description**
 
