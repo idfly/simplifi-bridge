@@ -87,6 +87,7 @@ var vm = new Vue({
   var meta2 = 'Connect to MetaMask', meta1 = 'Install MetaMask';
   var bin2 = 'Connect to Binance wallet', bin1 = 'Install Binance wallet'
 
+
   //set default params
   //for exchange
   vm.tokenFrom = vm.tokensEth[0];
@@ -127,7 +128,7 @@ var vm = new Vue({
     }else evt.preventDefault();
   }  
 
-setTimeout(checkInstall, 500);
+setTimeout(checkInstall, 1000);
 
 var delta =360;
   function rotate360Deg(ele){
