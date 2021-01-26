@@ -381,9 +381,9 @@ function exchButtons(a,s,chain) {
       
       //alert(x +' '+ alloEth +' '+ approveTokenEth);
       if (x && alloEth == 0) {
-        const tokenDecimals = web3.toBigNumber(18);
-        const tokenAmountToApprove = web3.toBigNumber(101010101);
-        const calculatedApproveValue = web3.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
+        const tokenDecimals = web3eth.toBigNumber(18);
+        const tokenAmountToApprove = web3eth.toBigNumber(101010101);
+        const calculatedApproveValue = web3eth.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
        await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
         allowanceEth(0) }).catch(function (e) {});
       } 
