@@ -381,9 +381,12 @@ function exchButtons(a,s,chain) {
       
       //alert(x +' '+ alloEth +' '+ approveTokenEth);
       if (x && alloEth == 0) {
-        const tokenDecimals = web3eth.toBigNumber(18);
-        const tokenAmountToApprove = web3eth.toBigNumber(101010101);
-        const calculatedApproveValue = web3eth.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
+        
+//         var number = web3.utils.toBN(123);
+
+        const tokenDecimals = await web3eth.utils.toBN(18);
+        const tokenAmountToApprove = await web3eth.utils.toBN(101010101);
+        const calculatedApproveValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3eth.utils.toBN(10).pow(tokenDecimals)));
        await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
         allowanceEth(0) }).catch(function (e) {});
       } 
@@ -404,9 +407,9 @@ function exchButtons(a,s,chain) {
         }).catch(e=>{});
       }
       if (x && alloBsc == 0) {
-        const tokenDecimals = web3.toBigNumber(18);
-        const tokenAmountToApprove = web3.toBigNumber(101010101);
-        const calculatedApproveValue = web3.toHex(tokenAmountToApprove.mul(web3.toBigNumber(10).pow(tokenDecimals)));
+        const tokenDecimals = web3bsc.utils.toBN(18);
+        const tokenAmountToApprove = web3bsc.utils.toBN(101010101);
+        const calculatedApproveValue = web3bsc.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
         await tokenContract.methods.approve(serviceContractBsc, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
         setTimeout(allowanceBsc,1000,0) }).catch(function (e) {});  // 'Seems, insufficient balance to pay Gas'    
   }
