@@ -23,7 +23,7 @@ module.exports = async (deployer, network, accounts) => {
 
             const LINK_CONTRACT_ADDRESS   = addresses.LINK_CONTRACT_ADDRESS;
             const ORACLE_CONTRACT_ADDRESS = addresses.ORACLE_CONTRACT_ADDRESS;
-            const DAI_ADDRESS             = addresses.TOKENPOOL_ADDRESS;
+            const TOKENPOOL_ADDRESS       = addresses.TOKENPOOL_ADDRESS;
 
                               await deployer.deploy(Hexstring, { from: accounts[0] })
               let hexstring = await Hexstring.deployed();
@@ -34,14 +34,14 @@ module.exports = async (deployer, network, accounts) => {
                               await deployer.deploy(MyContract, linkToken.address, oracle.address, { from: accounts[0] })
               let client    = await MyContract.deployed();
 
-                              await deployer.deploy(DexPool, DAI_ADDRESS, client.address, hexstring.address);
+                              await deployer.deploy(DexPool, TOKENPOOL_ADDRESS, client.address, hexstring.address);
               let dexPool   = await DexPool.deployed();
 
               
-              await writeEnv(linkToken.address, oracle.address, client.address, dexPool.address, DAI_ADDRESS, 'rinkeby');
-
+              await writeEnv(linkToken.address, oracle.address, client.address, dexPool.address, TOKENPOOL_ADDRESS, 'rinkeby');
+              let env_file = "env_connect_to_network_1.env";
               console.log('>> Generate env for external adapter in binancetestnet')
-              exec(`${process.cwd()}/scripts/bash/update_env_adpter_in_network2.sh 8082 rinkeby ${dexPool.address} ${oracle.address} `, { maxBuffer: 1024 * 100000000 }, (err, stdout, stderr) => {
+              exec(`${process.cwd()}/scripts/bash/update_env_adapter.sh 8082 rinkeby ${dexPool.address} ${oracle.address}  ${TOKENPOOL_ADDRESS} ${env_file}`, { maxBuffer: 1024 * 100000000 }, (err, stdout, stderr) => {
                 if (err) {
                     console.log('THROW ERROR', err);
                     return;

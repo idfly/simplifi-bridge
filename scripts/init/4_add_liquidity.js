@@ -23,8 +23,8 @@ module.exports = async callback => {
 try{
 
    // создаем провайдера
-   const web3Net1 = new Web3.providers.WebsocketProvider('ws://'+ networks[net1].host +":"+ networks[net1].port);
-   const web3Net2 = new Web3.providers.WebsocketProvider('ws://'+ networks[net2].host +":"+ networks[net2].port);
+   const web3Net1 = argv.stand === 'devstand' ? new Web3.providers.WebsocketProvider('ws://'+ networks[net1].host +":"+ networks[net1].port) : networks[net1].provider();
+   const web3Net2 = argv.stand === 'devstand' ? new Web3.providers.WebsocketProvider('ws://'+ networks[net2].host +":"+ networks[net2].port) : networks[net2].provider();
    
    DexPoolNet1.setProvider(web3Net1);
    DexPoolNet2.setProvider(web3Net2);
@@ -43,7 +43,7 @@ try{
 
    let amountNet1      = await ERC20Net1.web3.utils.toWei('2','Ether');
    let amountNet2      = await ERC20Net2.web3.utils.toWei('60','Ether');
-   let balancePoolNet2 = await tokenPoolNet2.balanceOf(dexPoolNet2.address);
+   let balancePoolNet2 = await tokenPoolNet2.balanceOf(dexPoolNet2.address, {from: userNet2});
 
    // 1. Set approve
 

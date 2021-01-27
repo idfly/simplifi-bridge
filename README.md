@@ -41,11 +41,12 @@ $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 
 ## Rinkeby testnet
 
+- cd ~/.chainlink-rinkeby && docker run -d --network host  -p 6688:6688 -v ~/.chainlink-rinkeby:/chainlink -it --env-file=.env smartcontract/chainlink:0.9.8 local n -p  chainlink/chainlink.pwd -a /chainlink/api.pwd
 - https://rinkeby.chain.link/
 
 - PORT=8082
 - ETH_URL=wss://rinkeby.infura.io/ws/v3/b9e220845c084e9195c77c542a852dd7
-- ORACLE_CONTRACT_ADDRESS=0x7AFe1118Ea78C1eae84ca8feE5C65Bc76CcF879e
+- ORACLE_CONTRACT_ADDRESS=
 - POOL_ADDRESS=
 
 - LINK_CONTRACT_ADDRESS=0x01BE23585060835E02B77ef475b0Cc51aA1e0709
