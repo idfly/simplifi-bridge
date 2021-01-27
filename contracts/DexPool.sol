@@ -4,19 +4,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./MyContract.sol";
 import "./IHexstring.sol";
+import "./GovernanceToken.sol";
+import './libraries/Math.sol';
 
 abstract contract ERC20 is IERC20 {}
 
 
-contract DexPool is Ownable {
+contract DexPool is GovernanceToken, Ownable {
 
   event Receive(bool success);
   event SwapDeposit(bytes32 requestId, uint256 curBlock);
   event SwapWithdraw(address recipient, uint256 amount);
   event TxCompleteBothChain(bytes32 requestId, bytes32 tx_fromNet2);
+  event AddLiquidity(bytes32 requestId, uint256 curBlock);
+  event Mint(address indexed sender, uint amount0, uint amount1);
 
   string constant private SET_REQUEST_TYPE = "set";
   string constant private GET_REQUEST_TYPE = "get";
+  uint   constant private MINIMUM_LIQUIDITY = 10**3;
 
   uint256 public test;
   address public myContract;
@@ -32,11 +37,43 @@ contract DexPool is Ownable {
               address _util ) 
   public {
 
-  	tokenOfPool = _tokenOfPool;
-  	myContract  = _myContract;
+    tokenOfPool = _tokenOfPool;
+    myContract  = _myContract;
     util        = _util;
 
   }
+
+
+function _addLiquidity(address luqidityProvider, uint256 amount) public {
+     require(msg.sender == address(this), "ONLY YOURSELF");
+     require(luqidityProvider != address(0), "ZERO_ADDRESS");
+
+     IERC20(tokenOfPool).transferFrom(luqidityProvider, address(this), amount);
+     
+}
+
+function addLiquidity(uint256 amountNet1,
+                      uint256 amountNet2,
+                      address luqidityProviderNet2,
+                      uint256 balancePoolNet2
+ ) external {
+
+  require(luqidityProviderNet2 != address(0), "ZERO_ADDRESS");
+  //TODO WARN how does check the balance senderNet2 ?
+  //TODO invoke only bsc
+  
+  IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amountNet1);
+  bytes memory out  = abi.encodeWithSelector(bytes4(keccak256(bytes('_addLiquidity(address,uint256)'))), luqidityProviderNet2, amountNet2);
+  bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
+
+  pendingRequests[requestId] = "0x0";
+
+  //TODO mint LP token after executing tx on net1 and net2 (balancePoolNet1 + balancePoolNet2)
+  mint(msg.sender, amountNet1, amountNet2, balancePoolNet2);
+
+  emit AddLiquidity(requestId, block.number);
+}
+
 
   /** 
    * The part of process 'swap'
@@ -82,6 +119,36 @@ contract DexPool is Ownable {
       emit SwapWithdraw(msg.sender, amount);
 
    }
+
+   function mint(address to, 
+                 uint amount0, 
+                 uint amount1,
+                 uint balancePoolNet2) private returns (uint liquidity) {
+        //(uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
+        uint256 _reserve0 = IERC20(tokenOfPool).balanceOf(address(this)) - amount0; // баланс пула1 до зачисления на него средств
+        uint256 _reserve1 = balancePoolNet2; // баланс пула2 до зачисления на него средств (приходит с фронта)
+        //uint balance0 = IERC20(token0).balanceOf(address(this));
+        uint balance0 = IERC20(tokenOfPool).balanceOf(address(this)); // текущий баланс (после зачисления от участника)
+        //uint balance1 = IERC20(token1).balanceOf(address(this));
+        uint balance1 = balancePoolNet2 + amount1; // текущий баланс. так как баланс к нам пришел до зачисления средств от учестника, это во второй сети
+        //uint amount0 = balance0.sub(_reserve0);
+        //uint amount1 = balance1.sub(_reserve1);
+
+        //bool feeOn = _mintFee(_reserve0, _reserve1);
+        uint _totalSupply = totalSupply; // gas savings, must be defined here since totalSupply can update in _mintFee
+        if (_totalSupply == 0) {
+            liquidity = Math.sqrt(amount0.mul(amount1)).sub(MINIMUM_LIQUIDITY);
+           _mint(address(0), MINIMUM_LIQUIDITY); // permanently lock the first MINIMUM_LIQUIDITY tokens
+        } else {
+            liquidity = Math.min(amount0.mul(_totalSupply) / _reserve0, amount1.mul(_totalSupply) / _reserve1);
+        }
+        require(liquidity > 0, 'UniswapV2: INSUFFICIENT_LIQUIDITY_MINTED');
+        _mint(to, liquidity);
+
+        //_update(balance0, balance1, _reserve0, _reserve1);
+        //if (feeOn) kLast = uint(reserve0).mul(reserve1); // reserve0 and reserve1 are up-to-date
+        emit Mint(msg.sender, amount0, amount1);
+    }
 
 
 
