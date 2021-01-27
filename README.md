@@ -89,3 +89,16 @@ $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 - tar czf digiulab.tar.gz ./digiu.lab
 - tar -xzf digiulab.tar.gz
 -  docker-compose -f ./testnet-docker-compose.yaml up -d adapter1_net
+
+
+# TEST BY HANDS
+
+- npm start
+- truffle exec ./scripts/init/1_set_jobId.js --network network1  // указать актуальный jobid
+- truffle exec ./scripts/init/1_set_jobId.js --network network2  // указать актуальный jobid
+- truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand
+- truffle exec ./scripts/init/4_add_liquidity.js --stand devstand // указать актуальное количество токенов
+- truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand
+- truffle exec ./scripts/init/5_swap_deposit.js --network network1  // указать адрес получателя в другой сети
+- truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand
+

@@ -1,7 +1,12 @@
 "use strict";
+const Web3 = require('web3');
+const web3 = new Web3();
 
 const fs = require('fs');
 const path = require('path');
+
+function toWei(n) { return web3.utils.toWei(n, 'ether');}
+function fromWei(n) { return web3.utils.fromWei(n, 'ether');}
 
 const writeEnv = async (linkToken, oracle, client_address, pool_address, tokenpool, network = 'network1') => {
 
@@ -66,6 +71,8 @@ try{
 module.exports = {
 
     writeEnv,
-    initAddresses
+    initAddresses,
+    toWei,
+    fromWei
     
 };
