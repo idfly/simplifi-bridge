@@ -52,7 +52,7 @@ app.post('/post', async function (req, res) {
 
 
 async function SetType(data, id){
-
+try{
     const tx  = await dexpool.methods.receiver(data).send({from: ownerPool});
 
     console.log(`>>>>>>>>>>>>>>> STATUS TRANSACTION: ${tx.status}`);
@@ -64,7 +64,10 @@ async function SetType(data, id){
         responseData.jobRunID = id;
         responseData.data     = {result: tx.transactionHash, tx: tx };
 
+
     return responseData
+
+}catch(e){console.log(e);}    
 
 }
 
