@@ -41,14 +41,15 @@ try{
    const userNet1 = (await DexPoolNet1.web3.eth.getAccounts())[0];
    const userNet2 = (await DexPoolNet2.web3.eth.getAccounts())[0];
 
-   let amountNet1      = await ERC20Net1.web3.utils.toWei('2','Ether');
-   let amountNet2      = await ERC20Net2.web3.utils.toWei('60','Ether');
-   let balancePoolNet2 = await tokenPoolNet2.balanceOf(dexPoolNet2.address, {from: userNet2});
+   let amountNet1      = await ERC20Net1.web3.utils.toWei('1','Ether');
+   let amountNet2      = await ERC20Net2.web3.utils.toWei('2','Ether');
+   let balancePoolNet1 = await tokenPoolNet1.balanceOf(dexPoolNet1.address, {from: userNet1});
+   
 
    // 1. Set approve
 
-   await tokenPoolNet1.approve(dexPoolNet1.address, amountNet1, {from: userNet1});
-   await tokenPoolNet2.approve(dexPoolNet2.address, amountNet2, {from: userNet2});
+   //await tokenPoolNet1.approve(dexPoolNet1.address, amountNet1, {from: userNet1});
+   //await tokenPoolNet2.approve(dexPoolNet2.address, amountNet2, {from: userNet2});
 
    // 2. AddLiquidity
    /*
@@ -57,11 +58,10 @@ try{
      userNet2        - адрес участника с которого надо сделать перевод в другой сети
      balancePoolNet2 - баланс пула в другой сети для расчета LP токенов
    */
-   const tx = await dexPoolNet1.addLiquidity(amountNet1,
-                                             amountNet2,
-                                             userNet2,
-                                             balancePoolNet2, {from: userNet1});
-
+   const tx = await dexPoolNet2.addLiquidity(amountNet2,
+                                             amountNet1,
+                                             userNet1,
+                                             balancePoolNet1, {from: userNet2 });
    console.log(JSON.stringify(tx, null, 4));
 
 }catch(e){console.log(e);}

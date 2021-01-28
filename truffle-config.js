@@ -1,7 +1,7 @@
 require('dotenv').config();
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 
-const bscws     = 'ws://95.217.104.54:8576';
+const bscws     = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 const rinkebyws = 'wss://rinkeby.infura.io/ws/v3/b9e220845c084e9195c77c542a852dd7';
 
 module.exports = {
