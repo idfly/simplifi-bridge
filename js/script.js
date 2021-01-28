@@ -366,34 +366,49 @@ function exchButtons(a,s,chain) {
 
   var alloEth = alloBsc = 0, approveTokenBsc, approveTokenEth;
 
+
   async function allowanceEth(x) {
+    console.log(`allowanceEth(${x})`);
     var tok,acc;
     if (vm.chainFrom.id == '0x4') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else {tok = vm.tokenTo.addr; acc = vm.accountTo;}
       const tokenContract = new web3eth.eth.Contract(erc20abi, tok);
       if (!x) {
+        console.log(`allowanceEth(${x})`);
         tokenContract.methods.allowance(acc,serviceContractEth).call().then(function (res) {
-        alloEth = res; //alert(res)
+        alloEth = res; 
+        console.log("RESULT", res, "token", tok);
         if (res == 0) approveTokenEth = tok; 
         exchButtons(1,1,'eth')//
         exchButtons(1,1,'allo')
-        }).catch(e=>{}); 
-      }
-      
-      //alert(x +' '+ alloEth +' '+ approveTokenEth);
-      if (x && alloEth == 0) {
-        
-//         var number = web3.utils.toBN(123);
-
+        }).catch(e=>{
+          console.error(e);
+        }); 
+      } else if (x) {
         const tokenDecimals = await web3eth.utils.toBN(18);
         const tokenAmountToApprove = await web3eth.utils.toBN(101010101);
         const calculatedApproveValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3eth.utils.toBN(10).pow(tokenDecimals)));
-       await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
-        allowanceEth(0) }).catch(function (e) {});
-      } 
+        await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:acc}).then(function (res) {
+        alert(JSON.stringify(res));
+        allowanceEth(0) }).catch(function (e) {console.error(e);});
+      } else {
+        console.error(`should'nt be there allowanceEth(${x})`);
+      }
       
-    
-  }
+//       tokenContract.once("Approval", {} , console.log);
+      
+      tokenContract.once('Approval', {}, function(error, event){ console.log(event); });
 
+
+
+
+//     tokenContract.getPastEvents("Approval",
+//     {                               
+//         fromBlock: START_BLOCK,     
+//         toBlock: END_BLOCK // You can also specify 'latest'          
+//     })                              
+// .then(events => console.log(events))
+// .catch((err) => console.error(err));
+  }
    async function allowanceBsc(x) {
     var tok,acc;
     if (vm.chainFrom.id == '0x61') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else { tok = vm.tokenTo.addr; acc = vm.accountTo; }
@@ -417,9 +432,11 @@ function exchButtons(a,s,chain) {
 }
 
   async function approving() {
-    await allowanceEth(1);
-    allowanceBsc(1)
-
+    if (vm.chainTo.id == '0x61') {
+      await allowanceEth(1); } else {
+       await allowanceBsc(1)
+      }
+  
   }
   
 
