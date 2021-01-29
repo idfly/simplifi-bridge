@@ -3,10 +3,10 @@ var vm = new Vue({
     el: '#app',
     data: {
       chains: [{id:0x4, name:"Ethereum rinkeby", icon:"ethereum.png", web:"web3eth"}, {id:0x61, name:"BSC testnet", icon:"bsc.webp",web:"web3bsc"}],
-      tokensEth: [{symbol:"DAI",addr:"0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea",icon:"dai.webp",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
-      tokensBsc: [{symbol:"DAI",addr:"0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867",icon:"dai.webp",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
-      dexPoolETH:[{addr:"0xca8c90020c708f6C75f7C98d38f0DcCf8EfE8360"}],
-      dexPoolBSC:[{addr:"0x573f9d264Ef8e2014Da5DE4b13BD46Ff596B8e8a"}],
+      tokensEth: [{symbol:"AAVE",addr:"0x918809f0c1d4c5e56328742406ddbf6bf7807c73",icon:"dai.webp",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
+      tokensBsc: [{symbol:"DAI",addr:"0x55797e477BE468855690c660AA2640d3E9F80Cc6",icon:"dai.webp",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
+      dexPoolETH:[{addr:"0x9f9A020ef5f14b126e2d76BD984a88a0ba9c89aA"}],
+      dexPoolBSC:[{addr:"0x0B998d26B8Ab9e1caaf084Ba30ac6859Adcc236E"}],
       buttonEth: '...',
       buttonBsc: '...',
       accountEth: '',
@@ -35,6 +35,8 @@ var vm = new Vue({
       balanceTo:'-',
       balanceLiqEth:'-',
       balanceLiqBsc:'-',
+      dexPoolContract:'',
+      tokenContract:'',
 
     },
     watch: {
@@ -84,9 +86,12 @@ var vm = new Vue({
 
     } 
   })
+console.log(`vm.dexPoolETH[0].addr ${vm.dexPoolETH[0].addr} vm.dexPoolBSC[0].addr ${vm.dexPoolBSC[0].addr}`)
 
-  var serviceContractEth = "0x5a18D011eF7b5761D427A97865fcBbfBe3b0A660", serviceContractBsc = "0x594c420e6567b4479614a5ffc5774c0a8a391452";
-  var meta2 = 'Connect to MetaMask', meta1 = 'Install MetaMask';
+var serviceContractEth = vm.dexPoolETH[0].addr, serviceContractBsc = vm.dexPoolBSC[0].addr;
+// var serviceContractEth = "0x5a18D011eF7b5761D427A97865fcBbfBe3b0A660", serviceContractBsc = "0x594c420e6567b4479614a5ffc5774c0a8a391452";
+
+var meta2 = 'Connect to MetaMask', meta1 = 'Install MetaMask';
   var bin2 = 'Connect to Binance wallet', bin1 = 'Install Binance wallet'
 
 
@@ -360,7 +365,7 @@ function exchButtons(a,s,chain) {
   } 
 
   if (chain == 'allo'){
-    if (alloEth*alloBsc > 0) { aa = 0; ss = 1} 
+    if (alloEth*alloBsc > 0) { aa = 0; ss = 1}   
 } 
   
   if (aa == 1 && alloEth*alloBsc == 0 ) document.querySelector("#approve").removeAttribute("disabled"); else {document.querySelector("#approve").setAttribute("disabled", "disabled");}
@@ -423,7 +428,7 @@ function exchButtons(a,s,chain) {
     if (vm.chainFrom.id == '0x61') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else { tok = vm.tokenTo.addr; acc = vm.accountTo; }
       const tokenContract = new web3bsc.eth.Contract(erc20abi, tok);
       if (!x) {
-        tokenContract.methods.allowance(acc,serviceContractBsc).call().then(function (res) {
+        await tokenContract.methods.allowance(acc,serviceContractBsc).call().then(function (res) {
         console.log("RESULT", res, "token", tok);
         alloBsc = res; 
         if (res == 0) approveTokenBsc = tok; 
