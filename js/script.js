@@ -378,36 +378,6 @@ function exchButtons(a,s,chain) {
 
   var alloEth = alloBsc = 0, approveTokenBsc, approveTokenEth;
 
-  async function allowanceEth(x) {
-    console.log(`allowanceEth(${x})`);
-    var tok,acc;
-    if (vm.chainFrom.id == '0x4') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else {tok = vm.tokenTo.addr; acc = vm.accountTo;}
-      const tokenContract = new web3eth.eth.Contract(erc20abi, tok);
-      if (!x) {
-        console.log(`allowanceEth(${x})`);
-        tokenContract.methods.allowance(acc,serviceContractEth).call().then(function (res) {
-        alloEth = res; 
-        console.log("RESULT", res, "token", tok);
-        if (res == 0) approveTokenEth = tok; 
-        exchButtons(1,1,'eth')//
-        exchButtons(1,1,'allo')
-
-        }).catch(e=>{
-          console.error(e);
-        }); 
-      } else if (x) {
-        const tokenDecimals = await web3eth.utils.toBN(18);
-        const tokenAmountToApprove = await web3eth.utils.toBN(101010101);
-        const calculatedApproveValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3eth.utils.toBN(10).pow(tokenDecimals)));
-        await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:acc}).then(function (res) {
-        alert(JSON.stringify(res));
-        allowanceEth(0) }).catch(function (e) {console.error(e);});
-      } else {
-        console.error(`should'nt be there allowanceEth(${x})`);
-      }
-      tokenContract.once('Approval', {}, function(error, event){ console.log(event); });
-  }
-
    async function allowanceBsc(x) {
     console.log(`allowanceBsc(${x})`);
     var tok,acc;
@@ -424,7 +394,7 @@ function exchButtons(a,s,chain) {
       } 
        if (x && alloBsc == 0) { 
         const tokenDecimals = web3bsc.utils.toBN(18);
-        const tokenAmountToApprove = web3bsc.utils.toBN(101010101);
+        const tokenAmountToApprove = web3bsc.utils.toBN(x);
         const calculatedApproveValue = web3bsc.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
         await tokenContract.methods.approve(serviceContractBsc, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
         setTimeout(allowanceBsc,1000,0) }).catch(function (e) {});  // 'Seems, insufficient balance to pay Gas'    
@@ -454,18 +424,18 @@ function exchButtons(a,s,chain) {
          accs = accounts;
          console.log("BSC accounts ",accounts); 
          })
-      tx = dexPoolContract.methods.swapDeposit(1, accs[0]).send({from:vm.accountFrom}).then(function (res) {//alert(JSON.stringify(res));
-        setTimeout(confirmSwap,1000,0) }).catch(function (e) {console.log(e)});
-      alert('Complete the approval!')
-    } else {
-      console.warn("NOT ALLOWED")
-    }
+      tx = await dexPoolContract.methods.swapDeposit(1, accs[0]).send({from:vm.accountFrom});
+      console.log(`tx.transactionHash ${tx.transactionHash}`);
+      let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);      
+      if (receipt != null){
+        console.log(receipt);
+        } else {
+          console.error("receipt null")
+        }
   }
+}
 
 async function getAllowanceEth(token) {
-//     console.log(`getAllowanceEth(${token._address}) serviceContractEth ${serviceContractEth}`);
-    // console.log(`getAllowanceEth(${token._address})`);
-
     token.methods.allowance(vm.accountFrom, serviceContractEth).call().then(function (res) {
         alloEth = res;
         console.log("allowance", res, "token", token._address);
@@ -492,8 +462,6 @@ function allowanceEth(x) {
 
 async function setaAllowanceEth(x, tokenContract) {
     console.log(`setaAllowanceEth(${x})`);
-    // tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenFrom.addr);
-
     console.log("approve  ------------------->");
     const tokenDecimals = await web3eth.utils.toBN(18);
     const tokenAmountToApprove = await web3eth.utils.toBN(x);
@@ -502,15 +470,18 @@ async function setaAllowanceEth(x, tokenContract) {
     if (tokenContract === undefined) {
     tokenContract = await new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
    }
-    await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:vm.accountFrom}).then(function (res) {
-        setTimeout(setaAllowanceEth,1000,0);
-        console.log(JSON.stringify(res));
-        console.log("approve  ------------------->");
-        tokenContract.once('Approval', {}, function(error, event){ console.log("Approval EVENT", event); });
-        // getAllowanceEth();
-    }).catch(function (e) {console.error(e);});
+    tx = await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:vm.accountFrom});
+    console.log(`tx.transactionHash ${tx.transactionHash}`);
+    let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);
+            if (receipt != null){
+                console.log(receipt);
+                } else {
+                  console.error("receipt null")
+                }
 }
 
 
-
+// async function timeout(ms) {
+//     return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
