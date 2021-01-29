@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+
+    <link href="https://fonts.googleapis.com/css2?family=Amaranth&display=swap" rel="stylesheet">
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/delaunay-fast@1.0.1/delaunay.js"></script>
+    <script src="./js/erc20abi.js"></script>
+    <script src="./js/DexPoolABI.js"></script>
+    <!-- <script src="./js/erc20abi.js"></script> -->
+   
+    
+    
+    <!-- Yandex.Metrika counter 
+<script type="text/javascript" >
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+  ym(71237989, "init", {
+       clickmap:true,
+       trackLinks:true,
+       accurateTrackBounce:true,
+       webvisor:true
+  });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/71237989" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+ Yandex.Metrika counter -->
+    
+    <title>Cross-Chain</title>
+  </head>
+  <body >
+
+    <canvas id="stars"></canvas>
+    
+
+<div class = "h-100" id="app" v-cloak>
+     
+<div  class="container-fluid" >
+ 
+  <div class = "row border-bottom p-3 flex-nowrap" style = "background-color:rgba(250, 250, 250, 0.1);">
+    <div class = "col text-left ">
+      <img src="./img/logo.png" width="110" alt="DigiU">
+    </div>
+
+    <div class = "col-5 text-left ">
+      <ul class="nav nav-masthead" id="pills-tab" role="tablist">
+        <li class="nav-item mr-3">
+          <a class="nav-link active autofocus" id="pills-swap-tab" data-toggle="pill" href="#pills-swap" role="tab" aria-controls="pills-swap" aria-selected="true">EXCHANGE</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-status-tab" data-toggle="pill" href="#pills-status" role="tab" aria-controls="pills-status" aria-selected="false">LIQUIDITY</a>
+        </li>
+       
+      </ul>
+    </div>
+
+    <div class = "col text-nowrap text-right">
+      
+      
+        <button id="pulse2" class="btn btn-dark  fw-bold rounded-pill mr-1" type="button" onclick="connectEth()" >
+          <img class='icon' src="./img/metamask.png"/> {{buttonEth}}
+        </button>
+        
+        <button id="pulse1" class="btn  btn-dark  fw-bold rounded-pill mr-1"  type="button" onclick="connectBsc()" >
+          <img class='icon' src="./img/bscw.png"/> {{buttonBsc}}
+        </button>
+        
+      
+          <button class="btn btn-light p-1 shadow" type="button" id="dropdownMenuButton" data-toggle="dropdown"  aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+          </button>
+          <div class="dropdown-menu shadow mt-1" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" target = "_blank" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
+              <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+              <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8zm0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+            </svg> About</a>
+            <a class="dropdown-item" target = "_blank" href="https://github.com/DigiU-Lab/MarketMake"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
+              <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
+            </svg> Code</a>
+            <a class="dropdown-item" target = "_blank" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-btn" viewBox="0 0 16 16">
+              <path d="M6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+              <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+            </svg> Demo</a>
+
+
+            <a class="dropdown-item" target = "_blank" href="https://app.compound.finance/"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
+              <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
+            </svg> DAI (ERC)</a>
+            <a class="dropdown-item" target = "_blank" href="https://testnet.binance.org/faucet-smart"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel-fill" viewBox="0 0 16 16">
+              <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z"/>
+            </svg> DAI (BEP)</a>
+          </div>
+         
+    </div>
+  </div>
+</div>
+
+
+<div class="d-flex align-items-center justify-content-center h-100" style = "min-height: 520px;">
+<div class="tab-content" id="pills-tabContent">
+<!--SWAP-->
+    <div class="tab-pane fade show active " id="pills-swap" role="tabpanel" aria-labelledby="pills-swap-tab">
+      <div class = "row">
+        <div class = "col" style = "border-radius: 10px; height: 500px; width: 500px; background-color:rgba(255, 255, 255, 0.8); box-shadow: 0 0 10px rgba(255,255,255,0.7); ">
+         
+        <div class = "row border-bottom p-3">
+          <div class="col text-muted">
+            <h4>Exchange</h4>
+            Trade tokens via Chainlink adapters
+          </div>
+        </div>
+     
+     <!--FORM From-->  
+    <div class="row justify-content-center mt-3">
+      <div class="col-10 forms p-2 rounded shadow">
+        <div class="logoForm" v-html = "'<img src=&quot./img/' + chainFrom.icon + '&quot class=&quot icon2 &quot/>'"> 
+      </div>
+      <div class="row p-2">
+        <div class="col ">
+          <b>From</b> <u>{{chainFrom.name}}</u>
+        </div>
+        <div class="col-4 text-left ">
+          Balance: {{balanceFrom}}
+        </div>
+      </div>
+      <div class = "row ">
+        <div class="col">
+
+        <div class="input-group">
+          <input id="num1" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num1')" onpaste="return false;"  type="text" class="form-control" placeholder="0.0" v-model="amountFrom">
+          <div class="input-group-append">
+            <button class="btn btn-light p-1 rounded" type="button" id="butfrom" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            v-html = "'<img src=&quot./img/'+tokenFrom.icon+'&quot class=&quot icon &quot/> ' + tokenFrom.symbol"> 
+            </button>
+  
+            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="butfrom">
+              <h6 v-if="chainFrom.id == '0x4'" class="dropdown-header">Ethereum tokens</h6>
+              <h6 v-if="chainFrom.id == '0x61'" class="dropdown-header">Binance tokens</h6>
+              <span  v-for="item of itemsFrom" v-on:click="setTokenFrom(item)" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
+            </div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-2">
+      <div class = "col-2">
+        <img class="spin cursor" onclick = "rotate360Deg(this)" src="./img/chainlink.png" width="60" height="63"/>
+      </div>
+    </div>
+
+    <!--FORM To -->
+    <div class="row justify-content-center mt-2">
+      <div class="col-10 forms p-2 rounded shadow">
+    
+        <div class="logoForm" v-html = "'<img src=&quot./img/'+chainTo.icon+'&quot class=&quot icon2 &quot/>'"> 
+        </div>
+
+      <div class="row p-2">
+        <div class="col">
+          <b>To</b> <u>{{chainTo.name}}</u>
+        </div>
+        <div class="col-4 text-left">
+          Balance: {{balanceTo}}
+        </div>
+      </div>
+      <div class = "row ">
+        <div class="col">
+
+        <div class="input-group">
+          <input id="num2" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num2')" onpaste="return false;"  type="text" class="form-control " placeholder="0.0" v-model="amountTo">
+          <div class="input-group-append">
+            <button class="btn btn-light p-1 rounded" type="button" id="butto" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            v-html = "'<img src=&quot./img/'+tokenTo.icon+'&quot class=&quot icon &quot/> ' + tokenTo.symbol"> 
+            </button>
+  
+            <div class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="butto">
+              <h6 v-if="chainTo.id == '0x4'" class="dropdown-header">Ethereum tokens</h6>
+              <h6 v-if="chainTo.id == '0x61'" class="dropdown-header">Binance tokens</h6>
+              <span  v-for="item of itemsTo" v-on:click="setTokenTo(item)" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
+            </div>
+  
+            
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+      </div>
+    </div>
+ 
+<!--Alerts-->
+<div class="row mt-1" justify-content-center style="height: 40px;">
+  <div class="col text-center text-muted">
+    <h6 id="alerteth"></h6>
+    <h6 id="alertbsc"></h6>
+  </div>
+</div>
+<!--APPROVE & SWAP-->
+<div id='apsw' class="row justify-content-center mt-2">
+  <div class = "col text-center">
+    <div  class="btn-group" role="group" >
+      <button id="approve" type="button" class="btn fw-bold btn-secondary button1 shadow" disabled v-on:click = "approving()"><span class="badge badge-light">1</span> APPROVE</button>
+      <button id="swap" type="button" data-toggle="modal" data-target="#SwapModalCenter" class="btn fw-bold btn-info button2 shadow" disabled >
+        <span class="badge badge-light">2</span> SWAP
+      </button>
+
+      <!-- Modal -->
+<div class="modal fade" id="SwapModalCenter" tabindex="-1" role="dialog" aria-labelledby="SwapModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title text-muted ml-3" id="SwapModalLongTitle">Cross-chain swap</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-dark">
+        <div class="row m-1">
+           <div class="col-1 text-left">
+          <span  v-html = "'<img src=&quot./img/'+tokenFrom.icon+'&quot class=&quot icon3 &quot/>'"></span>
+          </div>
+          <div class="col-5 text-left">
+            <h4>{{amountFrom}}</h4>
+          </div>
+          <div class="col-4 text-center">
+            {{chainFrom.name}}
+          </div>
+          <div class="col-2 text-right">
+            <h5> {{tokenFrom.symbol}}</h5>
+          </div>
+        </div>
+
+        <div class="row ml-1">
+          <div class="col text-left">
+            <svg  xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="row m-1 mt-2">
+          <div class="col-1 text-left">
+          <span  v-html = "'<img src=&quot./img/'+tokenTo.icon+'&quot class=&quot icon3 &quot/>'"></span>
+          </div>
+          <div class="col-5 text-left">
+            <h4>{{amountTo}}</h4>
+          </div>
+          <div class="col-4 text-center">
+            {{chainTo.name}}
+          </div>
+          <div class="col-2 text-right">
+            <h5> {{tokenTo.symbol}}</h5>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-success shadow button1 button2" v-on:click = "confirmSwap()">CONFIRM</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    </div>
+  </div>
+</div>
+          
+          
+        </div>
+      </div>
+    </div>
+
+<!--LIQUIDITY-->
+    <div class="tab-pane fade" id="pills-status" role="tabpanel" aria-labelledby="pills-status-tab">
+      <div class = "row">
+        <div class = "col" style = "border-radius: 10px; height: 500px; width: 500px; background-color:rgba(255, 255, 255, 0.8); box-shadow: 0 0 10px rgba(255,255,255,0.7); ">
+          
+        <div class = "row border-bottom p-3">
+          <div class="col text-muted">
+            <h4>Liquidity</h4>
+            Add liquidity to receive LP tokens
+          </div>
+        </div>
+        
+         
+
+     <!--FORM ETH Liquidity-->  
+     <div class="row justify-content-center mt-3">
+      <div class="col-10 forms p-2 rounded shadow">
+        <div class="logoForm" v-html = "'<img src=&quot./img/'+chains[0].icon+'&quot class=&quot icon2 &quot/>'"> 
+        </div>
+    
+      <div class="row p-2">
+        <div class="col ">
+          <u>{{chains[0].name}}</u>
+        </div>
+        <div class="col-4 text-left ">
+         Balance: {{balanceLiqEth}}
+        </div>
+      </div>
+      <div class = "row ">
+        <div class="col">
+
+        <div class="input-group">
+          <input id="num3" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num3')" onpaste="return false;" type="text" class="form-control" placeholder="0.0" v-model="amountLiqEth">
+          <div class="input-group-append">
+            <button class="btn btn-light p-1" type="button" id="dropdownMenuEth" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            v-html = "'<img src=&quot./img/'+tokenLiqEth.icon+'&quot class=&quot icon &quot/> ' + tokenLiqEth.symbol"> 
+            </button>
+  
+            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuEth">
+              <span  v-for="item of tokensEth" v-on:click="setLiqToken(item, 'eth')" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
+            </div>
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+    <div class="row justify-content-center m-4">
+      <div class = "col-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="indigo" class="bi bi-plus-circle-dotted" viewBox="0 0 16 16">
+          <path d="M8 0c-.176 0-.35.006-.523.017l.064.998a7.117 7.117 0 0 1 .918 0l.064-.998A8.113 8.113 0 0 0 8 0zM6.44.152c-.346.069-.684.16-1.012.27l.321.948c.287-.098.582-.177.884-.237L6.44.153zm4.132.271a7.946 7.946 0 0 0-1.011-.27l-.194.98c.302.06.597.14.884.237l.321-.947zm1.873.925a8 8 0 0 0-.906-.524l-.443.896c.275.136.54.29.793.459l.556-.831zM4.46.824c-.314.155-.616.33-.905.524l.556.83a7.07 7.07 0 0 1 .793-.458L4.46.824zM2.725 1.985c-.262.23-.51.478-.74.74l.752.66c.202-.23.418-.446.648-.648l-.66-.752zm11.29.74a8.058 8.058 0 0 0-.74-.74l-.66.752c.23.202.447.418.648.648l.752-.66zm1.161 1.735a7.98 7.98 0 0 0-.524-.905l-.83.556c.169.253.322.518.458.793l.896-.443zM1.348 3.555c-.194.289-.37.591-.524.906l.896.443c.136-.275.29-.54.459-.793l-.831-.556zM.423 5.428a7.945 7.945 0 0 0-.27 1.011l.98.194c.06-.302.14-.597.237-.884l-.947-.321zM15.848 6.44a7.943 7.943 0 0 0-.27-1.012l-.948.321c.098.287.177.582.237.884l.98-.194zM.017 7.477a8.113 8.113 0 0 0 0 1.046l.998-.064a7.117 7.117 0 0 1 0-.918l-.998-.064zM16 8a8.1 8.1 0 0 0-.017-.523l-.998.064a7.11 7.11 0 0 1 0 .918l.998.064A8.1 8.1 0 0 0 16 8zM.152 9.56c.069.346.16.684.27 1.012l.948-.321a6.944 6.944 0 0 1-.237-.884l-.98.194zm15.425 1.012c.112-.328.202-.666.27-1.011l-.98-.194c-.06.302-.14.597-.237.884l.947.321zM.824 11.54a8 8 0 0 0 .524.905l.83-.556a6.999 6.999 0 0 1-.458-.793l-.896.443zm13.828.905c.194-.289.37-.591.524-.906l-.896-.443c-.136.275-.29.54-.459.793l.831.556zm-12.667.83c.23.262.478.51.74.74l.66-.752a7.047 7.047 0 0 1-.648-.648l-.752.66zm11.29.74c.262-.23.51-.478.74-.74l-.752-.66c-.201.23-.418.447-.648.648l.66.752zm-1.735 1.161c.314-.155.616-.33.905-.524l-.556-.83a7.07 7.07 0 0 1-.793.458l.443.896zm-7.985-.524c.289.194.591.37.906.524l.443-.896a6.998 6.998 0 0 1-.793-.459l-.556.831zm1.873.925c.328.112.666.202 1.011.27l.194-.98a6.953 6.953 0 0 1-.884-.237l-.321.947zm4.132.271a7.944 7.944 0 0 0 1.012-.27l-.321-.948a6.954 6.954 0 0 1-.884.237l.194.98zm-2.083.135a8.1 8.1 0 0 0 1.046 0l-.064-.998a7.11 7.11 0 0 1-.918 0l-.064.998zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!--FORM BSC Liquidity -->
+    <div class="row justify-content-center mt-2">
+      <div class="col-10 forms p-2 rounded shadow">
+        <div class="logoForm" v-html = "'<img src=&quot./img/'+chains[1].icon+'&quot class=&quot icon2 &quot/>'"> 
+      </div>
+      <div class="row p-2">
+        <div class="col">
+         <u>{{chains[1].name}}</u>
+        </div>
+        <div class="col-4 text-left ">
+         Balance: {{balanceLiqBsc}}
+        </div>
+      </div>
+      <div class = "row ">
+        <div class="col">
+
+        <div class="input-group">
+          <input id="num4" autocomplete="off" maxlength="14" onkeypress="return isNumberKey(event,'num4')" onpaste="return false;" type="text" class="form-control" placeholder="0.0" v-model="amountLiqBsc">
+          <div class="input-group-append">
+            <button class="btn btn-light p-1" type="button" id="dropdownMenuBsc" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;" 
+            v-html = "'<img src=&quot./img/'+tokenLiqBsc.icon+'&quot class=&quot icon &quot/> ' + tokenLiqBsc.symbol"> 
+            </button>
+  
+            <div  class="dropdown-menu mt-1 shadow rounded cursor" aria-labelledby="dropdownMenuBsc">
+              <span  v-for="item of tokensBsc" v-on:click="setLiqToken(item, 'bsc')" class="dropdown-item" v-html = "'<img src=&quot./img/'+item.icon+'&quot class=&quot icon &quot/> ' + item.symbol"></span>
+            </div>
+  
+            
+          </div>
+        </div>
+
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+<!--APPROVE & ADD LIQUIDITY-->
+<div class="row justify-content-center mt-5">
+  <div class = "col text-center">
+    <div class="btn-group" role="group">
+      <button type="button" class="btn fw-bold btn-secondary button1 shadow"><span class="badge badge-light">1</span> APPROVE</button>
+      <button type="button" class="btn fw-bold btn-info button2 shadow" ><span class="badge badge-light">2</span> SUPPLY</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+        </div>
+      </div>
+    </div>
+
+
+
+</div>
+</div>
+
+
+<footer class="footer">
+  <div class="container-fluid d-flex  justify-content-between">
+     <div class="text-primary">ENS:<a target="_blank" href="https://digiu.eth.link"> digiu.eth.link</a></div>
+  
+    <div class="text-muted">2021 DigiU.Lab Team</div>
+  </div>
+</footer>
+</div>
+
+  
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<!--
+  
+-->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js"></script>
+
+<script src="./js/script.js"></script>
+<script src="./js/stars.js"></script>
+
+
+</body>
+</html>
