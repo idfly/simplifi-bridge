@@ -17,7 +17,7 @@ let  ownerPool = null;  // opposite network
     worker = new Worker();
     
     await worker.connect(process.env.LISTEN_NETWORK);
-    worker.monitor();
+//    worker.monitor();
     
     dexpool   = new worker.web3.eth.Contract(dexPool.abi, process.env.POOL_ADDRESS);
     ownerPool = (await worker.web3.eth.getAccounts())[0];
@@ -58,7 +58,7 @@ try{
     console.log(`>>>>>>>>>>>>>>> STATUS TRANSACTION: ${tx.status}`);
 
     //TODO ожидание пока worker поймает из противоположной сети tx.status === true ? ОК : false === rejecteed
-    await worker.timeout(10000);
+    //await worker.timeout(10000);
 
     let responseData = {};
         responseData.jobRunID = id;
