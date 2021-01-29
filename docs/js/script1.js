@@ -3,8 +3,8 @@ var vm = new Vue({
     el: '#app',
     data: {
       chains: [{id:0x4, name:"Ethereum rinkeby", icon:"ethereum.png", web:"web3eth"}, {id:0x61, name:"BSC testnet", icon:"bsc.webp",web:"web3bsc"}],
-      tokensEth: [{symbol:"DAI",addr:"0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea",icon:"dai.webp",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
-      tokensBsc: [{symbol:"DAI",addr:"0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867",icon:"dai.webp",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
+      tokensEth: [{symbol:"DAI",addr:"0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea",icon:"aave_.png",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
+      tokensBsc: [{symbol:"DAI",addr:"0xec5dcb5dbf4b114c9d0f65bccab49ec54f6a0867",icon:"aave_.png",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
       dexPoolETH:[{addr:"0xca8c90020c708f6C75f7C98d38f0DcCf8EfE8360"}],
       dexPoolBSC:[{addr:"0x573f9d264Ef8e2014Da5DE4b13BD46Ff596B8e8a"}],
       buttonEth: '...',
