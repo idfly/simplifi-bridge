@@ -460,17 +460,19 @@ function exchButtons(a,s,chain) {
   //SWAP
   async function confirmSwap() {
     if (alloEth*alloBsc == 0) {
-      const dexPoolContract = new web3eth.eth.Contract(dexPoolABI, vm.dexPoolETH.addr);
+      dexPoolContract = await new web3eth.eth.Contract(dexPoolABI, vm.dexPoolETH[0].addr);
 
-      console.log("contract", dexPoolContract)
+      console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH.addr} contract  ${dexPoolContract.address}`)
       
-      web3bsc.eth.getAccounts(function(err, accounts) {
+      await web3bsc.eth.getAccounts(function(err, accounts) {
          accs = accounts;
-         console.log(accounts); 
+         console.log("BSC accounts ",accounts); 
          })
       tx = dexPoolContract.methods.swapDeposit(1, accs[0]).send({from:vm.accountFrom}).then(function (res) {//alert(JSON.stringify(res));
-        setTimeout(allowanceBsc,1000,0) }).catch(function (e) {}); 
+        setTimeout(allowanceBsc,1000,0) }).catch(function (e) {console.log(e)});
       alert('Complete the approval!')
+    } else {
+      console.warn("NOT ALLOWED")
     }
   }
 
