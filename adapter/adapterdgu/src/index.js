@@ -52,23 +52,30 @@ app.post('/post', async function (req, res) {
 
 
 async function SetType(data, id){
-try{
-    const tx  = await dexpool.methods.receiver(data).send({from: ownerPool});
+    try{
+        const tx  = await dexpool.methods.receiver(data).send({from: ownerPool});
 
-    console.log(`>>>>>>>>>>>>>>> STATUS TRANSACTION: ${tx.status}`);
+        //TODO negative variant
+        let responseData = {};
 
-    //TODO ожидание пока worker поймает из противоположной сети tx.status === true ? ОК : false === rejecteed
-    //await worker.timeout(10000);
+        while(true){
+            console.log(`>>>>>>>>>>>>>>> TX: ${tx.transactionHash}, WAITING RECEIPT`);
+            await worker.timeout(10000);
 
-    let responseData = {};
-        responseData.jobRunID = id;
-        responseData.data     = {result: tx.transactionHash, tx: tx };
+            let receipt = await worker.web3.eth.getTransactionReceipt(tx.transactionHash);
+            if (receipt != null){ //TODO receipt.status === true
+                //console.log('receipt: ',receipt);
+                
+                responseData.jobRunID = id;
+                responseData.data     = {result: tx.transactionHash, tx: receipt };
 
+                break;
+            }
+        }
 
-    return responseData
+        return responseData
 
-}catch(e){console.log(e);}    
-
+    }catch(e){console.log(e);}    
 }
 
 async function GetType(data, id){
