@@ -154,8 +154,8 @@ var delta =360;
       token = vm.tokenTo; vm.tokenTo = vm.tokenFrom; vm.tokenFrom = token;
       amount = vm.amountTo; vm.amountTo = vm.amountFrom; vm.amountFrom = amount;
       account = vm.accountTo; vm.accountTo = vm.accountFrom; vm.accountFrom = account;
-      refreshAccountDataEth();
-      refreshAccountDataBsc();
+      // refreshAccountDataEth();
+      // refreshAccountDataBsc();
       if (vm.chainFrom.id == '0x61') {
         
          allowanceBsc() 
@@ -473,6 +473,55 @@ function exchButtons(a,s,chain) {
       alert('Complete the approval!')
     }
   }
+
+async function getAllowanceEth(token) {
+//     console.log(`getAllowanceEth(${token._address}) serviceContractEth ${serviceContractEth}`);
+    // console.log(`getAllowanceEth(${token._address})`);
+
+    token.methods.allowance(vm.accountFrom, serviceContractEth).call().then(function (res) {
+        alloEth = res;
+        console.log("allowance", res, "token", token._address);
+        if (res == 0) approveTokenEth = token._address;
+        exchButtons(1,1,'eth')//
+        exchButtons(1,1,'allo')
+
+    }).catch(e=>{
+        console.error(e);
+    });
+
+}
+
+function allowanceEth(x) {
+    const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
+    console.log(`vm.tokenFrom.addr ${vm.tokenFrom.addr}`)
+
+    if (!x) {
+        getAllowanceEth(tokenContract)
+    } else {
+        setaAllowanceEth(x, tokenContract)
+    }
+}
+
+async function setaAllowanceEth(x, tokenContract) {
+    console.log(`setaAllowanceEth(${x})`);
+    // tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenFrom.addr);
+
+    console.log("approve  ------------------->");
+    const tokenDecimals = await web3eth.utils.toBN(18);
+    const tokenAmountToApprove = await web3eth.utils.toBN(x);
+    const calculatedApproveValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3eth.utils.toBN(10).pow(tokenDecimals)));
+    console.log("approve  ------------------->");
+    if (tokenContract === undefined) {
+    tokenContract = await new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
+   }
+    await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:vm.accountFrom}).then(function (res) {
+        setTimeout(setaAllowanceEth,1000,0);
+        console.log(JSON.stringify(res));
+        console.log("approve  ------------------->");
+        tokenContract.once('Approval', {}, function(error, event){ console.log("Approval EVENT", event); });
+        // getAllowanceEth();
+    }).catch(function (e) {console.error(e);});
+}
 
 
 
