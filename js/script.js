@@ -393,14 +393,22 @@ function exchButtons(a,s,chain) {
         }).catch(e=>{});
       } 
        if (x && alloBsc == 0) { 
-        const tokenDecimals = web3bsc.utils.toBN(18);
-        const tokenAmountToApprove = web3bsc.utils.toBN(x);
-        const calculatedApproveValue = web3bsc.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
-        await tokenContract.methods.approve(serviceContractBsc, calculatedApproveValue).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
+       /////////
+//        let qwe = calcAmount(web3bsc, x);
+        await tokenContract.methods.approve(serviceContractBsc, x).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
         setTimeout(allowanceBsc,1000,0) }).catch(function (e) {});  // 'Seems, insufficient balance to pay Gas'    
   }
   
 }
+
+// async function  calcAmount( x) {
+//   const tokenDecimals = await web3eth.utils.toBN(18);
+//   const tokenAmountToApprove = await web3eth.utils.toBN(x);
+//   const calculatedValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+//   console.log(`calculatedValue ${calculatedValue}`)
+//   return calculatedValue;
+
+// }
 
   async function approving() {
     if (vm.chainTo.id == '0x61') {
@@ -419,12 +427,16 @@ function exchButtons(a,s,chain) {
       dexPoolContract = await new web3eth.eth.Contract(dexPoolABI, vm.dexPoolETH[0].addr);
 
       console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract.address}`)
-      
+       const tokenDecimals = await web3eth.utils.toBN(18);
+  const tokenAmountToApprove = await web3eth.utils.toBN(1);
+  const calculatedValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+  
       await web3bsc.eth.getAccounts(function(err, accounts) {
          accs = accounts;
          console.log("BSC accounts ",accounts); 
          })
-      tx = await dexPoolContract.methods.swapDeposit(1, accs[0]).send({from:vm.accountFrom});
+       
+      tx = await dexPoolContract.methods.swapDeposit(calculatedValue, accs[0]).send({from:vm.accountFrom});
       console.log(`tx.transactionHash ${tx.transactionHash}`);
       let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);      
       if (receipt != null){
@@ -479,9 +491,4 @@ async function setaAllowanceEth(x, tokenContract) {
                   console.error("receipt null")
                 }
 }
-
-
-// async function timeout(ms) {
-//     return new Promise(resolve => setTimeout(resolve, ms));
-// }
 
