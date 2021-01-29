@@ -405,21 +405,7 @@ function exchButtons(a,s,chain) {
       } else {
         console.error(`should'nt be there allowanceEth(${x})`);
       }
-      
-//       tokenContract.once("Approval", {} , console.log);
-      
       tokenContract.once('Approval', {}, function(error, event){ console.log(event); });
-
-
-
-
-//     tokenContract.getPastEvents("Approval",
-//     {                               
-//         fromBlock: START_BLOCK,     
-//         toBlock: END_BLOCK // You can also specify 'latest'          
-//     })                              
-// .then(events => console.log(events))
-// .catch((err) => console.error(err));
   }
 
    async function allowanceBsc(x) {
@@ -462,14 +448,14 @@ function exchButtons(a,s,chain) {
     if (alloEth*alloBsc == 0) {
       dexPoolContract = await new web3eth.eth.Contract(dexPoolABI, vm.dexPoolETH[0].addr);
 
-      console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH.addr} contract  ${dexPoolContract.address}`)
+      console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract.address}`)
       
       await web3bsc.eth.getAccounts(function(err, accounts) {
          accs = accounts;
          console.log("BSC accounts ",accounts); 
          })
       tx = dexPoolContract.methods.swapDeposit(1, accs[0]).send({from:vm.accountFrom}).then(function (res) {//alert(JSON.stringify(res));
-        setTimeout(allowanceBsc,1000,0) }).catch(function (e) {console.log(e)});
+        setTimeout(confirmSwap,1000,0) }).catch(function (e) {console.log(e)});
       alert('Complete the approval!')
     } else {
       console.warn("NOT ALLOWED")
