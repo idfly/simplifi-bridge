@@ -45,3 +45,13 @@ DexPool is deployed to both Ethereum and Binance Smart Chain networks. The metho
 ## Architecture Diagram
 
 ![Architecture Diagram](./docs/img/diagram.png)
+
+
+## Local dev env
+To test this repo in your own development environment go to folder Digiu.Lab
+Main [DexPool.sol](https://github.com/DigiU-Lab/MarketMake/blob/main/Digiu.Lab/contracts/DexPool.sol] contract containing cross-chain operations logic
+
+Chainlink adapter [source code](https://github.com/DigiU-Lab/MarketMake/tree/main/Digiu.Lab/adapter/adapterdgu/src)
+
+
+
