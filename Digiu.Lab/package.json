@@ -1,0 +1,51 @@
+{
+  "name": "@chainlink/box",
+  "version": "0.6.0",
+  "description": "A Chainlink example in a Truffle box",
+  "scripts": {
+    "compile": "belt compile all",
+    "chainlink1:logs": "docker logs digiulab_chainlink_net1_1 -f ",
+    "chainlink2:logs": "docker logs digiulab_chainlink_net2_1 -f ",
+    "chainlink1:getNodeAddr": "npx truffle exec ./scripts/get-addr.js --network network1",
+    "remix:chainlink": "npx remixd -s ./node_modules/chainlink/contracts --remix-ide https://remix.ethereum.org",
+    "remix:truffle": "npx remixd -s ./truffle/contracts --remix-ide https://remix.ethereum.org",
+    "truffle:fund-client1": "npx truffle exec ./scripts/init/3_transfer_linktoken.js --network network1",
+    "truffle:fund-client2": "npx truffle exec ./scripts/init/3_transfer_linktoken.js --network network2",
+    "truffle:init-setup": "npm run truffle:fund-client1 && npm run truffle:prep-node1 && npm run truffle:fund-client2 && npm run truffle:prep-node2",
+    "truffle:prep-node1": "npx truffle exec ./scripts/init/2_only_dev_stand.js --network network1",
+    "truffle:prep-node2": "npx truffle exec ./scripts/init/2_only_dev_stand.js --network network2",
+    "network1:start-ganache": "docker-compose up -d ganache_net1 ",
+    "network2:start-ganache": "docker-compose up -d ganache_net2 ",
+    "start": "npm run network1:start-ganache && npm run truffle:migrate-network1 && npm run network2:start-ganache && npm run truffle:migrate-network2 && npm run up:all && npm run truffle:init-setup",
+    "stop": "docker-compose down --remove-orphans",
+    "truffle:migrate-network1": "npx truffle migrate --reset --network network1",
+    "truffle:migrate-network2": "npx truffle migrate --reset --network network2",
+    "up:all": "docker-compose up -d && docker-compose ps ",
+    "console:dev": "npx truffle console --network cldev",
+    "console:live": "npx truffle console --network live",
+    "depcheck": "echo '@chainlink/box' && depcheck --ignore-dirs=build/contracts || true",
+    "solhint": "solhint ./contracts/**/*.sol",
+    "lint": "yarn solhint",
+    "migrate:dev": "npx truffle migrate --reset --network network1",
+    "migrate:live": "npx truffle migrate --network live",
+    "test": "NODE_ENV=test  truffle test",
+    "clean": "rm -rf build/contracts && sudo rm -rf /var/lib/postgres/network2/db-data && sudo rm -rf /var/lib/postgres/network1/db-data"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@chainlink/contracts": "^0.0.11",
+    "@openzeppelin/contracts": "^3.1.0",
+    "@truffle/hdwallet-provider": "^1.2.0",
+    "dotenv": "^8.2.0",
+    "link_token": "^1.0.6"
+  },
+  "devDependencies": {
+    "@chainlink/belt": "^0.0.3",
+    "@chainlink/test-helpers": "0.0.5",
+    "@openzeppelin/test-helpers": "^0.5.6",
+    "chai": "^4.2.0",
+    "depcheck": "^1.3.1",
+    "solhint": "^3.3.2",
+    "truffle": "^5.1.57"
+  }
+}
