@@ -119,7 +119,7 @@ function addLiquidity(uint256 amountNet1,
       //TODO check simpleState is not null
       SimpleState storage simpleState = pendingRequests[requestId];
       simpleState.tx = tx_fromNet2;
-      
+
       if(simpleState.func == bytes32("addLiquidity")) mint(simpleState.recepient, simpleState.amount1, simpleState.amount2, simpleState.balancePool2);
 
       emit TxCompleteBothChain(requestId, tx_fromNet2);
@@ -168,6 +168,26 @@ function addLiquidity(uint256 amountNet1,
         //_update(balance0, balance1, _reserve0, _reserve1);
         //if (feeOn) kLast = uint(reserve0).mul(reserve1); // reserve0 and reserve1 are up-to-date
         emit Mint(msg.sender, amount0, amount1);
+    }
+
+
+    function calculateLP(uint amount0, 
+                         uint amount1,
+                         uint balancePoolNet2) external view returns (uint256 liquidity) {
+        
+        uint256 _reserve0 = IERC20(tokenOfPool).balanceOf(address(this));
+        uint256 _reserve1 = balancePoolNet2;
+        
+        uint balance0 = IERC20(tokenOfPool).balanceOf(address(this)) + amount0;
+        uint balance1 = balancePoolNet2 + amount1;
+
+        uint _totalSupply = totalSupply;
+        if (_totalSupply == 0) {
+            liquidity = Math.sqrt(amount0.mul(amount1)).sub(MINIMUM_LIQUIDITY);
+           
+        } else {
+            liquidity = Math.min(amount0.mul(_totalSupply) / _reserve0, amount1.mul(_totalSupply) / _reserve1);
+        }
     }
 
 
