@@ -53,7 +53,9 @@ app.post('/post', async function (req, res) {
 
 async function SetType(data, id){
     try{
+        console.log('nonce check 1: ', await worker.web3.eth.getTransactionCount(ownerPool));
         const tx  = await dexpool.methods.receiver(data).send({from: ownerPool});
+        console.log('nonce check 2: ', await worker.web3.eth.getTransactionCount(ownerPool));
 
         //TODO negative variant
         let responseData = {};
@@ -72,7 +74,7 @@ async function SetType(data, id){
                 break;
             }
         }
-
+console.log('nonce check 3: ', await worker.web3.eth.getTransactionCount(ownerPool));
         return responseData
 
     }catch(e){console.log(e);}    
