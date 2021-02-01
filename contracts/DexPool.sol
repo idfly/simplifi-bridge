@@ -19,6 +19,15 @@ contract DexPool is GovernanceToken, Ownable {
   event AddLiquidity(bytes32 requestId, uint256 curBlock);
   event Mint(address indexed sender, uint amount0, uint amount1);
 
+  struct SimpleState {
+    address recepient;
+    uint256 amount1;
+    uint256 amount2;
+    uint256 balancePool2;
+    bytes32 tx;
+    bytes32 func;
+  }
+
   string constant private SET_REQUEST_TYPE = "set";
   string constant private GET_REQUEST_TYPE = "get";
   uint   constant private MINIMUM_LIQUIDITY = 10**3;
@@ -28,7 +37,7 @@ contract DexPool is GovernanceToken, Ownable {
   address public util;
 
   // requestId => tx (callback, where tx.status === true)
-  mapping(bytes32 => bytes32) private pendingRequests;
+  mapping(bytes32 => SimpleState) private pendingRequests;
 
   address tokenOfPool;
 
@@ -66,10 +75,15 @@ function addLiquidity(uint256 amountNet1,
   bytes memory out  = abi.encodeWithSelector(bytes4(keccak256(bytes('_addLiquidity(address,uint256)'))), luqidityProviderNet2, amountNet2);
   bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
 
-  pendingRequests[requestId] = "0x0";
-
+  SimpleState storage simpleState = pendingRequests[requestId];
+  simpleState.recepient    = msg.sender;
+  simpleState.amount1      = amountNet1;
+  simpleState.amount2      = amountNet2;
+  simpleState.balancePool2 = balancePoolNet2;
+  simpleState.tx           = "0x0";
+  simpleState.func         = "addLiquidity";
   //TODO mint LP token after executing tx on net1 and net2 (balancePoolNet1 + balancePoolNet2)
-  mint(msg.sender, amountNet1, amountNet2, balancePoolNet2);
+  //mint(msg.sender, amountNet1, amountNet2, balancePoolNet2);
 
   emit AddLiquidity(requestId, block.number);
 }
@@ -89,8 +103,10 @@ function addLiquidity(uint256 amountNet1,
      //byte to string and send to Net2
      bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
      //save requestId for bind with callback requestId -> this is approve consistaency !!!!
-     // hex"0x0" - in pending
-     pendingRequests[requestId] = "0x0";
+     
+     SimpleState storage simpleState = pendingRequests[requestId];
+     simpleState.tx           = "0x0";
+     simpleState.func         = "swapDeposit";
 
      emit SwapDeposit(requestId, block.number);
      
@@ -100,7 +116,11 @@ function addLiquidity(uint256 amountNet1,
 
       require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
       // transation on overside is executed. tx.status = true
-      pendingRequests[requestId] = tx_fromNet2;
+      //TODO check simpleState is not null
+      SimpleState storage simpleState = pendingRequests[requestId];
+      simpleState.tx = tx_fromNet2;
+      
+      if(simpleState.func == bytes32("addLiquidity")) mint(simpleState.recepient, simpleState.amount1, simpleState.amount2, simpleState.balancePool2);
 
       emit TxCompleteBothChain(requestId, tx_fromNet2);
   }
