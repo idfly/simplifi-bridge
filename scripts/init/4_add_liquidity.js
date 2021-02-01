@@ -50,7 +50,9 @@ try{
 
    //await tokenPoolNet1.approve(dexPoolNet1.address, amountNet1, {from: userNet1});
    //await tokenPoolNet2.approve(dexPoolNet2.address, amountNet2, {from: userNet2});
-
+   
+   const calculateLPforFront = await dexPoolNet2.calculateLP(amountNet2, amountNet1, balancePoolNet1, {from: userNet2 });
+   console.log('calculateLPforFront: ',calculateLPforFront.toString());
    // 2. AddLiquidity
    /*
      amountNet1      - сумма для зачисления к текущем пуле
