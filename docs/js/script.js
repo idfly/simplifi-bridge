@@ -455,18 +455,23 @@ function exchButtons(a,s,chain) {
 }
 
 async function getAllowanceEth(token) {
-    await token.methods.allowance(vm.accountFrom, serviceContractEth);
-       console.log("allowance", res, "token", token._address);
+  await token.methods.allowance(vm.accountFrom, serviceContractEth).call().then(function (res) {
+        console.log("RESULT", res, "token", tok);
+        alloBsc = res; 
+        if (res == 0) approveTokenBsc = tok; 
+        exchButtons(1,1,'bsc')//
+      
+        }).catch(e=>{});
         exchButtons(1,1,'eth')
         exchButtons(1,1,'allo')
         alloBsc == 0 
         alloEth = 0;
         // console.log("allowance", res, "token", token._address);
       
-       // 
-
 
 }
+
+//
 
 function allowanceEth(x) {
     const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
