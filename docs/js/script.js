@@ -3,8 +3,8 @@ var vm = new Vue({
     el: '#app',
     data: {
       chains: [{id:0x4, name:"Ethereum rinkeby", icon:"ethereum.png", web:"web3eth"}, {id:0x61, name:"BSC testnet", icon:"bsc.webp",web:"web3bsc"}],
-      tokensEth: [{symbol:"AAVE",addr:"0x918809f0c1d4c5e56328742406ddbf6bf7807c73",icon:"aave_.png",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
-      tokensBsc: [{symbol:"BNB",addr:"0x55797e477BE468855690c660AA2640d3E9F80Cc6",icon:"bnb.png",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
+      tokensEth: [{symbol:"AAVE",addr:"0x918809f0c1d4c5e56328742406ddbf6bf7807c73",icon:"dai.webp",price:1}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
+      tokensBsc: [{symbol:"BNB",addr:"0x55797e477BE468855690c660AA2640d3E9F80Cc6",icon:"dai.webp",price:1},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
       dexPoolETH:[{addr:"0x9f9A020ef5f14b126e2d76BD984a88a0ba9c89aA"}],
       dexPoolBSC:[{addr:"0x0B998d26B8Ab9e1caaf084Ba30ac6859Adcc236E"}],
       buttonEth: '...',
@@ -16,7 +16,7 @@ var vm = new Vue({
       bscChainId: '',
       tokenFrom: '',
       tokenTo: '',
-      amountFrom: '',
+      amountFrom: 0,
       amountTo: '',
       accountFrom: '',
       accountTo: '',
@@ -43,8 +43,11 @@ var vm = new Vue({
       
       amountFrom: function() {
         if (document.activeElement.id == 'num1' ) {
+        amountFrom = document.getElementById(document.activeElement.id).value;
+        console.log(`amountFrom ${vm.amountFrom}`)
         calcAmount('from');
-       
+        getAllAllowance();
+
         }
         exchButtons(1,1,'amo')
       }, 
@@ -114,9 +117,9 @@ var meta2 = 'Connect to MetaMask', meta1 = 'Install MetaMask';
   }
 
   function calcAmount(ft) {
-     if (ft == 'from' && (vm.amountFrom === '' || vm.amountFrom == 0 ) ) {vm.amountTo = ''; return} 
+     if (ft == 'from' && (vm.amountFrom === '' || vm.amountFrom == 0 ) ) {vm.amountTo = ''; return}
      if (ft == 'to' && (vm.amountTo === '' || vm.amountTo == 0) ) {vm.amountFrom = ''; return}
-     
+
      if (ft == 'from') { vm.amountTo = BigNumber(vm.amountFrom).times(vm.price); } else { vm.amountFrom = BigNumber(vm.amountTo).div(vm.price)} ;
 
   }
@@ -142,11 +145,7 @@ var delta =360;
       ele.style.webkitTransform="rotate("+delta+"deg)";
       delta+=360;
       //rotate data
-      console.log(vm.chainTo.id, vm.chainFrom.id)
-      // let exToken = vm.tokenTo;
-      // setTokenTo(vm.tokenFrom)
-      // setTokenFrom(vm.itemsTo)
-      
+      console.log(vm.chainTo.id, vm.chainFrom.id);    
       let chain,balance,amount,token,items;
       chain = vm.chainTo; vm.chainTo = vm.chainFrom; vm.chainFrom = chain;
       balance = vm.balanceTo; vm.balanceTo = vm.balanceFrom; vm.balanceFrom = balance;
@@ -154,15 +153,7 @@ var delta =360;
       token = vm.tokenTo; vm.tokenTo = vm.tokenFrom; vm.tokenFrom = token;
       amount = vm.amountTo; vm.amountTo = vm.amountFrom; vm.amountFrom = amount;
       account = vm.accountTo; vm.accountTo = vm.accountFrom; vm.accountFrom = account;
-      // refreshAccountDataEth();
-      // refreshAccountDataBsc();
-      if (vm.chainFrom.id == '0x61') {
-        
-         allowanceBsc() 
-        } else {
-        
-           allowanceEth()
-        }
+      getAllAllowance();
 
   }
 
@@ -258,23 +249,15 @@ function onConnectBsc() {
     // Subscribe to accounts change
     BinanceChain.on("accountsChanged", (accounts) => {
       vm.accountBsc = accounts[0];
-      refreshAccountDataBsc()
-      allowanceBsc(0);
+      refreshAccountDataBsc();
     });
     
     BinanceChain.on("chainChanged", (chainId) => {
       vm.bscChainId = chainId;
       refreshAccountDataBsc();
-      allowanceBsc(0)
     });
-
-    
-    
     refreshAccountDataBsc();
     setInterval(refreshAccountDataBsc,10000);
-    allowanceBsc(0);
-    
-   
   }
 
 function alertBsc() {
@@ -293,12 +276,7 @@ function refreshAccountDataBsc() {
     (vm.chainTo.id == '0x61') ? vm.accountTo = vm.accountBsc : vm.accountFrom = vm.accountBsc;
     fetchSwapDataBsc();
     fetchLiquidityDataBsc();
-    
-    //exchButtons(1,1,'bsc')
-    
-
     document.getElementById('alertbsc').innerHTML ='';
-
     }
 
 
@@ -367,128 +345,194 @@ function exchButtons(a,s,chain) {
   if (chain == 'allo'){
     if (alloEth*alloBsc > 0) { aa = 0; ss = 1}   
 } 
-  
-  if (aa == 1 && alloEth*alloBsc == 0 ) document.querySelector("#approve").removeAttribute("disabled"); else {document.querySelector("#approve").setAttribute("disabled", "disabled");}
+  console.log(`${aa} ${alloEth} ${alloBsc} ${aa == 1 && alloEth*alloBsc == 0}`)
+  if (aa == 1 || alloEth*alloBsc == 0 ) document.querySelector("#approve").removeAttribute("disabled"); else {document.querySelector("#approve").setAttribute("disabled", "disabled");}
+  console.log(`${ss} ${cc} ${ss == 1 && cc == 1}`)
   if (ss == 1 && cc == 1) document.querySelector("#swap").removeAttribute("disabled"); else document.querySelector("#swap").setAttribute("disabled", "disabled");
 
 
   }
 
+
+
+
 //APPROVE
 
   var alloEth = alloBsc = 0, approveTokenBsc, approveTokenEth;
 
-   async function allowanceBsc(x) {
-    console.log(`allowanceBsc(${x})`);
-    var tok,acc;
-    if (vm.chainFrom.id == '0x61') {tok = vm.tokenFrom.addr; acc = vm.accountFrom;} else { tok = vm.tokenTo.addr; acc = vm.accountTo; }
-      const tokenContract = new web3bsc.eth.Contract(erc20abi, tok);
-      if (!x) {
-        await tokenContract.methods.allowance(acc,serviceContractBsc).call().then(function (res) {
-        console.log("RESULT", res, "token", tok);
-        alloBsc = res; 
-        if (res == 0) approveTokenBsc = tok; 
-        exchButtons(1,1,'bsc')//
-      
-        }).catch(e=>{});
-      } 
-       if (x && alloBsc == 0) { 
-       /////////
-//        let qwe = calcAmount(web3bsc, x);
-        await tokenContract.methods.approve(serviceContractBsc, x).send({from:acc}).then(function (res) {//alert(JSON.stringify(res));
-        setTimeout(allowanceBsc,1000,0) }).catch(function (e) {});  // 'Seems, insufficient balance to pay Gas'    
-  }
-  
+
+function  getCalculatedValue( x) {
+  const tokenDecimals =  web3eth.utils.toBN(18);
+  const tokenAmountToApprove =  web3eth.utils.toBN(x);
+  const calculatedValue =  web3eth.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+  console.log(`calculatedValue ${calculatedValue}`)
+return calculatedValue;
 }
 
-// async function  calcAmount( x) {
-//   const tokenDecimals = await web3eth.utils.toBN(18);
-//   const tokenAmountToApprove = await web3eth.utils.toBN(x);
-//   const calculatedValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
-//   console.log(`calculatedValue ${calculatedValue}`)
-//   return calculatedValue;
-
-// }
-
   async function approving() {
-    if (vm.chainTo.id == '0x61') {
-    await allowanceEth(1); } else {
-     await allowanceBsc(1)
-    }
-
-  
+    if (vm.chainFrom.id == '0x61'){
+      tokenContract = new web3bsc.eth.Contract(erc20abi,  vm.tokensBsc[0].addr);
+      approveTransferToServiceContract(vm.amountFrom, tokenContract, serviceContractBsc);
+  } else {
+      tokenContract = new web3eth.eth.Contract(erc20abi,  vm.tokensEth[0].addr);
+      approveTransferToServiceContract(vm.amountFrom, tokenContract, serviceContractEth);
   }
-  
+  }
+
   var accs;
 
-  //SWAP
-  async function confirmSwap() {
-    if (alloEth*alloBsc == 0) {
-      dexPoolContract = await new web3eth.eth.Contract(dexPoolABI, vm.dexPoolETH[0].addr);
 
-      console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract.address}`)
-       const tokenDecimals = await web3eth.utils.toBN(18);
-  const tokenAmountToApprove = await web3eth.utils.toBN(1);
-  const calculatedValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
-  
+async function confirmSwap() {
+if (vm.chainFrom.id == '0x61'){
+confirmSwapBSC();
+} else {
+      dexPoolContract = await new web3eth.eth.Contract(dexPoolABI, vm.dexPoolETH[0].addr);
+      console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
+      const tokenDecimals = await web3eth.utils.toBN(18);
+      const tokenAmountToApprove = await web3eth.utils.toBN(1);
+      console.log(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+      const calculatedValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+
       await web3bsc.eth.getAccounts(function(err, accounts) {
          accs = accounts;
-         console.log("BSC accounts ",accounts); 
+         console.log("BSC accounts ",accounts);
          })
-       
+      console.log(calculatedValue);
       tx = await dexPoolContract.methods.swapDeposit(calculatedValue, accs[0]).send({from:vm.accountFrom});
       console.log(`tx.transactionHash ${tx.transactionHash}`);
-      let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);      
+      let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);
       if (receipt != null){
         console.log(receipt);
+            document.querySelector("#swap").$.modal.close();
+        disableSwapEnableAprove();
         } else {
           console.error("receipt null")
         }
+        }
+}
+
+
+  //SWAP
+
+  async function confirmSwapBSC() {
+        dexPoolContract = await new web3bsc.eth.Contract(dexPoolABI, vm.dexPoolETH[0].addr);
+        console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
+        const tokenDecimals = await web3bsc.utils.toBN(18);
+        const tokenAmountToApprove = await web3bsc.utils.toBN(1);
+        console.log(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+        const calculatedValue = await web3bsc.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+
+        await web3eth.eth.getAccounts(function(err, accounts) {
+           accs = accounts;
+           console.log("ETH accounts ",accounts);
+           })
+        console.log(calculatedValue);
+        tx = await dexPoolContract.methods.swapDeposit(calculatedValue, accs[0]).send({from:vm.accountFrom});
+        console.log(`tx.transactionHash ${tx.transactionHash}`);
+        let receipt = await web3bsc.eth.getTransactionReceipt(tx.transactionHash);
+        if (receipt != null){
+          console.log(receipt);
+          enableSwapDisableAprove();
+          } else {
+            console.error("receipt null")
+          }
   }
+
+
+function enableSwapDisableAprove(){
+    document.querySelector("#swap").removeAttribute("disabled");
+    document.querySelector("#approve").setAttribute("disabled", "disabled");
 }
 
-async function getAllowanceEth(token) {
-    token.methods.allowance(vm.accountFrom, serviceContractEth).call().then(function (res) {
-        alloEth = res;
-        console.log("allowance", res, "token", token._address);
-        if (res == 0) approveTokenEth = token._address;
-        exchButtons(1,1,'eth')//
-        exchButtons(1,1,'allo')
-
-    }).catch(e=>{
-        console.error(e);
-    });
-
+function disableSwapEnableAprove(){
+  document.querySelector("#approve").removeAttribute("disabled");
+  document.querySelector("#swap").setAttribute("disabled", "disabled");
 }
 
-function allowanceEth(x) {
-    const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
-    console.log(`vm.tokenFrom.addr ${vm.tokenFrom.addr}`)
 
-    if (!x) {
-        getAllowanceEth(tokenContract)
-    } else {
-        setaAllowanceEth(x, tokenContract)
+async function getAllowance(tokenContract, serviceContract, account) {
+      console.log(`getAllowance( ${tokenContract._address}, ${serviceContract}, ${account} )`);
+      await tokenContract.methods.allowance(account, serviceContract).call().then(function (res) {
+      console.log("tokenContract allowance", res, "token", tokenContract, "amountFrom", vm.amountFrom );
+      if (res > vm.amountFrom ) {
+      enableSwapDisableAprove();
+      } else {
+      console.log("Allowance", res, "LESS THEN amountFrom", vm.amountFrom );
+      disableSwapEnableAprove();
+      }
+      return res;
+      }).catch(e=>{  console.log(`getAllowance(${e})`);});
+}
+
+async function approveTransferToServiceContractBSC(x, tokenContract, serviceContract) {
+  console.log(`setaAllowance(amoun ${x}\n, tokenContract ${tokenContract._address}\n, serviceContract ${serviceContract}\n, from ${vm.accountFrom} )`);
+  const tokenDecimals = await web3bsc.utils.toBN(18);
+  const tokenAmountToApprove = await web3bsc.utils.toBN(x);
+  const calculatedApproveValue = await web3bsc.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
+      tx = await tokenContract.methods.approve(serviceContract, calculatedApproveValue).send({from:vm.accountFrom});
+      console.log(`tx.transactionHash ${tx.transactionHash}`);
+      let receipt = await web3bsc.eth.getTransactionReceipt(tx.transactionHash);
+              if (receipt != null){
+                  console.log(receipt);
+                  document.querySelector("#swap").removeAttribute("disabled");
+                  } else {
+                    console.error("receipt null")
+                  }
+  getAllowance(tokenContract, serviceContract, vm.accountFrom);
+}
+
+
+async function approveTransferToServiceContract(x, tokenContract, serviceContract) {
+if (vm.chainFrom.id == '0x61'){
+approveTransferToServiceContractBSC(x, tokenContract, serviceContract);
+} else {
+  console.log(`setaAllowance(amoun ${x}\n, tokenContract ${tokenContract._address}\n, serviceContract ${serviceContract}\n, from ${vm.accountFrom} )`);
+  const tokenDecimals = await web3eth.utils.toBN(18);
+  const tokenAmountToApprove = await web3eth.utils.toBN(x);
+  const calculatedApproveValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3eth.utils.toBN(10).pow(tokenDecimals)));
+      tx = await tokenContract.methods.approve(serviceContract, calculatedApproveValue).send({from:vm.accountFrom});
+      console.log(`tx.transactionHash ${tx.transactionHash}`);
+      let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);
+              if (receipt != null){
+                  console.log(receipt);
+                  document.querySelector("#swap").removeAttribute("disabled");
+                  } else {
+                    console.error("receipt null")
+                  }
+  getAllowance(tokenContract, serviceContract, vm.accountFrom);
+}
+}
+
+async function getAllAllowance() {
+  var acc;
+  if (vm.chainFrom.id == '0x61'){
+    acc = vm.accountFrom;
+    tokenContract =  new web3bsc.eth.Contract(erc20abi, vm.tokensBsc[0].addr);
+    serviceContract = serviceContractBsc
+
+} else {
+  console.log("vm.tokensEth[0]", vm.tokensEth[0].addr);
+  acc = vm.accountTo;
+  tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokensEth[0].addr);
+  serviceContract = serviceContractEth
+
+}
+  return await getAllowance(tokenContract, serviceContract, acc)
+}
+
+
+  //input only number
+  function isNumberKey(evt,id,ft)
+  {
+  console.log(evt)
+  console.log(document.getElementById(id).value)
+    console.log(`isNumberKey(${evt},${id},${ft})`)
+    var data = document.getElementById(id).value;
+    if((evt.charCode>= 48 && evt.charCode <= 57) || evt.charCode== 46 ||evt.charCode == 0){
+    if(data.indexOf('.') > -1 || data == ''){
+     if(evt.charCode== 46)
+      evt.preventDefault();
     }
-}
-
-async function setaAllowanceEth(x, tokenContract) {
-    console.log(`setaAllowanceEth(${x})`);
-    console.log("approve  ------------------->");
-    const tokenDecimals = await web3eth.utils.toBN(18);
-    const tokenAmountToApprove = await web3eth.utils.toBN(x);
-    const calculatedApproveValue = await web3eth.utils.toHex(tokenAmountToApprove.mul(web3eth.utils.toBN(10).pow(tokenDecimals)));
-    console.log("approve  ------------------->");
-    if (tokenContract === undefined) {
-    tokenContract = await new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
-   }
-    tx = await tokenContract.methods.approve(serviceContractEth, calculatedApproveValue).send({from:vm.accountFrom});
-    console.log(`tx.transactionHash ${tx.transactionHash}`);
-    let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);
-            if (receipt != null){
-                console.log(receipt);
-                } else {
-                  console.error("receipt null")
-                }
-}
-
+    vm.amountFrom = data;
+    } else evt.preventDefault();
+  }
