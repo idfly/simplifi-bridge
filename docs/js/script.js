@@ -412,10 +412,8 @@ function exchButtons(a,s,chain) {
 
 
 function calcToWei(x) {
-    const tokenDecimals = web3eth.utils.toBN(18);
-    const tokenAmountToApprove = web3eth.utils.toBN(x);
-    const calculatedValue = web3eth.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
-    console.log(`calculatedValue ${calculatedValue}`)
+    let amount = Math.round(x, 18);
+    var calculatedValue = web3eth.utils.toWei(amount.toString(), 'ether');
     return calculatedValue;
 }
 
