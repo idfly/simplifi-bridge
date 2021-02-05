@@ -52,20 +52,32 @@
       <img src="./img/logo.png" width="110" alt="DigiU">
     </div>
 
-    <div class = "col-5 text-left ">
+    <div class = "col-5 text-right ">
       <ul class="nav nav-masthead" id="pills-tab" role="tablist">
+
         <li class="nav-item mr-3">
           <a class="nav-link active autofocus" id="pills-swap-tab" data-toggle="pill" href="#pills-swap" role="tab" aria-controls="pills-swap" aria-selected="true">EXCHANGE</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" id="pills-status-tab" data-toggle="pill" href="#pills-status" role="tab" aria-controls="pills-status" aria-selected="false">LIQUIDITY</a>
+
+        <li class="nav-item mr-3">
+          <a class="nav-link" id="pills-status-tab" data-toggle="pill" href="#pills-status" role="tab" aria-controls="pills-status" aria-selected="false">LIQUIDITY </a>
+        </li>
+
+        <li class="nav-item mr-3">
+          <a class="nav-link" id="pills-pool-tab" data-toggle="pill" href="#pills-pool" role="tab" aria-controls="pills-pool" aria-selected="false">POOL BALANCE</a>
         </li>
        
       </ul>
-    </div>
 
+    </div>
+    <div class = "col text-nowrap text-center">
+
+    </div>
+    <div class = "col text-nowrap text-center">
+      LP BALANCE: {{balanceDigiUBsc}} DGU
+    </div>
     <div class = "col text-nowrap text-right">
-      
+
       
         <button id="pulse2" class="btn btn-dark  fw-bold rounded-pill mr-1" type="button" onclick="connectEth()" >
           <img class='icon' src="./img/metamask.png"/> {{buttonEth}}
@@ -301,6 +313,9 @@
             <h4>Liquidity</h4>
             Add liquidity to receive LP tokens
           </div>
+          <div>
+            {{balanceDigiUBsc}} DigiU
+          </div>
         </div>
         
          
@@ -390,8 +405,9 @@
 <div class="row justify-content-center mt-5">
   <div class = "col text-center">
     <div class="btn-group" role="group">
-      <button type="button" class="btn fw-bold btn-secondary button1 shadow"><span class="badge badge-light">1</span> APPROVE</button>
-      <button type="button" class="btn fw-bold btn-info button2 shadow" ><span class="badge badge-light">2</span> SUPPLY</button>
+      <button type="button" class="btn fw-bold btn-secondary button1 shadow" v-on:click = "approveOnETHToken4AddLiquidity()"><span class="badge badge-light">1</span> APPROVE</button>
+      <button type="button" class="btn fw-bold btn-info button2 shadow" v-on:click = "addLiquidity()"  ><span class="badge badge-light">2</span> SUPPLY</button>
+
     </div>
   </div>
 </div>
@@ -403,9 +419,44 @@
       </div>
     </div>
 
+  <div class="tab-pane fade" id="pills-pool" role="tabpanel" aria-labelledby="pills-pool-tab">
+    <div class = "row">
+      <div class = "col" style = "border-radius: 10px; height: 500px; width: 500px; background-color:rgba(255, 255, 255, 0.8); box-shadow: 0 0 10px rgba(255,255,255,0.7); ">
 
+        <div class = "row border-bottom p-3">
+    <div class="col text-muted">
+      <h4>Pool Balance</h4>
+    </div>
+          <div class="col-10 forms p-2 rounded shadow">
+            <div class="row p-2">
+              <div class="col ">
+                <b>Pool</b> <u>{{chainTo.name}}</u>
+              </div>
+              <div class="col-4 text-left ">
+                Balance: {{dexPoolBalanceUNI}}
+              </div>
+            </div>
+
+<!--        <div class = "col text-nowrap text-center">-->
+
+        </div>
+          </div>
+          <div class="col-10 forms p-2 rounded shadow">
+
+          <div class = "col text-nowrap text-center">
+          <h4>POOL BALANCE: {{dexPoolBalanceAAVE}}  AAVE</h4>
+        </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
 
 </div>
+
 </div>
 
 
@@ -418,7 +469,6 @@
 </footer>
 </div>
 
-  
 
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
