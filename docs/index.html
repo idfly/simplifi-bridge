@@ -432,20 +432,37 @@
               <div class="col ">
                 <b>Pool</b> <u>{{chainTo.name}}</u>
               </div>
+              <div class = "row ">
               <div class="col-4 text-left ">
                 Balance: {{dexPoolBalanceUNI}}
               </div>
-            </div>
 
+            <button class="btn btn-light p-1 rounded" type="button" id="butto" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;"
+                    v-html = "'<img src=&quot./img/'+tokenTo.icon+'&quot class=&quot icon &quot/> ' + tokenTo.symbol">
+            </button>
+            </div>
 <!--        <div class = "col text-nowrap text-center">-->
 
         </div>
           </div>
           <div class="col-10 forms p-2 rounded shadow">
 
-          <div class = "col text-nowrap text-center">
-          <h4>POOL BALANCE: {{dexPoolBalanceAAVE}}  AAVE</h4>
-        </div>
+            <div class="row p-2">
+              <div class="col ">
+                <b>Pool</b> <u>{{chainTo.name}}</u>
+              </div>
+              <div class = "row ">
+              <div class="col-4 text-left ">
+                Balance: {{dexPoolBalanceAAVE}}
+              </div>
+              <button class="btn btn-light p-1 rounded" type="button" id="butto" data-toggle="dropdown"  aria-expanded="false" style = "width: 120px;"
+                      v-html = "'<img src=&quot./img/'+tokenFrom.icon+'&quot class=&quot icon &quot/> ' + tokenFrom.symbol">
+              </button>
+            </div>
+
+
+
+
           </div>
         </div>
       </div>
