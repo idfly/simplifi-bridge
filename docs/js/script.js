@@ -34,8 +34,8 @@ var vm = new Vue({
       //balances
       balanceFrom:'0',
       balanceTo:'0',
-      balanceLiqEth:'-',
-      balanceLiqBsc:'-',
+      balanceLiqEth:'0',
+      balanceLiqBsc:'0',
         balanceDigiUBsc:'-',
       dexPoolContract:'',
       tokenContract:'',
@@ -352,7 +352,6 @@ async function fetchDigiUtokenBalanace() {
     tokenContract.methods.balanceOf(vm.accountBsc).call().then(function (bal) {
         console.log("tokenContract.methods.balanceOf", bal);
         vm.balanceDigiUBsc = calcFromWei(bal);
-        // vm.balanceDigiUBsc = Math.round(bal * 1e-10) / 1e8;
         console.log("fetchDigiUtokenBalanace", vm.balanceDigiUBsc);
 
     });
@@ -379,15 +378,14 @@ async function fetchLiquidityDataEth() {
   
   const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenLiqEth.addr);
   tokenContract.methods.balanceOf(vm.accountEth).call().then(function (bal) {
-  vm.balanceLiqEth = Math.round(bal*1e-10)/1e8;})
+  vm.balanceLiqEth = calcFromWei(bal)})
 
 }
 
 async function fetchLiquidityDataBsc() {
     const tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenLiqBsc.addr);
     tokenContract.methods.balanceOf(vm.accountBsc).call().then(function (bal) {
-    vm.balanceLiqBsc = Math.round(calcFromWei(bal));
-    })
+    vm.balanceLiqBsc = calcFromWei(bal)})
 }
 
 
