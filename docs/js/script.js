@@ -18,7 +18,7 @@ var vm = new Vue({
       tokenFrom: '',
       tokenTo: '',
       amountFrom: 0,
-      amountTo: '',
+      amountTo: 0,
       accountFrom: '',
       accountTo: '',
       chainFrom: '',
@@ -32,8 +32,8 @@ var vm = new Vue({
       tokenLiqBsc:'',
       price: 1,
       //balances
-      balanceFrom:'-',
-      balanceTo:'-',
+      balanceFrom:'0',
+      balanceTo:'0',
       balanceLiqEth:'-',
       balanceLiqBsc:'-',
         balanceDigiUBsc:'-',
@@ -58,11 +58,9 @@ var vm = new Vue({
 
         amountLiqEth: function() {
             if (document.activeElement.id == 'num3' ) {
-                this.amountLiqEth = document.getElementById(document.activeElement.id).value;
+                amountLiqEth = document.getElementById(document.activeElement.id).value;
                 console.log(`amountLiqEth ${vm.amountLiqEth}`)
                 calculateLiquidityAmount('from');
-                // getAllAllowance();
-
             }
         },
 
@@ -76,6 +74,12 @@ var vm = new Vue({
         amountLiqBsc: function() {
             if (document.activeElement.id == 'num4' ) {
                 calculateLiquidityAmount('to');
+            }
+        },
+
+        amountLiqEth: function() {
+            if (document.activeElement.id == 'num3' ) {
+                calculateLiquidityAmount('from');
             }
         },
       
@@ -318,11 +322,12 @@ async function fetchSwapDataBsc() {
 if (vm.chainTo.id == '0x61') {
     const tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenTo.addr);
    tokenContract.methods.balanceOf(vm.accountTo).call().then(function (bal) {
-    vm.balanceTo = Math.round(bal*1e-10)/1e8;})
+    vm.balanceTo = calcFromWei(bal);
+   })
 } else {
   const tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenFrom.addr);
   tokenContract.methods.balanceOf(vm.accountFrom).call().then(function (bal) {
-  vm.balanceFrom = Math.round(bal*1e-10)/1e8;})
+  vm.balanceFrom = calcFromWei(bal);})
 }
 
 }
@@ -332,11 +337,11 @@ async function fetchSwapDataEth() {
   if (vm.chainTo.id == '0x4') {
     const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenTo.addr);
     tokenContract.methods.balanceOf(vm.accountTo).call().then(function (bal) {
-    vm.balanceTo = Math.round(bal*1e-10)/1e8;});
+    vm.balanceTo = calcFromWei(bal);});
 } else {
   const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenFrom.addr);
   tokenContract.methods.balanceOf(vm.accountFrom).call().then(function (bal) {
-  vm.balanceFrom = Math.round(bal*1e-10)/1e8;})
+  vm.balanceFrom = calcFromWei(bal);})
 }
 
 }
