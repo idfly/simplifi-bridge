@@ -92,14 +92,14 @@ function addLiquidity(uint256 amountNet1,
   /** 
    * The part of process 'swap'
    */
-  function swapDeposit(uint256 amount, address recipientOnNet2) external {
+  function swapDeposit(uint256 amount1, uint256 amount2, address recipientOnNet2) external {
 
     require(recipientOnNet2 != address(0), "ZERO_ADDRESS");
     //перевод usdc(BNB) c адреса alice на адрес пула в сети ethereum(Binance)
-    IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount);
+    IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount1);
 
      //prepare
-     bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('swapWithdraw(address,uint256)'))), recipientOnNet2, amount);
+     bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('swapWithdraw(address,uint256)'))), recipientOnNet2, amount2);
      //byte to string and send to Net2
      bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
      //save requestId for bind with callback requestId -> this is approve consistaency !!!!
