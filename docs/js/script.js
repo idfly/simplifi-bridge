@@ -186,10 +186,14 @@ var delta =360;
 
 
 function setLiqToken(item, typ) {
-  if (typ == 'eth') {vm.tokenLiqEth = item; fetchLiquidityDataEth()}
-  else {vm.tokenLiqBsc = item; fetchLiquidityDataBsc()}
-  
-  //getBalanceFrom()
+  if (typ == 'eth') {
+      vm.tokenLiqEth = item;
+      fetchLiquidityDataEth();
+  }
+  else {
+      vm.tokenLiqBsc = item;
+      fetchLiquidityDataBsc();
+  }
 }
 
 
@@ -361,7 +365,7 @@ async function fetchDigiUtokenBalanace() {
   }
 
   async function getPrice(){
-      vm.currentPrice = vm.dexPoolBalanceUNI / vm.dexPoolBalanceAAVE;
+      vm.currentPrice = Math.round(vm.dexPoolBalanceUNI / vm.dexPoolBalanceAAVE,0);
       console.log("vm.currentPrice", vm.currentPrice);
   }
 
@@ -377,7 +381,8 @@ async function fetchLiquidityDataEth() {
 async function fetchLiquidityDataBsc() {
     const tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenLiqBsc.addr);
     tokenContract.methods.balanceOf(vm.accountBsc).call().then(function (bal) {
-    vm.balanceLiqBsc = Math.round(bal*1e-10)/1e8;})
+    vm.balanceLiqBsc = Math.round(calcFromWei(bal));
+    })
 }
 
 
@@ -397,12 +402,8 @@ function exchButtons(a,s,chain) {
   if (chain == 'allo'){
     if (alloEth*alloBsc > 0) { aa = 0; ss = 1}   
 } 
-  console.log(`${aa} ${alloEth} ${alloBsc} ${aa == 1 && alloEth*alloBsc == 0}`)
-  if (aa == 1 || alloEth*alloBsc == 0 ) document.querySelector("#approve").removeAttribute("disabled"); else {document.querySelector("#approve").setAttribute("disabled", "disabled");}
-  console.log(`${ss} ${cc} ${ss == 1 && cc == 1}`)
-  if (ss == 1 && cc == 1) document.querySelector("#swap").removeAttribute("disabled"); else document.querySelector("#swap").setAttribute("disabled", "disabled");
-
-
+  disableSupplyEnableAprove();
+  disableSwapEnableAprove();
   }
 
 
@@ -414,13 +415,13 @@ function exchButtons(a,s,chain) {
 
 
 function calcToWei(x) {
-    let amount = Math.round(x, 18);
+    let amount = Math.round(x, 0);
     var calculatedValue = web3eth.utils.toWei(amount.toString(), 'ether');
     return calculatedValue;
 }
 
 function calcFromWei(x) {
-    var calculatedValue = web3eth.utils.fromWei(x.toString(), 'ether');
+    var calculatedValue = Math.round(web3eth.utils.fromWei(x.toString(), 'ether'));
     return calculatedValue;
 }
 
@@ -469,7 +470,7 @@ confirmSwapBSC();
 async function addLiquidity() {
     fetchDigiUtokenBalanace();
      dexPoolContract = await new web3bsc.eth.Contract(dexPoolABI, vm.dexPoolBSC[0].addr);
-        console.log(`addLiquidity ${vm.amountLiqEth} ${vm.amountLiqBsc} vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
+        console.log(`addLiquidity ${vm.balanceLiqBsc} ${vm.amountLiqEth} ${vm.amountLiqBsc} vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
         let amountNet1 = calcToWei( vm.amountLiqBsc).toString();
 
         let amountNet2 = calcToWei( vm.amountLiqEth).toString();
@@ -534,13 +535,22 @@ function enableSwapDisableAprove(){
 function disableSwapEnableAprove(){
   document.querySelector("#approve").removeAttribute("disabled");
   document.querySelector("#swap").setAttribute("disabled", "disabled");
-  document.querySelector("#approve-add").removeAttribute("disabled"); "approve-add"
+}
+
+function enableSupplyDisableAprove() {
+    document.querySelector("#approve-add").setAttribute("disabled", "disabled");
+    document.querySelector("#add-liquidity").removeAttribute("disabled");
+}
+
+function disableSupplyEnableAprove() {
+    document.querySelector("#add-liquidity").setAttribute("disabled", "disabled");
+    document.querySelector("#approve-add").removeAttribute("disabled");
 }
 
 async function approveOnETHToken4AddLiquidity(){
-    getAllAllowance();
     await approveTransferToServiceContract(web3eth, vm.amountLiqEth, vm.tokensEth[0].addr, serviceContractEth, vm.accountEth);
     await approveOnBSCToken4AddLiquidity();
+    enableSupplyDisableAprove();
 }
 
 function approveOnBSCToken4AddLiquidity(){
@@ -573,7 +583,7 @@ async function approveTransferToServiceContract(w3, amount, tokenContractAddr, s
       let receipt = await w3.eth.getTransactionReceipt(tx.transactionHash);
               if (receipt != null){
                   console.log(receipt);
-                  document.querySelector("#swap").removeAttribute("disabled");
+                  enableSwapDisableAprove();
                   } else {
                     console.error("receipt null")
                   }
@@ -598,10 +608,6 @@ async function getAllAllowance() {
 
   //input only number
   function isNumberKey(evt,id,ft) {
-      document.querySelector("#approve-add").removeAttribute("disabled"); "approve-add"
-
-  // console.log(evt);
-  // console.log(document.getElementById(id).value)
     console.log(`isNumberKey(${evt},${id},${ft})`)
     var data = document.getElementById(id).value;
     if((evt.charCode>= 48 && evt.charCode <= 57) || evt.charCode== 46 ||evt.charCode == 0){
@@ -612,4 +618,5 @@ async function getAllAllowance() {
     console.log("DATA", data);
     vm.amountFrom = data;
     } else evt.preventDefault();
+    getAllAllowance();
   }
