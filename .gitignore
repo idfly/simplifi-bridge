@@ -1,4 +1,5 @@
 #Buidler files
+.env
 /*.env
 adapter/adapterdgu/src/abi
 adapter/adapterdgu/*.json
