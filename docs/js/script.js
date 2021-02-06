@@ -41,6 +41,7 @@ var vm = new Vue({
       tokenContract:'',
         dexPoolBalanceUNI:'',
         dexPoolBalanceAAVE:'',
+        currentPrice:'',
     },
     watch: {
       
@@ -132,7 +133,6 @@ var meta2 = 'Connect to MetaMask', meta1 = 'Install MetaMask';
   vm.tokenLiqBsc = vm.tokensBsc[0];
 
   function calcPrice(ft) {
-    vm.price = vm.tokenFrom.price/vm.tokenTo.price; 
     calcAmount(ft);
   }
 
@@ -140,16 +140,13 @@ var meta2 = 'Connect to MetaMask', meta1 = 'Install MetaMask';
      if (ft == 'from' && (vm.amountFrom === '' || vm.amountFrom == 0 ) ) {vm.amountTo = ''; return}
      if (ft == 'to' && (vm.amountTo === '' || vm.amountTo == 0) ) {vm.amountFrom = ''; return}
 
-     if (ft == 'from') { vm.amountTo = BigNumber(vm.amountFrom).times(vm.price); } else { vm.amountFrom = BigNumber(vm.amountTo).div(vm.price)} ;
+     if (ft == 'from') { vm.amountTo = BigNumber(vm.amountFrom).times(vm.currentPrice); } else { vm.amountFrom = BigNumber(vm.amountTo).div(vm.currentPrice)} ;
 
   }
 
 function calculateLiquidityAmount(ft) {
     console.log(`calculating vm.amountLiqBsc from vm.amountLiqEth ${vm.amountLiqEth}`);
-    if (ft == 'from') { vm.amountLiqBsc = BigNumber(vm.amountLiqEth).times(vm.price); } else { vm.amountLiqEth = BigNumber(vm.amountLiqBsc).div(vm.price);} ;
-
-
-
+    if (ft == 'from') { vm.amountLiqBsc = BigNumber(vm.amountLiqEth).times(vm.currentPrice); } else { vm.amountLiqEth = BigNumber(vm.amountLiqBsc).div(vm.currentPrice);} ;
 }
 
 
@@ -172,7 +169,7 @@ var delta =360;
       ele.style.webkitTransform="rotate("+delta+"deg)";
       delta+=360;
       //rotate data
-      console.log(vm.chainTo.id, vm.chainFrom.id);    
+      console.log(vm.chainTo.id, vm.chainFrom.id);
       let chain,balance,amount,token,items;
       chain = vm.chainTo; vm.chainTo = vm.chainFrom; vm.chainFrom = chain;
       balance = vm.balanceTo; vm.balanceTo = vm.balanceFrom; vm.balanceFrom = balance;
@@ -327,7 +324,7 @@ if (vm.chainTo.id == '0x61') {
 }
 
 async function fetchSwapDataEth() {
- 
+
   if (vm.chainTo.id == '0x4') {
     const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenTo.addr);
     tokenContract.methods.balanceOf(vm.accountTo).call().then(function (bal) {
@@ -353,17 +350,20 @@ async function fetchDigiUtokenBalanace() {
 }
     async function fetchDexPoolBalanace() {
          let tokenContractBSC = new web3bsc.eth.Contract(erc20abi, vm.tokenLiqBsc.addr);
-        tokenContractBSC.methods.balanceOf(vm.dexPoolBSC[0].addr).call().then(function (bal) {
+        let bal = await tokenContractBSC.methods.balanceOf(vm.dexPoolBSC[0].addr).call();
             vm.dexPoolBalanceUNI = calcFromWei(bal);
             console.log("dexPoolBalanceUNI", vm.balanceDigiUBsc);
-        });
         let tokenContractETH = new web3eth.eth.Contract(erc20abi, vm.tokenLiqEth.addr);
-        tokenContractETH.methods.balanceOf(vm.dexPoolETH[0].addr).call().then(function (bal) {
-            vm.dexPoolBalanceAAVE = calcFromWei(bal);
-            console.log("dexPoolBalanceAAVE", vm.balanceDigiUBsc);
-        });
+        let bal2 = await tokenContractETH.methods.balanceOf(vm.dexPoolETH[0].addr).call();
+            vm.dexPoolBalanceAAVE = calcFromWei(bal2);
+            console.log("dexPoolBalanceAAVE", vm.dexPoolBalanceAAVE);
+        await getPrice();
+  }
 
-}
+  async function getPrice(){
+      vm.currentPrice = vm.dexPoolBalanceUNI / vm.dexPoolBalanceAAVE;
+      console.log("vm.currentPrice", vm.currentPrice);
+  }
 
 //liquidity tab
 async function fetchLiquidityDataEth() {
@@ -582,6 +582,7 @@ async function approveTransferToServiceContract(w3, amount, tokenContractAddr, s
 
 async function getAllAllowance() {
     fetchDigiUtokenBalanace();
+    fetchDexPoolBalanace();
   if (vm.chainFrom.id == '0x61'){
     tokenContract =  new web3bsc.eth.Contract(erc20abi, vm.tokensBsc[0].addr);
     serviceContract = serviceContractBsc
