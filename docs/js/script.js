@@ -5,8 +5,8 @@ var vm = new Vue({
       chains: [{id:0x4, name:"Ethereum rinkeby", icon:"ethereum.png", web:"web3eth"}, {id:0x61, name:"BSC testnet", icon:"bsc.webp",web:"web3bsc"}],
       tokensEth: [{symbol:"AAVE",addr:"0x918809f0c1d4c5e56328742406ddbf6bf7807c73",icon:"AAVE.webp",price:509}], //price bypass{symbol:"USDT",addr:"",icon:"tether.webp",price:1} {symbol:"USDC",addr:"0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",icon:"usdc.webp",price:1}
       tokensBsc: [{symbol:"UNI",addr:"0x55797e477BE468855690c660AA2640d3E9F80Cc6",icon:"uniswap-uni.webp",price:21},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
-      dexPoolETH:[{addr:"0x9f9A020ef5f14b126e2d76BD984a88a0ba9c89aA"}],
-      dexPoolBSC:[{addr:"0x0B998d26B8Ab9e1caaf084Ba30ac6859Adcc236E"}],
+      dexPoolETH:[{addr:"0x8C2e2b076ccd2d1654de5A094a8626ADa609b415"}],
+      dexPoolBSC:[{addr:"0xa7A22197C3c16CF3DD5a7C79479064736f56ba3e"}],
         digiuTokenAddress:'0x0b998d26b8ab9e1caaf084ba30ac6859adcc236e',
       buttonEth: '...',
       buttonBsc: '...',
@@ -344,21 +344,23 @@ async function fetchSwapDataEth() {
 async function fetchDigiUtokenBalanace() {
     let tokenContract = new web3bsc.eth.Contract(erc20abi, vm.digiuTokenAddress);
     tokenContract.methods.balanceOf(vm.accountBsc).call().then(function (bal) {
-        vm.balanceDigiUBsc = Math.round(bal * 1e-10) / 1e8;
+        console.log("tokenContract.methods.balanceOf", bal);
+        vm.balanceDigiUBsc = calcFromWei(bal);
+        // vm.balanceDigiUBsc = Math.round(bal * 1e-10) / 1e8;
         console.log("fetchDigiUtokenBalanace", vm.balanceDigiUBsc);
 
     });
 }
     async function fetchDexPoolBalanace() {
-         tokenContract = new web3bsc.eth.Contract(erc20abi, vm.tokenLiqBsc.addr);
-        tokenContract.methods.balanceOf(vm.dexPoolBSC[0].addr).call().then(function (bal) {
-            vm.dexPoolBalanceUNI = Math.round(bal*1e-10)/1e8;
-            console.log("poolBalance", vm.dexPoolBalanceUNI);
+         let tokenContractBSC = new web3bsc.eth.Contract(erc20abi, vm.tokenLiqBsc.addr);
+        tokenContractBSC.methods.balanceOf(vm.dexPoolBSC[0].addr).call().then(function (bal) {
+            vm.dexPoolBalanceUNI = calcFromWei(bal);
+            console.log("dexPoolBalanceUNI", vm.balanceDigiUBsc);
         });
-        tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenLiqEth.addr);
-        tokenContract.methods.balanceOf(vm.dexPoolETH[0].addr).call().then(function (bal) {
-            vm.dexPoolBalanceAAVE = Math.round(bal*1e-10)/1e8;
-            console.log("poolBalance", vm.dexPoolBalanceAAVE);
+        let tokenContractETH = new web3eth.eth.Contract(erc20abi, vm.tokenLiqEth.addr);
+        tokenContractETH.methods.balanceOf(vm.dexPoolETH[0].addr).call().then(function (bal) {
+            vm.dexPoolBalanceAAVE = calcFromWei(bal);
+            console.log("dexPoolBalanceAAVE", vm.balanceDigiUBsc);
         });
 
 }
@@ -417,6 +419,11 @@ function calcToWei(x) {
     return calculatedValue;
 }
 
+function calcFromWei(x) {
+    var calculatedValue = web3eth.utils.fromWei(x.toString(), 'ether');
+    return calculatedValue;
+}
+
   async function approving() {
       fetchDigiUtokenBalanace();
       if (vm.chainFrom.id == '0x61') {
@@ -427,7 +434,9 @@ function calcToWei(x) {
   }
 
   var accs;
-
+/*
+function swapDeposit(uint256 amount1, uint256 amount2, address recipientOnNet2) external
+*/
 
 async function confirmSwap() {
     fetchDigiUtokenBalanace();
@@ -436,14 +445,14 @@ if (vm.chainFrom.id == '0x61'){
 confirmSwapBSC();
 } else {
       dexPoolContract = await new web3eth.eth.Contract(dexPoolABI, vm.dexPoolETH[0].addr);
-      console.log(`vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
-      const calculatedValue = await calcToWei(vm.amountFrom);
+      console.log(`vm.amountFrom ${vm.amountFrom}\n vm.amountTo ${vm.amountTo}\n vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
+      const amount1 = await calcToWei(vm.amountFrom);
+      const amount2 = await calcToWei(vm.amountTo);
       await web3bsc.eth.getAccounts(function(err, accounts) {
          accs = accounts;
          console.log("BSC accounts ",accounts);
          })
-      console.log(calculatedValue);
-      tx = await dexPoolContract.methods.swapDeposit(calculatedValue, accs[0]).send({from:vm.accountFrom});
+      tx = await dexPoolContract.methods.swapDeposit(amount1, amount2, accs[0]).send({from:vm.accountFrom});
       console.log(`tx.transactionHash ${tx.transactionHash}`);
       let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);
       if (receipt != null){
@@ -461,12 +470,14 @@ async function addLiquidity() {
     fetchDigiUtokenBalanace();
      dexPoolContract = await new web3bsc.eth.Contract(dexPoolABI, vm.dexPoolBSC[0].addr);
         console.log(`addLiquidity ${vm.amountLiqEth} ${vm.amountLiqBsc} vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
-        let amountNet1 = calcToWei( vm.amountLiqBsc)
-        let amountNet2 = calcToWei( vm.amountLiqEth)
+        let amountNet1 = calcToWei( vm.amountLiqBsc).toString();
+
+        let amountNet2 = calcToWei( vm.amountLiqEth).toString();
     await web3eth.eth.getAccounts(function (err, accounts) {
             accs = accounts;
             console.log("ETH accounts ", accounts);
-        })
+        });
+    console.log(`amountNet1 ${amountNet1}  \namountNet2 ${amountNet2}\n`);
         tx = await dexPoolContract.methods.addLiquidity(
             amountNet1,
             amountNet2,
@@ -489,7 +500,7 @@ async function addLiquidity() {
             .finally(() => {
                 console.log('Extra Code After Everything')
             });
-    fetchDigiUtokenBalanace();
+    // fetchDigiUtokenBalanace();
 }
 
 //SWAP
@@ -497,17 +508,13 @@ async function addLiquidity() {
   async function confirmSwapBSC() {
         dexPoolContract = await new web3bsc.eth.Contract(dexPoolABI, vm.dexPoolBSC[0].addr);
         console.log(`vm.dexPoolBSC.addr ${vm.dexPoolBSC[0].addr} contract  ${dexPoolContract._address}`)
-        const tokenDecimals = await web3bsc.utils.toBN(18);
-        const tokenAmountToApprove = await web3bsc.utils.toBN(1);
-        console.log(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
-        const calculatedValue = await web3bsc.utils.toHex(tokenAmountToApprove.mul(web3bsc.utils.toBN(10).pow(tokenDecimals)));
-
+      const amount1 = await calcToWei(vm.amountFrom);
+      const amount2 = await calcToWei(vm.amountTo);
         await web3eth.eth.getAccounts(function(err, accounts) {
            accs = accounts;
            console.log("ETH accounts ",accounts);
            })
-        console.log(calculatedValue);
-        tx = await dexPoolContract.methods.swapDeposit(calculatedValue, accs[0]).send({from:vm.accountFrom});
+        tx = await dexPoolContract.methods.swapDeposit(amount1, amount2, accs[0]).send({from:vm.accountFrom});
         console.log(`tx.transactionHash ${tx.transactionHash}`);
         let receipt = await web3bsc.eth.getTransactionReceipt(tx.transactionHash);
         if (receipt != null){
