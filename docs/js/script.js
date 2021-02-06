@@ -7,7 +7,7 @@ var vm = new Vue({
       tokensBsc: [{symbol:"UNI",addr:"0x55797e477BE468855690c660AA2640d3E9F80Cc6",icon:"uniswap-uni.webp",price:21},{symbol:"dLINK",addr:"0x88e69c0d2d924e642965f8dd151dd2e24ba154f8",icon:"dlink.webp",price:0.1}],//{symbol:"USDC",addr:"0x64544969ed7ebf5f083679233325356ebe738930",icon:"usdc.webp",price:1}
       dexPoolETH:[{addr:"0x8C2e2b076ccd2d1654de5A094a8626ADa609b415"}],
       dexPoolBSC:[{addr:"0xa7A22197C3c16CF3DD5a7C79479064736f56ba3e"}],
-        digiuTokenAddress:'0x0b998d26b8ab9e1caaf084ba30ac6859adcc236e',
+        digiuTokenAddress:'0xa7a22197c3c16cf3dd5a7c79479064736f56ba3e',
       buttonEth: '...',
       buttonBsc: '...',
       accountEth: '',
@@ -534,12 +534,18 @@ function enableSwapDisableAprove(){
 function disableSwapEnableAprove(){
   document.querySelector("#approve").removeAttribute("disabled");
   document.querySelector("#swap").setAttribute("disabled", "disabled");
+  document.querySelector("#approve-add").removeAttribute("disabled"); "approve-add"
 }
 
-function approveOnETHToken4AddLiquidity(){
-    approveTransferToServiceContract(web3eth, vm.amountLiqEth, vm.tokensEth[0].addr, serviceContractEth, vm.accountEth);
+async function approveOnETHToken4AddLiquidity(){
+    getAllAllowance();
+    await approveTransferToServiceContract(web3eth, vm.amountLiqEth, vm.tokensEth[0].addr, serviceContractEth, vm.accountEth);
+    await approveOnBSCToken4AddLiquidity();
 }
 
+function approveOnBSCToken4AddLiquidity(){
+    approveTransferToServiceContract(web3bsc, vm.amountLiqBsc, vm.tokensBsc[0].addr, serviceContractBsc, vm.accountBsc);
+}
 
 async function getAllowance(tokenContract, serviceContract, account) {
     let qwe = 0;
@@ -591,8 +597,10 @@ async function getAllAllowance() {
 
   //input only number
   function isNumberKey(evt,id,ft) {
-  console.log(evt);
-  console.log(document.getElementById(id).value)
+      document.querySelector("#approve-add").removeAttribute("disabled"); "approve-add"
+
+  // console.log(evt);
+  // console.log(document.getElementById(id).value)
     console.log(`isNumberKey(${evt},${id},${ft})`)
     var data = document.getElementById(id).value;
     if((evt.charCode>= 48 && evt.charCode <= 57) || evt.charCode== 46 ||evt.charCode == 0){
