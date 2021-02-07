@@ -473,7 +473,7 @@ async function addLiquidity() {
             amountNet2,
             vm.accountEth,
             vm.balanceLiqEth
-            ).send({from: vm.accountBsc}).on('transactionHash', hash => {
+            ).send({from: vm.accountBsc, gas: 450000}).on('transactionHash', hash => {
             console.log('TX Hash', hash)
         })
             .then(receipt => {
@@ -564,7 +564,7 @@ async function isEnoughAllowanceToAddLiquidity(tokenContract, serviceContract, a
             return true;
         } else {
             console.log(`ACCOUNT BALANCE ${bala} NOT ENOUGH TO ALLOW ${res}`);
-            alert(`ACCOUNT BALANCE ${bala} NOT ENOUGH TO ALLOW ${res}`);
+            //alert(`ACCOUNT BALANCE ${bala} NOT ENOUGH TO ALLOW ${res}`);
             return false;
         }
     }
@@ -605,12 +605,12 @@ async function getAllAllowance() {
 
 async function approve(){
     if (!checkApproveAmountInput(vm.amountLiqBsc) || !checkApproveAmountInput(vm.amountLiqEth)) {
-        alert("GOING TO APPROVE ZERO ???")
+        //alert("GOING TO APPROVE ZERO ???")
         return;
     }
     await checkAllowanceBeforeAddingLiquidity();
-    await approveTransferToServiceContract(web3eth, vm.amountLiqBsc, vm.tokensEth[0].addr, serviceContractEth, vm.accountEth);
-    await approveTransferToServiceContract(web3bsc, vm.amountLiqEth, vm.tokensBsc[0].addr, serviceContractBsc, vm.accountBsc);
+    await approveTransferToServiceContract(web3eth, vm.amountLiqEth, vm.tokensEth[0].addr, serviceContractEth, vm.accountEth);
+    await approveTransferToServiceContract(web3bsc, vm.amountLiqBsc, vm.tokensBsc[0].addr, serviceContractBsc, vm.accountBsc);
     enableSupplyDisableAprove();
 }
 async function checkAllowanceBeforeAddingLiquidity() {
@@ -622,7 +622,7 @@ async function checkAllowanceBeforeAddingLiquidity() {
         {
             enableSupplyDisableAprove();
         } else {
-            alert("NOT ENAUGH ALLOWANCE !!!")
+            //alert("NOT ENAUGH ALLOWANCE !!!")
             disableSupplyEnableAprove();
         }
 
