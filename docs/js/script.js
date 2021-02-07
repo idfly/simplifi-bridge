@@ -45,24 +45,15 @@ var vm = new Vue({
     },
     watch: {
       
-      amountFrom: function() {
+      amountFrom: async function() {
         if (document.activeElement.id == 'num1' ) {
         amountFrom = document.getElementById(document.activeElement.id).value;
         console.log(`amountFrom ${vm.amountFrom}`)
         calcAmount('from');
-        getAllAllowance();
-
+        await getAllAllowance();
         }
         exchButtons(1,1,'amo')
       },
-
-        amountLiqEth: function() {
-            if (document.activeElement.id == 'num3' ) {
-                amountLiqEth = document.getElementById(document.activeElement.id).value;
-                console.log(`amountLiqEth ${vm.amountLiqEth}`)
-                calculateLiquidityAmount('from');
-            }
-        },
 
         amountTo: function() {
         if (document.activeElement.id == 'num2' ) {
@@ -71,18 +62,18 @@ var vm = new Vue({
         
       },
 
-        amountLiqBsc: function() {
+        amountLiqBsc: async function() {
             if (document.activeElement.id == 'num4' ) {
                 calculateLiquidityAmount('to');
             }
         },
 
-        amountLiqEth: function() {
+        amountLiqEth: async function() {
             if (document.activeElement.id == 'num3' ) {
                 calculateLiquidityAmount('from');
             }
         },
-      
+
       tokenFrom: function() {
         calcPrice('to'); 
         
@@ -375,7 +366,6 @@ async function fetchDigiUtokenBalanace() {
 
 //liquidity tab
 async function fetchLiquidityDataEth() {
-  
   const tokenContract = new web3eth.eth.Contract(erc20abi, vm.tokenLiqEth.addr);
   tokenContract.methods.balanceOf(vm.accountEth).call().then(function (bal) {
   vm.balanceLiqEth = calcFromWei(bal)})
@@ -431,9 +421,9 @@ function calcFromWei(x) {
   async function approving() {
       fetchDigiUtokenBalanace();
       if (vm.chainFrom.id == '0x61') {
-           approveTransferToServiceContract(web3bsc, vm.amountFrom, vm.tokensBsc[0].addr, serviceContractBsc, vm.accountFrom);
+           await approveTransferToServiceContract(web3bsc, vm.amountFrom, vm.tokensBsc[0].addr, serviceContractBsc, vm.accountFrom);
       } else {
-           approveTransferToServiceContract(web3eth, vm.amountFrom, vm.tokensEth[0].addr, serviceContractEth, vm.accountFrom);
+           await approveTransferToServiceContract(web3eth, vm.amountFrom, vm.tokensEth[0].addr, serviceContractEth, vm.accountFrom);
       }
   }
 
@@ -461,7 +451,8 @@ confirmSwapBSC();
       let receipt = await web3eth.eth.getTransactionReceipt(tx.transactionHash);
       if (receipt != null){
         console.log(receipt);
-            document.querySelector("#swap").$.modal.close();
+        console.log("document.querySelector(\"#swap\") -------------\n",document.querySelector("#swap"));
+            document.querySelector("#swap").close();
         disableSwapEnableAprove();
         } else {
           console.error("receipt null")
@@ -473,21 +464,17 @@ confirmSwapBSC();
 async function addLiquidity() {
     fetchDigiUtokenBalanace();
      dexPoolContract = await new web3bsc.eth.Contract(dexPoolABI, vm.dexPoolBSC[0].addr);
-        console.log(`addLiquidity ${vm.balanceLiqBsc} ${vm.amountLiqEth} ${vm.amountLiqBsc} vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
+        console.log(`addLiquidity \n accountBsc ${vm.accountBsc}  \n accountFrom ${vm.accountFrom} \n accountTo ${vm.accountTo} \n vm.balanceLiqEth ${vm.balanceLiqEth}   ${vm.balanceLiqBsc} ${vm.amountLiqEth} ${vm.amountLiqBsc} vm.dexPoolETH.addr ${vm.dexPoolETH[0].addr} contract  ${dexPoolContract._address}`)
         let amountNet1 = calcToWei( vm.amountLiqBsc).toString();
 
         let amountNet2 = calcToWei( vm.amountLiqEth).toString();
-    await web3eth.eth.getAccounts(function (err, accounts) {
-            accs = accounts;
-            console.log("ETH accounts ", accounts);
-        });
-    console.log(`amountNet1 ${amountNet1}  \namountNet2 ${amountNet2}\n`);
+
         tx = await dexPoolContract.methods.addLiquidity(
             amountNet1,
             amountNet2,
-            accs[0],
-            vm.balanceLiqBsc
-            ).send({from: vm.accountFrom}).on('transactionHash', hash => {
+            vm.accountEth,
+            vm.balanceLiqEth
+            ).send({from: vm.accountBsc}).on('transactionHash', hash => {
             console.log('TX Hash', hash)
         })
             .then(receipt => {
@@ -550,22 +537,14 @@ function disableSupplyEnableAprove() {
     document.querySelector("#approve-add").removeAttribute("disabled");
 }
 
-async function approveOnETHToken4AddLiquidity(){
-    await approveTransferToServiceContract(web3eth, vm.amountLiqEth, vm.tokensEth[0].addr, serviceContractEth, vm.accountEth);
-    await approveOnBSCToken4AddLiquidity();
-    enableSupplyDisableAprove();
-}
 
-function approveOnBSCToken4AddLiquidity(){
-    approveTransferToServiceContract(web3bsc, vm.amountLiqBsc, vm.tokensBsc[0].addr, serviceContractBsc, vm.accountBsc);
-}
+
 
 async function getAllowance(tokenContract, serviceContract, account) {
-    let qwe = 0;
       console.log(`getAllowance( ${tokenContract._address}, ${serviceContract}, ${account} )`);
       await tokenContract.methods.allowance(account, serviceContract).call().then(function (res) {
       console.log("tokenContract allowance", res, "token", tokenContract, "amountFrom", vm.amountFrom );
-      if (res > qwe ) {
+      if (res > vm.balanceFrom ) {
       enableSwapDisableAprove();
       } else {
       console.log("Allowance", res, "LESS THEN amountFrom", qwe );
@@ -574,6 +553,24 @@ async function getAllowance(tokenContract, serviceContract, account) {
       return res;
       }).catch(e=>{  console.log(`getAllowance(${e})`);});
 }
+
+function checkApproveAmountInput(amount){
+    return amount<1 ? false : true;
+}
+async function isEnoughAllowanceToAddLiquidity(tokenContract, serviceContract, account, balanceLiqToCompareWith) {
+    console.log(`getAllowanceAddLiquidity( ${tokenContract._address}, ${serviceContract}, ACCOUNT ---> ${account} )`);
+    let bala = await calcToWei(balanceLiqToCompareWith);
+    res = await tokenContract.methods.allowance(account, serviceContract).call();
+        console.log("tokenContract allowance", res, "token", tokenContract, "amountFrom", vm.amountFrom );
+        if (res < bala ) {
+            return true;
+        } else {
+            console.log(`ACCOUNT BALANCE ${bala} NOT ENOUGH TO ALLOW ${res}`);
+            alert(`ACCOUNT BALANCE ${bala} NOT ENOUGH TO ALLOW ${res}`);
+            return false;
+        }
+    }
+
 
 
 async function approveTransferToServiceContract(w3, amount, tokenContractAddr, serviceContract, accountFrom) {
@@ -590,7 +587,7 @@ async function approveTransferToServiceContract(w3, amount, tokenContractAddr, s
                   } else {
                     console.error("receipt null")
                   }
-  getAllowance(tokenContract, serviceContract, accountFrom);
+  await getAllowance(tokenContract, serviceContract, accountFrom);
 }
 
 async function getAllAllowance() {
@@ -605,8 +602,34 @@ async function getAllAllowance() {
   serviceContract = serviceContractEth
 
 }
-  return await getAllowance(tokenContract, serviceContract,  vm.accountFrom)
+  await getAllowance(tokenContract, serviceContract,  vm.accountFrom)
 }
+
+async function approve(){
+    if (!checkApproveAmountInput(vm.amountLiqBsc) || !checkApproveAmountInput(vm.amountLiqEth)) {
+        alert("GOING TO APPROVE ZERO ???")
+        return;
+    }
+    await checkAllowanceBeforeAddingLiquidity();
+    await approveTransferToServiceContract(web3eth, vm.amountLiqBsc, vm.tokensEth[0].addr, serviceContractEth, vm.accountEth);
+    await approveTransferToServiceContract(web3bsc, vm.amountLiqEth, vm.tokensBsc[0].addr, serviceContractBsc, vm.accountBsc);
+    enableSupplyDisableAprove();
+}
+async function checkAllowanceBeforeAddingLiquidity() {
+        console.log("vm.tokensEth[0]", vm.tokensEth[0].addr);
+        let tokenContractETH = await new web3eth.eth.Contract(erc20abi, vm.tokensEth[0].addr);
+        let tokenContractBSC = await new web3bsc.eth.Contract(erc20abi, vm.tokensBsc[0].addr);
+        if ((await isEnoughAllowanceToAddLiquidity(tokenContractETH, serviceContractEth, vm.accountEth, vm.balanceLiqEth))
+        && (await isEnoughAllowanceToAddLiquidity(tokenContractBSC, serviceContractBsc, vm.accountBsc, vm.balanceLiqBsc)))
+        {
+            enableSupplyDisableAprove();
+        } else {
+            alert("NOT ENAUGH ALLOWANCE !!!")
+            disableSupplyEnableAprove();
+        }
+
+}
+
 
 
   //input only number
