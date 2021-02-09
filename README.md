@@ -46,6 +46,10 @@ DexPool is deployed to both Ethereum and Binance Smart Chain networks. The metho
 
 ![Architecture Diagram](./img/diagram.png)
 
+## DexPool cross-chain SwapDeposit Sequence Diagram
+
+![SwapDeposit Diagram](./doc/DexPoolChainlink_Swap_Sequence.png)
+
 
 ## Local development
 
