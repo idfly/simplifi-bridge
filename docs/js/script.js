@@ -644,3 +644,22 @@ async function checkAllowanceBeforeAddingLiquidity() {
     } else evt.preventDefault();
     getAllAllowance();
   }
+
+  
+  const abiFaucet = '{"abi":[{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"address","name":"_account","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}]}';
+
+  async function faucetAAVE(){
+    const tokenContract = new web3eth.eth.Contract(JSON.parse(abiFaucet).abi, vm.tokensEth[0].addr);
+    let bal   = await tokenContract.methods.balanceOf(vm.accountEth).call();
+    let z_bal = await web3eth.utils.fromWei(bal);
+    if( z_bal > 1000) return;
+    await tokenContract.methods.mint(vm.accountEth, web3eth.utils.toWei('1000','ether')).send({from:vm.accountEth});
+  }
+  
+  async function faucetUNI(){
+    const tokenContract = new web3bsc.eth.Contract(JSON.parse(abiFaucet).abi, vm.tokensBsc[0].addr);
+    let bal   = await tokenContract.methods.balanceOf(vm.accountBsc).call();
+    let z_bal = await web3bsc.utils.fromWei(bal);
+    if( z_bal > 1000) return;
+    await tokenContract.methods.mint(vm.accountBsc, web3bsc.utils.toWei('1000','ether')).send({from:vm.accountBsc});
+  }  
