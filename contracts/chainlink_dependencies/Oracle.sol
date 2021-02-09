@@ -25,6 +25,7 @@ contract Oracle is ChainlinkRequestInterface, OracleInterface, Ownable, LinkToke
   mapping(bytes32 => bytes32) private commitments;
   mapping(address => bool) private authorizedNodes;
   uint256 private withdrawableTokens = ONE_FOR_CONSISTENT_GAS_COST;
+  bytes32[] private specIdListPermission;
 
   event OracleRequest(
     bytes32 indexed specId,
@@ -166,6 +167,17 @@ contract Oracle is ChainlinkRequestInterface, OracleInterface, Ownable, LinkToke
     returns (bool)
   {
     return authorizedNodes[_node];
+  }
+
+  function setPermissionJobId(bytes32 jobId)
+    external
+    onlyOwner()
+  {
+    specIdListPermission.push(jobId);
+  }
+
+  function getPermissionJobId() external view returns(bytes32[] memory){
+    return specIdListPermission;
   }
 
   /**
