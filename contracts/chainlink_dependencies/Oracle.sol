@@ -105,8 +105,17 @@ contract Oracle is ChainlinkRequestInterface, OracleInterface, Ownable, LinkToke
                   expiration,
                   _dataVersion,
                   _data);
+    /*emit OracleRequest(
+      _specId,
+      _sender,
+      requestId,
+      _payment,
+      _callbackAddress,
+      _callbackFunctionId,
+      expiration,
+      _dataVersion,
+      _data);*/                 
   }
-
   function emitBroadcast(
     address _sender,
     bytes32 requestId,
