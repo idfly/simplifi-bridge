@@ -1,6 +1,9 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 //process.env.MNEMONIC_TESTNET_BS =;
 module.exports = {
+
+  nameAdapter: process.env.NAME,
+
   networks: {
 
     network1: {
@@ -16,10 +19,10 @@ module.exports = {
     },
 
     binancetestnet: {
-       provider: () => new HDWalletProvider(process.env.MNEMONIC_TESTNET_BSC, `ws://95.217.104.54:8576`)
+       provider: () => new HDWalletProvider(process[env][nameAdapter], `ws://95.217.104.54:8576`)
     },
     rinkeby: {
-       provider: () => new HDWalletProvider(process.env.MNEMONIC_TESTNET_RINKEBY, `wss://rinkeby.infura.io/ws/v3/0f4453c71dd145c6b819bbbf60a96e9d`)
+       provider: () => new HDWalletProvider(process[env][nameAdapter], `wss://rinkeby.infura.io/ws/v3/0f4453c71dd145c6b819bbbf60a96e9d`)
     }  
     
   }
