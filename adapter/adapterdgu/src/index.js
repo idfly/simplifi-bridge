@@ -25,7 +25,7 @@ let  ownerAdapter = null;  // this potentially may be bottleneck
     let num = (process.env.LISTEN_NETWORK === 'network1' || process.env.LISTEN_NETWORK === 'network2') ? ~~process.env.NAME.slice(-1) + 3 : 0;
     ownerAdapter = (await worker.web3.eth.getAccounts())[num];
 
-    console.log(`\nSTART SUCCESS\n________________________\n\nLISTEN_NETWORK: ${process.env.LISTEN_NETWORK}\nCHAIN_ID: ${await worker.web3.eth.getChainId()}\nPOOL_ADDRESS: ${process.env.POOL_ADDRESS}\nORACLE_CONTRACT_ADDRESS: ${process.env.ORACLE_CONTRACT_ADDRESS}\n\n`);
+    console.log(`\nSTART SUCCESS\n________________________\n\nOWNER ADAPTER ${ownerAdapter}\nLISTEN_NETWORK: ${process.env.LISTEN_NETWORK}\nCHAIN_ID: ${await worker.web3.eth.getChainId()}\nPOOL_ADDRESS: ${process.env.POOL_ADDRESS}\nORACLE_CONTRACT_ADDRESS: ${process.env.ORACLE_CONTRACT_ADDRESS}\n\n`);
 
     
 
@@ -33,6 +33,32 @@ let  ownerAdapter = null;  // this potentially may be bottleneck
 
 const app = express();
 app.use(bodyParser.json());
+
+/**
+ *  Получаем запрос, Осуществляем контроль. Подписание. Отдаем chainlink node to job.
+ */
+app.post('/control', async function (req, res) {
+    console.log('REQUEST /control', req.body);
+    //TODO check tx
+    let data  = '0x'+req.body.data.selector;
+    let reqId = await worker.web3.utils.fromAscii(req.body.id);
+    const hashMessage = worker.web3.utils.soliditySha3(reqId,data);
+
+    let sign = await worker.web3.eth.sign(hashMessage, ownerAdapter);
+    //https://medium.com/@yaoshiang/ethereums-ecrecover-openzeppelin-s-ecdsa-and-web3-s-sign-8ff8d16595e1
+    const v1 = '0x' + sign.slice(128+2, 130+2);
+    sign = v1 == '0x00' ? sign.substring(0, sign.length - 2) + '1b' : v1 == '0x01' ? sign.substring(0, sign.length - 2) + '1c' : sign;
+
+
+    let responseData = req.body;
+    responseData.data.sign = sign;
+    responseData.data.hashMessage = hashMessage;
+    
+
+
+    console.log('RESPONSE /control ', responseData);
+    res.status(200).send(responseData);
+});
 
 
 /**
@@ -46,7 +72,7 @@ app.post('/post', async function (req, res) {
     // for staticcall
     if(req.body.data.request_type === 'get')  responseData =  await GetType(data, req.body.id);
     // for call
-    if(req.body.data.request_type === 'set')  responseData =  await SetType(data, req.body.id);
+    if(req.body.data.request_type === 'set')  responseData =  await SetType(data, req.body.id, req.body.data.sign);
 
 
     console.log('RESPONSE /post ', responseData);
@@ -54,10 +80,10 @@ app.post('/post', async function (req, res) {
 });
 
 
-async function SetType(data, id){
+async function SetType(data, id, sign){
     try{
         console.log('nonce check 1: ', await worker.web3.eth.getTransactionCount(ownerAdapter));
-        const tx  = await dexpool.methods.receiver(data).send({from: ownerAdapter});
+        const tx  = await dexpool.methods.receiver(await worker.web3.utils.fromAscii(id), sign, data).send({from: ownerAdapter});
         console.log('nonce check 2: ', await worker.web3.eth.getTransactionCount(ownerAdapter));
 
         //TODO negative variant

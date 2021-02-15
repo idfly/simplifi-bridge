@@ -1,6 +1,7 @@
 pragma solidity >=0.4.21 < 0.7.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./MyContract.sol";
 import "./IHexstring.sol";
@@ -35,6 +36,7 @@ contract DexPool is GovernanceToken, Ownable {
   uint256 public test;
   address public myContract;
   address public util;
+  uint256 private test_agregator; 
 
   // requestId => tx (callback, where tx.status === true)
   mapping(bytes32 => SimpleState) private pendingRequests;
@@ -218,11 +220,22 @@ function addLiquidity(uint256 amountNet1,
   *
   * NOTE: owner - it's deployer address. 
   */
-  function receiver(bytes memory b) external onlyOwner {
-    (bool success, bytes memory data) = address(this).call(b);
-    require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
 
-    emit Receive(success);
+  //TODO agregator logic && smart ecrecover && nonce
+  function receiver(bytes32 jobRunID, bytes memory signature, bytes memory b) external /*onlyOwner*/ {
+    bytes32 hash = ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(jobRunID, b)));
+    address res  = ECDSA.recover(hash, signature);
+    //require(msg.sender == res, "sender is not owner signature");
+
+    if(test_agregator == 2){
+      (bool success, bytes memory data) = address(this).call(b);
+      require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
+      test_agregator = 0;
+      
+      emit Receive(success);
+    }else{
+      test_agregator++;
+    }
   }
  /**
   * Receive invoke from other network through external adapter
