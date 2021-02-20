@@ -1,16 +1,17 @@
-# Digiu.labs
+# DExPool
+Liquidity pool that allows cross-chain swaps and liquidity operations using chainlink oracle network. 
+Pool pairs can consist of assets from different chains.
 
 ## Deploy
 
 
 ```bash
-$ cd project
+$ git clone ssh://git@bitbucket.digiu.ai:7999/bcl/Digiu.Lab.git
+$ cd Digiu.Lab
 $ npm install
-$ truffle exec './scripts/prep-node.js' --network network1
-$ truffle exec './scripts/prep-node.js' --network network2
-$ truffle exec './scripts/fund-client.js' --network network1
-$ truffle exec './scripts/fund-client.js' --network network2
-$ truffle exec './scripts/jobID.js' --network network1  (после как получили)
+$ npm start
+$ npm add-control-adapter-1 && add-post-adapter-1 && add-jobspec-1
+$ truffle exec './scripts/init/1_jobId.js' --network network1  (после как получили)
 
 ```
 
@@ -21,7 +22,6 @@ $ truffle exec './scripts/jobID.js' --network network1  (после как по�
 $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 ```
 
-#  НЕЗАБУДЬ ПОСЛЕ КАЖДОГО ПЕРЕДЕПЛОЯ СМАРТОВ МЕНЯЮТСЯ АДРЕСА ПУЛА И ОРАКУЛА НО В КОНТЕЙНЕР АДАПТЕРА НИКАК ПОКА `НЕ ПЕРЕДАЮТСЯ !!!!`
 
 # ADDRESES
 

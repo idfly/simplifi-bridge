@@ -29,7 +29,13 @@
     "migrate:dev": "npx truffle migrate --reset --network network1",
     "migrate:live": "npx truffle migrate --network live",
     "test": "NODE_ENV=test  truffle test",
-    "clean": "rm -rf build/contracts && sudo rm -rf /var/lib/postgres/network2/db-data && sudo rm -rf /var/lib/postgres/network1/db-data"
+    "clean": "rm -rf build/contracts && sudo rm -rf /var/lib/postgres/network2/db-data && sudo rm -rf /var/lib/postgres/network1/db-data",
+    "add-control-adapter-1": "./scripts/bash/1_add_bridge.sh  http://localhost:6688 http://localhost:8080/control control1_net1",
+    "add-control-adapter-2": "./scripts/bash/1_add_bridge.sh  http://localhost:6689 http://localhost:8081/control control2_net1",
+    "add-post-adapter-1": "./scripts/bash/1_add_bridge.sh  http://localhost:6688 http://localhost:8080/post adapter1_net1",
+    "add-post-adapter-2": "./scripts/bash/1_add_bridge.sh  http://localhost:6689 http://localhost:8081/post adapter2_net1",
+    "add-jobspec-1": "./scripts/bash/2_add_jobSpec.sh http://localhost:6688 ./scripts/jobSpecs/jobSpec1.json",
+    "add-jobspec-2": "./scripts/bash/2_add_jobSpec.sh http://localhost:6689 ./scripts/jobSpecs/jobSpec2.json"
   },
   "license": "MIT",
   "dependencies": {
