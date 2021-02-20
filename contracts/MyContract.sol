@@ -12,6 +12,7 @@ contract MyContract is ChainlinkClient, Ownable {
   uint256 constant private ORACLE_PAYMENT =  1 * LINK;//0.1 * 10 ** 18; // 0.1 LINK    
   address public oracle;
   bytes32 public jobId;
+  bytes32[] private specIdListPermission;
   
 
   // requestId => recipient
@@ -58,13 +59,23 @@ contract MyContract is ChainlinkClient, Ownable {
     /*onlyOwner*/
     returns (bytes32 requestId)
   {
-    Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.callback.selector);
+    Chainlink.Request memory req = buildChainlinkRequest(specIdListPermission[0], address(this), this.callback.selector);
     req.add("selector", _selector);
     req.add("request_type", rqt);
-    
-    requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);
 
+    uint256 len       = specIdListPermission.length;
+    bytes32 requestId = "0x0";
+
+    for(uint256 y = 0; y < len; y++){
+
+      req.id    = specIdListPermission[y];
+      requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);    
+    }
+    
     routeForCallback[requestId] = msg.sender;
+
+    return requestId;
+
 
   }
 
@@ -109,5 +120,16 @@ contract MyContract is ChainlinkClient, Ownable {
     onlyOwner
   {
     cancelChainlinkRequest(_requestId, _payment, _callbackFunctionId, _expiration);
+  }
+
+  function setPermissionJobId(bytes32 jobId)
+    external
+    onlyOwner()
+  {
+    specIdListPermission.push(jobId);
+  }
+
+  function getPermissionJobId() external view returns(bytes32[] memory){
+    return specIdListPermission;
   }
 }

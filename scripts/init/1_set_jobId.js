@@ -1,4 +1,3 @@
-const Oracle     = artifacts.require('Oracle')
 const DexPool    = artifacts.require('DexPool')
 const MyContract = artifacts.require('MyContract')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken');
@@ -15,12 +14,12 @@ try{
       
       console.log(`>>>>>>> SET JOBID: ${myContract.address} ON NETWORK ${process.argv[5]}\ntx:${tx.tx}\n\n`);*/
 
-      const oracle        = await Oracle.at(env.parsed.ORACLE_CONTRACT_ADDRESS);
-            tx            = await oracle.setPermissionJobId(await web3.utils.fromAscii("5b46dac8b3bb40ab91c7ab1b48fddef9"));
+      
+      let tx              = await myContract.setPermissionJobId(await web3.utils.fromAscii("6f29b8bd32af40f0bcf70251c7ed9b0c"));
 
 	   console.log(`>>>>>>> SET PermissionJobId: ${myContract.address} ON NETWORK ${process.argv[5]}\ntx:${tx.tx}\n\n`);
 
-	  let allJOBID            = await oracle.getPermissionJobId();
+	  let allJOBID            = await myContract.getPermissionJobId();
 	  console.log(`LIST JOBID: ${allJOBID}`);
 
     
@@ -32,4 +31,4 @@ try{
 // e349165b20ef4f25a06c065cbd5f4b17 net2
 // 0389c63bc0d041cea65ab4fceb5e1eb9
 
-// e42ec7897baf45da8e0f7fa3e6a4e902 5b46dac8b3bb40ab91c7ab1b48fddef9
+// 6f29b8bd32af40f0bcf70251c7ed9b0c ad71fda1ec874ac19b1176648205d612
