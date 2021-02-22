@@ -3,7 +3,7 @@ const { exec } = require('child_process');
 const MyContract    = artifacts.require('MyContract')
 const DexPool       = artifacts.require('DexPool')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
-const Oracle        = artifacts.require('Oracle')
+const { Oracle }    = require('@chainlink/contracts/truffle/v0.6/Oracle')
 const { Hexstring } = require('../lib/Hexstring')
 const BTCToken      = artifacts.require('BTCToken')
 
@@ -21,6 +21,7 @@ module.exports = async (deployer, network, accounts) => {
 
             LinkToken.setProvider(deployer.provider)
             Hexstring.setProvider(deployer.provider)
+            Oracle.setProvider(deployer.provider);
 
 
             try {
