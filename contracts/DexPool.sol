@@ -7,6 +7,7 @@ import "./MyContract.sol";
 import "./IHexstring.sol";
 import "./GovernanceToken.sol";
 import './libraries/Math.sol';
+import "./libraries/Other.sol";
 
 abstract contract ERC20 is IERC20 {}
 
@@ -36,7 +37,7 @@ contract DexPool is GovernanceToken, Ownable {
   uint256 public test;
   address public myContract;
   address public util;
-  uint256 private test_agregator; 
+  address private secondPartPool; 
 
   // requestId => tx (callback, where tx.status === true)
   mapping(bytes32 => SimpleState) private pendingRequests;
@@ -56,8 +57,8 @@ contract DexPool is GovernanceToken, Ownable {
 
 
 function _addLiquidity(address luqidityProvider, uint256 amount) public {
-     require(msg.sender == address(this), "ONLY YOURSELF");
-     require(luqidityProvider != address(0), "ZERO_ADDRESS");
+     require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
+     require(luqidityProvider != address(0), "NULL ADDRESS");
 
      IERC20(tokenOfPool).transferFrom(luqidityProvider, address(this), amount);
      
@@ -69,13 +70,14 @@ function addLiquidity(uint256 amountNet1,
                       uint256 balancePoolNet2
  ) external {
 
-  require(luqidityProviderNet2 != address(0), "ZERO_ADDRESS");
+  require(luqidityProviderNet2 != address(0), "NULL ADDRESS");
+  require(secondPartPool != address(0), "BAD ADDRESS");
   //TODO WARN how does check the balance senderNet2 ?
-  //TODO invoke only bsc
+  //TODO? invoke only bsc
   
   IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amountNet1);
   bytes memory out  = abi.encodeWithSelector(bytes4(keccak256(bytes('_addLiquidity(address,uint256)'))), luqidityProviderNet2, amountNet2);
-  bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
+  bytes32 requestId = MyContract(myContract).transmitRequest(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out), Other.toAsciiString(secondPartPool));
 
   SimpleState storage simpleState = pendingRequests[requestId];
   simpleState.recepient    = msg.sender;
@@ -96,14 +98,15 @@ function addLiquidity(uint256 amountNet1,
    */
   function swapDeposit(uint256 amount1, uint256 amount2, address recipientOnNet2) external {
 
-    require(recipientOnNet2 != address(0), "ZERO_ADDRESS");
+    require(recipientOnNet2 != address(0), "NULL ADDRESS");
+    require(secondPartPool  != address(0), "BAD ADDRESS");
     //перевод usdc(BNB) c адреса alice на адрес пула в сети ethereum(Binance)
     IERC20(tokenOfPool).transferFrom(msg.sender, address(this), amount1);
 
      //prepare
      bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('swapWithdraw(address,uint256)'))), recipientOnNet2, amount2);
      //byte to string and send to Net2
-     bytes32 requestId = MyContract(myContract).transmit(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out));
+     bytes32 requestId = MyContract(myContract).transmitRequest(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out), Other.toAsciiString(secondPartPool));
      //save requestId for bind with callback requestId -> this is approve consistaency !!!!
      
      SimpleState storage simpleState = pendingRequests[requestId];
@@ -134,7 +137,7 @@ function addLiquidity(uint256 amountNet1,
   function swapWithdraw(address recipient,uint256 amount) public {
 
       require(IERC20(tokenOfPool).balanceOf(address(this)) >= amount, "INSUFFICIENT AMOUNT IN SWAPWITHDRAW");
-      require(msg.sender == address(this), "ONLY YOURSELF");
+      require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
       //перевод BNB(USDC) c адреса пула на адрес alice в сети Binance(Ethereum)
       IERC20(tokenOfPool).transfer(recipient, amount);
 
@@ -202,41 +205,17 @@ function addLiquidity(uint256 amountNet1,
 
   function _setTest(uint256 val) public  {
 
-    require(msg.sender == address(this), "ONLY YOURSELF");
+    require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
 
     test = val;
   }
   function _getTest() public view returns (uint256)  {
 
-    require(msg.sender == address(this), "ONLY YOURSELF");
+    require(msg.sender == myContract, "ONLY CERTAIN CHAINLINK CLIENT");
 
     return test;
   }
 
-
- /**
-  * Receive invoke from other network through external adapter
-  * Change state smart-contrat
-  *
-  * NOTE: owner - it's deployer address. 
-  */
-
-  //TODO agregator logic && smart ecrecover && nonce
-  function receiver(bytes32 jobRunID, bytes memory signature, bytes memory b) external /*onlyOwner*/ {
-    bytes32 hash = ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(jobRunID, b)));
-    address res  = ECDSA.recover(hash, signature);
-    //require(msg.sender == res, "sender is not owner signature");
-
-    if(test_agregator == 2){
-      (bool success, bytes memory data) = address(this).call(b);
-      require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
-      test_agregator = 0;
-      
-      emit Receive(success);
-    }else{
-      test_agregator++;
-    }
-  }
  /**
   * Receive invoke from other network through external adapter
   * Staticcall (read state smart-contrat)
@@ -249,6 +228,10 @@ function addLiquidity(uint256 amountNet1,
             return '';
         }
       return abi.decode(data, (bytes32));
+  }
+
+  function setSecondPool(address adr) external onlyOwner {
+    secondPartPool = adr;
   }
 
 
