@@ -15,12 +15,12 @@ try{
       
       console.log(`>>>>>>> SET JOBID: ${myContract.address} ON NETWORK ${process.argv[5]}\ntx:${tx.tx}\n\n`);*/
 
-      const oracle        = await Oracle.at(env.parsed.ORACLE_CONTRACT_ADDRESS);
-            tx            = await oracle.setPermissionJobId(await web3.utils.fromAscii("5b46dac8b3bb40ab91c7ab1b48fddef9"));
+      //const oracle        = await Oracle.at(env.parsed.ORACLE_CONTRACT_ADDRESS);
+            tx            = await myContract.setPermissionJobId(await web3.utils.fromAscii("842ff826bb0d4921a8fd252a78827982"));
 
 	   console.log(`>>>>>>> SET PermissionJobId: ${myContract.address} ON NETWORK ${process.argv[5]}\ntx:${tx.tx}\n\n`);
 
-	  let allJOBID            = await oracle.getPermissionJobId();
+	  let allJOBID            = await myContract.getPermissionJobId();
 	  console.log(`LIST JOBID: ${allJOBID}`);
 
     
@@ -32,4 +32,4 @@ try{
 // e349165b20ef4f25a06c065cbd5f4b17 net2
 // 0389c63bc0d041cea65ab4fceb5e1eb9
 
-// e42ec7897baf45da8e0f7fa3e6a4e902 5b46dac8b3bb40ab91c7ab1b48fddef9
+// 842ff826bb0d4921a8fd252a78827982 b344bbdbb2274b20b05f9c80d345c4a8
