@@ -11,5 +11,4 @@ dist/
 build/
 .vscode
 .idea
-network2/db-data
-network1/db-data
+cookiefile
