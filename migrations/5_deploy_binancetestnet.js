@@ -41,7 +41,7 @@ module.exports = async (deployer, network, accounts) => {
               await writeEnv(linkToken.address, oracle.address, client.address, dexPool.address, TOKENPOOL_ADDRESS, 'binancetestnet');
               let env_file = "env_connect_to_network_2.env";
               console.log('>> Generate env for external adapter in rinkeby')
-              exec(`${process.cwd()}/scripts/bash/update_env_adapter.sh 8081 binancetestnet ${dexPool.address} ${oracle.address} ${TOKENPOOL_ADDRESS} ${env_file}`, { maxBuffer: 1024 * 100000000 }, (err, stdout, stderr) => {
+              exec(`${process.cwd()}/scripts/bash/update_env_adapter.sh 8081 binancetestnet ${dexPool.address} ${oracle.address} ${TOKENPOOL_ADDRESS}  ${client.address} ${env_file}`, { maxBuffer: 1024 * 100000000 }, (err, stdout, stderr) => {
                 if (err) {
                     console.log('THROW ERROR', err);
                     return;

@@ -4,12 +4,12 @@ require('dotenv').config();
 const express    = require('express');
 const bodyParser = require('body-parser');
 
-const dexPool = require("./abi/DexPool.json");
+const bridgeAbi = require("./abi/MyContract.json");
 
 const Worker = require('./modules/worker');
 
 let  worker       = null;  // opposite network
-let  dexpool      = null;  // opposite network
+let  bridge       = null;  // opposite network
 let  ownerAdapter = null;  // this potentially may be bottleneck
 
 (async () => {
@@ -19,7 +19,7 @@ let  ownerAdapter = null;  // this potentially may be bottleneck
     await worker.connect(process.env.LISTEN_NETWORK);
 //    worker.monitor();
     
-    dexpool      = new worker.web3.eth.Contract(dexPool.abi, process.env.POOL_ADDRESS);
+    bridge      = new worker.web3.eth.Contract(bridgeAbi.abi, process.env.BRIDGE_ADDRESS);
 
     // for dev stand
     let num = (process.env.LISTEN_NETWORK === 'network1' || process.env.LISTEN_NETWORK === 'network2') ? ~~process.env.NAME.slice(-1) + 3 : 0;
@@ -39,10 +39,18 @@ app.use(bodyParser.json());
  */
 app.post('/control', async function (req, res) {
     console.log('REQUEST /control', req.body);
-    //TODO check tx
-    let data  = '0x'+req.body.data.selector;
-    let reqId = await worker.web3.utils.fromAscii(req.body.id);
-    const hashMessage = worker.web3.utils.soliditySha3(reqId,data);
+
+    //TODO enhancment
+    let for_approve = await worker.web3.eth.getTransactionReceipt(req.body.meta.initiator.transactionHash);
+    if(req.body.meta.initiator.blockHash != for_approve.blockHash) throw Error('TODO');
+    if(for_approve.status != true || for_approve.status != '0x1') throw Error('TODO');
+
+    let data           = '0x' + req.body.data.selector;
+    let reqId          = req.body.data.dataPrefix.substring(0, 66);
+    let tx             = req.body.meta.initiator.transactionHash;
+    let receive_side   = '0x' + req.body.data.receive_side;
+    console.log(reqId);console.log(data);console.log(tx);console.log(receive_side);
+    const hashMessage  = worker.web3.utils.soliditySha3(reqId, data, tx, receive_side);
 
     let sign = await worker.web3.eth.sign(hashMessage, ownerAdapter);
     //https://medium.com/@yaoshiang/ethereums-ecrecover-openzeppelin-s-ecdsa-and-web3-s-sign-8ff8d16595e1
@@ -72,7 +80,11 @@ app.post('/post', async function (req, res) {
     // for staticcall
     if(req.body.data.request_type === 'get')  responseData =  await GetType(data, req.body.id);
     // for call
-    if(req.body.data.request_type === 'set')  responseData =  await SetType(data, req.body.id, req.body.data.sign);
+    if(req.body.data.request_type === 'set')  responseData =  await SetType(req.body.data.dataPrefix.substring(0, 66),
+                                                                            req.body.data.sign, 
+                                                                            data,
+                                                                            req.body.meta.initiator.transactionHash, 
+                                                                            req.body.data.receive_side);
 
 
     console.log('RESPONSE /post ', responseData);
@@ -80,10 +92,10 @@ app.post('/post', async function (req, res) {
 });
 
 
-async function SetType(data, id, sign){
+async function SetType(id, sign, data, _tx, adr_receiver){
     try{
         console.log('nonce check 1: ', await worker.web3.eth.getTransactionCount(ownerAdapter));
-        const tx  = await dexpool.methods.receiver(await worker.web3.utils.fromAscii(id), sign, data).send({from: ownerAdapter});
+        const tx  = await bridge.methods.receiveRequest(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter});
         console.log('nonce check 2: ', await worker.web3.eth.getTransactionCount(ownerAdapter));
 
         //TODO negative variant
@@ -111,7 +123,7 @@ console.log('nonce check 3: ', await worker.web3.eth.getTransactionCount(ownerAd
 
 async function GetType(data, id){
 
-    let response = await dexpool.methods.lowLevelGet(data).call();
+    let response = await bridge.methods.lowLevelGet(data).call();
     let responseData          = {};
         responseData.jobRunID = id;
         responseData.data     = {result: response};
@@ -134,11 +146,11 @@ app.get('/testSet', async function (req, res) {
     // this is represents of bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('_setTest(uint256)'))), amount);
     let data = '0xfec102800000000000000000000000000000000000000000000000008ac7230489e80000';
     //pass 'data' for call inside smart-contracts
-    const tx  = await dexpool.methods.receiver(data).send({from: ownerAdapter});
+    const tx  = await bridge.methods.receiveRequest(data).send({from: ownerAdapter});
     console.log(tx);
 
     // shoud be 10000000000000000000
-    console.log('New value is ', await dexpool.methods.test().call());
+    console.log('New value is ', await bridge.methods.test().call());
 
     
     res.status(200).send({});
@@ -156,7 +168,7 @@ app.get('/testGet', async function (req, res) {
     // this is represents of bytes memory out = abi.encodeWithSelector(bytes4(keccak256(bytes('_getTest()'))));
     let data = '0x49eba8f7';
     //pass 'data' for call inside smart-contracts
-    const getResult  = await dexpool.methods.lowLevelGet(data).call();
+    const getResult  = await bridge.methods.lowLevelGet(data).call();
     
     console.log('Result staticcall ', getResult);
 
