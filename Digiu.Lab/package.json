@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "A Chainlink example in a Truffle box",
   "scripts": {
-    "compile": "belt compile all",
+    "compile": "./compile-external",
     "chainlink1:logs": "docker logs digiulab_chainlink_net1_1 -f ",
     "chainlink2:logs": "docker logs digiulab_chainlink_net2_1 -f ",
     "chainlink1:getNodeAddr": "npx truffle exec ./scripts/get-addr.js --network network1",
@@ -37,7 +37,8 @@
     "@openzeppelin/contracts": "^3.1.0",
     "@truffle/hdwallet-provider": "^1.2.0",
     "dotenv": "^8.2.0",
-    "link_token": "^1.0.6"
+    "link_token": "^1.0.6",
+    "live-server": "^1.2.1"
   },
   "devDependencies": {
     "@chainlink/belt": "^0.0.3",
