@@ -4,23 +4,59 @@ Pool pairs can consist of assets from different chains.
 
 ## Deploy
 
-
-```bash
-$ git clone ssh://git@bitbucket.digiu.ai:7999/bcl/Digiu.Lab.git
-$ cd Digiu.Lab
-$ npm install
-$ npm start
-$ npm add-control-adapter-1 && add-post-adapter-1 && add-jobspec-1
-$ truffle exec './scripts/init/1_jobId.js' --network network1  (после как получили)
-
-```
+- clone repo install and start
+````
+git clone ssh://git@bitbucket.digiu.ai:7999/bcl/Digiu.Lab.git
+cd Digiu.Lab
+npm install
+npm start
+````
+- add "control" external adapter
+````
+npm add-control-adapter-1
+````
+- add "post" changing state external adapter
+````
+npm add-post-adapter-1
+````
+- same for second chainlink node
+````
+npm add-control-adapter-2
+npm add-post-adapter-2
+````
+- register job specs on chainlink nodes
+````
+npm add-jobspec-1
+npm add-jobspec-2
+````
+- set job pernission in contract
+````
+npm set-permission-job-id-1
+npm set-permission-job-id-2
+````
 
 
 ## Test
 
+
+- check balances
 ```bash
-$ truffle exec './scripts/z_test.js' --network network1  (пока так)
+npm check-results
 ```
+
+
+- add liquidity
+```bash
+npm add-liquidity
+```
+
+- swap from network1
+```bash
+npm swap-from-1
+```
+
+
+
 
 
 # ADDRESES
@@ -91,15 +127,4 @@ $ truffle exec './scripts/z_test.js' --network network1  (пока так)
 - tar -xzf digiulab.tar.gz
 -  docker-compose -f ./testnet-docker-compose.yaml up -d adapter1_net
 
-
-# TEST BY HANDS
-
-- npm start
-- truffle exec ./scripts/init/1_set_jobId.js --network network1  // указать актуальный jobid
-- truffle exec ./scripts/init/1_set_jobId.js --network network2  // указать актуальный jobid
-- truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand
-- truffle exec ./scripts/init/4_add_liquidity.js --stand devstand // указать актуальное количество токенов
-- truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand
-- truffle exec ./scripts/init/5_swap_deposit.js --network network1  // указать адрес получателя в другой сети
-- truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand
 

@@ -37,7 +37,15 @@
     "add-post-adapter-1": "./scripts/bash/1_add_bridge.sh  http://localhost:6688 http://172.20.128.55:8081/post adapter1_net1",
     "add-post-adapter-2": "./scripts/bash/1_add_bridge.sh  http://localhost:7000 http://172.20.128.57:8081/post adapter2_net1",
     "add-jobspec-1": "./scripts/bash/2_add_jobSpec.sh http://localhost:6688 ./scripts/jobSpecs/jobSpec1.json",
-    "add-jobspec-2": "./scripts/bash/2_add_jobSpec.sh http://localhost:7000 ./scripts/jobSpecs/jobSpec2.json"
+    "add-jobspec-2": "./scripts/bash/2_add_jobSpec.sh http://localhost:7000 ./scripts/jobSpecs/jobSpec2.json",
+    "set-permission-job-id-1": "npx truffle exec './scripts/init/1_set_jobId.js' --network network1 jobSpec1.json",
+    "set-permission-job-id-2": "npx truffle exec './scripts/init/1_set_jobId.js' --network network2 jobSpec2.json",
+    "check-results": "npx truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand",
+    "add-liquidity": "npx truffle exec ./scripts/init/4_add_liquidity.js --stand devstand",
+    "swap-from-1": "npx truffle exec ./scripts/init/5_swap_deposit.js --network network1",
+    "swap-from-2": "npx truffle exec ./scripts/init/5_swap_deposit.js --network network2"
+
+
   },
   "license": "MIT",
   "dependencies": {

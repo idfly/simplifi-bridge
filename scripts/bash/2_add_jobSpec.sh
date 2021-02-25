@@ -16,4 +16,5 @@ echo $NODE_ADDRESS #> ../../build/node2.addr
   done
   echo -en "RESPONCE $RESPONCE\n"
   echo -en "\nJOBID $JOBID"
+  echo $JOBID > "./build/job${2: -10}.id"
   echo " done!"
