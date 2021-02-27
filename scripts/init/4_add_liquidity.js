@@ -41,8 +41,8 @@ try{
    const userNet1 = (await DexPoolNet1.web3.eth.getAccounts())[0];
    const userNet2 = (await DexPoolNet2.web3.eth.getAccounts())[0];
 
-   let amountNet1      = await ERC20Net1.web3.utils.toWei('1','Ether');
-   let amountNet2      = await ERC20Net2.web3.utils.toWei('2','Ether');
+   let amountNet1      = await ERC20Net1.web3.utils.toWei('58','Ether');
+   let amountNet2      = await ERC20Net2.web3.utils.toWei('59','Ether');
    let balancePoolNet1 = await tokenPoolNet1.balanceOf(dexPoolNet1.address, {from: userNet1});
    
 
@@ -66,7 +66,7 @@ try{
                                              amountNet1,
                                              userNet1,
                                              balancePoolNet1, {from: userNet2 });
-   console.log(JSON.stringify(tx, null, 4));
+   console.log('dexPoolNet2.addLiquidity:', tx.tx);
 
 }catch(e){console.log(e);}
   callback();

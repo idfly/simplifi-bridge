@@ -19,7 +19,7 @@ try{
 
       const myContract    = await MyContract.at(env.parsed.CLIENT_ADDRESS);
       const token         = await LinkToken.at(addresses.LINK_CONTRACT_ADDRESS);
-      const tx            = await token.transfer(myContract.address, await web3.utils.toWei('10','Ether'), { from: (await web3.eth.getAccounts())[0] });
+      const tx            = await token.transfer(myContract.address, await web3.utils.toWei('100','Ether'), { from: (await web3.eth.getAccounts())[0] });
 
       console.log(`>>>>>>> TRANSFER LINK TOKEN TO MyContract: ${myContract.address} ON NETWORK ${process.argv[5]}\ntx:${tx.tx}\n\n`);
       console.log(`>>>>>>>>>>>>>  Balance MyContract: ${myContract.address} is: ${(await token.balanceOf(myContract.address)).toString()} LINK`);
