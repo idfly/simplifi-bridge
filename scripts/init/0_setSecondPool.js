@@ -20,7 +20,10 @@ let envNet2 = require('dotenv').config({ path: `../../build/addrs_${net2}.env` }
 let adapterAddreses = require('dotenv').config({ path: `../../adapter/adapterdgu/.env` });
 
 
-
+/**
+   - setSecondPool -  Bind second part pool address for checks
+   - setControl    -  filling white list, consisting from signers
+*/
 module.exports = async callback => {
 try{
 
@@ -42,18 +45,25 @@ try{
    const userNet1 = (await DexPoolNet1.web3.eth.getAccounts())[0];
    const userNet2 = (await DexPoolNet2.web3.eth.getAccounts())[0];
 
+   /** Bind other address pool for checks*/
    let res1 = await dexPoolNet1.setSecondPool(dexPoolNet2.address, {from: userNet1});
    console.log('dexPoolNet1 setSecondPool: ',res1.tx);
 
+   /** Bind other address pool for checks*/
    let res2 = await dexPoolNet2.setSecondPool(dexPoolNet1.address, {from: userNet2});
    console.log('dexPoolNet2 setSecondPool: ',res2.tx);
 
-   /*let res3 = await myContract1.setControl(adapterAddreses., {from: userNet1});
-   console.log('myContract1.setControl: ',res3.tx);*/
-   let res4 = await myContract2.setControl((await DexPoolNet1.web3.eth.getAccounts())[4+3], {from: userNet2});
-   console.log('myContract2.setControl: ',res4.tx);
-   let res5 = await myContract2.setControl((await DexPoolNet1.web3.eth.getAccounts())[5+3], {from: userNet2});
-   console.log('myContract2.setControl: ',res5.tx);
+   /** fill white list for signers */
+
+   let res3 = await myContract1.setControl((await DexPoolNet2.web3.eth.getAccounts())[4+3], {from: userNet1});
+   console.log('myContract3.setControl: ',res3.tx);
+   let res4 = await myContract1.setControl((await DexPoolNet2.web3.eth.getAccounts())[5+3], {from: userNet1});
+   console.log('myContract4.setControl: ',res4.tx);
+
+   let res5 = await myContract2.setControl((await DexPoolNet1.web3.eth.getAccounts())[4+3], {from: userNet2});
+   console.log('myContract5.setControl: ',res5.tx);
+   let res6 = await myContract2.setControl((await DexPoolNet1.web3.eth.getAccounts())[5+3], {from: userNet2});
+   console.log('myContract6.setControl: ',res6.tx);
 
 
 }catch(e){console.log(e);}
