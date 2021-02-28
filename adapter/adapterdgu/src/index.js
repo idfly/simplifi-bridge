@@ -147,7 +147,7 @@ try{
 async function SetTypeAuditorResponse(correlationId, sign, _tx, reqId){
     try{
 
-            const tx  = await bridge.methods.receiveResponse(correlationId, sign, _tx, reqId).send({from: ownerAdapter});
+            const tx  = await bridge.methods.receiveResponse(correlationId, sign, _tx, reqId).send({from: ownerAdapter, gas: 100000});
             //TODO negative variant
             let responseData = {};
 
