@@ -110,14 +110,28 @@ contract MyContract is ChainlinkClient, Ownable {
                   EXPIRY_TIME,
                   ARGS_VERSION,
                   req.buf.buf);
-
-    return requestId;
   }
 
   /**
     Create response on request from 2 -> 1 (initiator side)
   */
-  function transmitResponse() external{
+  function transmitResponse(string memory correlationId) private returns (bytes32 requestId){
+
+    Chainlink.Request memory req = buildChainlinkRequest(specIdListPermission[0], address(this), this.callback.selector);
+    req.add("request_type", "setResponse");
+    req.add("correlationId", correlationId);
+    
+
+    requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);
+
+    emitBroadcast(address(this),
+                  requestId,
+                  ORACLE_PAYMENT,
+                  address(this),
+                  this.callback.selector,
+                  EXPIRY_TIME,
+                  ARGS_VERSION,
+                  req.buf.buf);
   
   }
   /**
@@ -126,31 +140,47 @@ contract MyContract is ChainlinkClient, Ownable {
   *
   */
   // WARN whitelist must be includes ID of first side && msg.sender it's address adapter => adr control -> adr adapter -> id otherside
-  function receiveRequest(bytes32 reqId,
+  // TODO to do msg.sender  under sign
+  function receiveRequest(string memory reqId,
                           bytes memory signature,
                           bytes memory b,
                           bytes32 tx,
-                          address receiveSide) external /*onlyOwner*/ {
+                          address receiveSide) external {
 
+    bytes32 hreqId   = keccak256(abi.encodePacked(reqId));
     bytes32 hash     = ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(reqId, b, tx, receiveSide)));
     address res      = ECDSA.recover(hash, signature);
     require(true == whiteList[res], 'SECURITY EVENT');
     // require receiveSide != 0 || ....
-
-    agregator[reqId] = agregator[reqId] + 1;
-    // temporary equals 2
-    if(agregator[reqId] == 2 /* && NONCE === hash(local nonce, adr mycont_1) && ALL hashs == */){
+    
+    agregator[hreqId] = agregator[hreqId] + 1;
+    // HARD code: temporary equals 2
+    if(agregator[hreqId] == 2 /* && NONCE === hash(local nonce, adr mycont_1) && ALL hashs == */){
       (bool success, bytes memory data) = receiveSide.call(b);
       require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
       
-      
-
-      //transmitResponse
+      transmitResponse(reqId);
     }
   }
+  /** Receive response from other side.
+    precondition:
+      bridgepart_1#transmitRequest -> bridgepart_2#receiveRequest -> bridgepart_2#transmitResponse -> bridgepart_1#receiveResponse
+  */
+  function receiveResponse(bytes32 correlationId, bytes memory signature, bytes32 tx, bytes32 reqId) external /*onlyOwner*/ {
 
-  function receiveResponse(bytes32 jobRunID, bytes memory signature, bytes memory b) external /*onlyOwner*/ {
+    bytes32 hash     = ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(correlationId, tx, reqId)));
+    address res      = ECDSA.recover(hash, signature);
+    require(true == whiteList[res], 'SECURITY EVENT');
+    require(address(0) != routeForCallback[correlationId], 'SECURITY EVENT: BAD CORRELATIONID');
 
+    agregator[reqId] = agregator[reqId] + 1;
+    // HARD code: temporary equals 2
+    if(agregator[reqId] == 2 /* && NONCE === hash(local nonce, adr mycont_1) && ALL hashs == */){
+      DexPool(routeForCallback[correlationId]).setPendingRequestsDone(correlationId, tx);
+    }
+
+
+    
   }
 
   /**
@@ -165,7 +195,7 @@ contract MyContract is ChainlinkClient, Ownable {
     recordChainlinkFulfillment(_requestId)
   {
     
-    DexPool(routeForCallback[_requestId]).setPendingRequestsDone(_requestId, _data);
+    //DexPool(routeForCallback[_requestId]).setPendingRequestsDone(_requestId, _data);
   }
 
   /**

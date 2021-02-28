@@ -30,7 +30,7 @@ contract DexPool is GovernanceToken, Ownable {
     bytes32 func;
   }
 
-  string constant private SET_REQUEST_TYPE = "set";
+  string constant private SET_REQUEST_TYPE = "setRequest";
   string constant private GET_REQUEST_TYPE = "get";
   uint   constant private MINIMUM_LIQUIDITY = 10**3;
 
