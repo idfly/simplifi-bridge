@@ -1,6 +1,6 @@
 const Web3      = require("web3");
 const config    = require("./config");
-const oracleAbi = require("../abi/Oracle.json");
+const oracleAbi = {}; /*require("../abi/Oracle.json")*/;
 
 
 class Worker {
