@@ -1,3 +1,5 @@
+const argv = require('minimist')(process.argv.slice(2), {string: ['recipient']});
+
 const DexPool    = artifacts.require('DexPool');
 const ERC20      = artifacts.require('ERC20');
 
@@ -8,10 +10,7 @@ module.exports = async callback => {
 try{
 
 let addresses = await initAddresses(process.argv[5], env);
-
-let recipent_overside = "0xcbd89DA4fbc3aB042DAD58c0AfD1120910CEDc46"; // net2
-//let recipent_overside = "0x9805E1FD9013f79b04F6cED13696F9346b70cC39"; // net1
-
+let recipent_overside = web3.utils.isAddress(argv.recipient.trim()) ? argv.recipient.trim() : (function(){throw "unresolved value of --recipient"}());
 
       const dexPool       = await DexPool.at(addresses.POOL_ADDRESS);
       const token_pool    = await ERC20.at(addresses.TOKENPOOL_ADDRESS);
