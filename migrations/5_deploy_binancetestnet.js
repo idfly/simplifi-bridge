@@ -1,10 +1,10 @@
 const { exec } = require('child_process');
 
 const MyContract    = artifacts.require('MyContract')
-const DexPool       = artifacts.require('DexPool')
+// const DexPool       = artifacts.require('DexPool')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
 const { Oracle }    = require('@chainlink/contracts/truffle/v0.6/Oracle')
-const { Hexstring } = require('../lib/Hexstring')
+// const { Hexstring } = require('../lib/Hexstring')
 
 const { writeEnv, initAddresses } = require('../utils/helper');
 
