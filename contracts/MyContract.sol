@@ -176,7 +176,9 @@ contract MyContract is ChainlinkClient, Ownable {
     agregator[reqId] = agregator[reqId] + 1;
     // HARD code: temporary equals 2
     if(agregator[reqId] == 2 /* && NONCE === hash(local nonce, adr mycont_1) && ALL hashs == */){
-      DexPool(routeForCallback[correlationId]).setPendingRequestsDone(correlationId, tx);
+      bytes memory b = abi.encodeWithSelector(bytes4(keccak256(bytes('setPendingRequestsDone(bytes32,bytes32)'))), correlationId, tx);
+      (bool success, bytes memory data) = routeForCallback[correlationId].call(b);
+      require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
     }
 
 
