@@ -46,7 +46,8 @@
     "check-results": "npx truffle exec ./scripts/init/CHECK_RESULT.js --stand devstand",
     "add-liquidity": "npx truffle exec ./scripts/init/4_add_liquidity.js --stand devstand",
     "swap-from-1": "npx truffle exec ./scripts/init/5_swap_deposit.js --network network1",
-    "swap-from-2": "npx truffle exec ./scripts/init/5_swap_deposit.js --network network2"
+    "swap-from-2": "npx truffle exec ./scripts/init/5_swap_deposit.js --network network2",
+    "integration:local": " truffle test ./test/integration/e2e.test.js --typenet devstand --net1 network1 --net2 network2"
   },
   "license": "MIT",
   "dependencies": {
