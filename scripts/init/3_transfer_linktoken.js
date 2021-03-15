@@ -1,4 +1,3 @@
-const DexPool       = artifacts.require('DexPool')
 const MyContract    = artifacts.require('MyContract')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken');
 const { Oracle }    = require('@chainlink/contracts/truffle/v0.6/Oracle');
