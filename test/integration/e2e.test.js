@@ -13,6 +13,8 @@ const factoryProvider =  checkoutProvider(argv);
 let envNet1 = require('dotenv').config({ path: `./build/addrs_${argv.net1}.env` });
 let envNet2 = require('dotenv').config({ path: `./build/addrs_${argv.net2}.env` });
 
+const { expectEvent } = require('@openzeppelin/test-helpers');
+
 // todo gas consumtion
 contract('Brigde', (deployer, accounts) => {
 
@@ -64,6 +66,12 @@ contract('Brigde', (deployer, accounts) => {
        await timeout(500);
       }
 
+      while(true){
+        let result = await this.mp1.getPendingRequests(t.args[0]);  
+        if(result[1] !== '0x3078310000000000000000000000000000000000000000000000000000000000') break;
+        await timeout(500);
+      }
+
       // checking out result on started pool the result of execute all process
       result = await this.mp1.getPendingRequests(t.args[0]);
       assert.notEqual(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'bridge worked on both sides');
@@ -84,6 +92,12 @@ contract('Brigde', (deployer, accounts) => {
        let result = ~~(await this.mp1.testData()).toString();
        if(result === testData) break;
        await timeout(500);
+      }
+
+      while(true){
+        let result = await this.mp2.getPendingRequests(t.args[0]);  
+        if(result[1] !== '0x3078310000000000000000000000000000000000000000000000000000000000') break;
+        await timeout(500);
       }
 
       // checking out result on started pool the result of execute all process
