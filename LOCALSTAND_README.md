@@ -12,6 +12,19 @@
 npm start
 ````
 
+## Integration test
+
+- deploy all 
+```bash
+npm start
+```
+
+- execute test
+```bash
+npm run integration:local
+```
+
+
 ## Test by hands on LOCAL STAND (convenient for debug)
 
 
