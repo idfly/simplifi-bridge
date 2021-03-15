@@ -2,10 +2,10 @@
 const { oracle } = require('@chainlink/test-helpers')
 const { expectRevert, time } = require('@openzeppelin/test-helpers')
 
-contract('MyContract', accounts => {
+contract('Bridge', accounts => {
   const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
   const { Oracle } = require('@chainlink/contracts/truffle/v0.6/Oracle')
-  const MyContract = artifacts.require('MyContract.sol')
+  const Bridge = artifacts.require('Bridge.sol')
   const DigiUToken = artifacts.require('DigiUToken.sol')
 
   const defaultAccount = accounts[0]
@@ -35,7 +35,7 @@ contract('MyContract', accounts => {
     oc = await Oracle.new(link.address, { from: defaultAccount })
     digiuToken = await DigiUToken.new({from: defaultAccount})
     console.log("this.digiuToken.address", digiuToken.address)
-    cc = await MyContract.new(link.address, digiuToken.address,  { from: consumer })
+    cc = await Bridge.new(link.address, digiuToken.address,  { from: consumer })
     await oc.setFulfillmentPermission(oracleNode, true, {
       from: defaultAccount,
     })

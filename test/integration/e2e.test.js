@@ -5,8 +5,8 @@ const { Hexstring }  = require('../../lib/Hexstring');
 
 const mockPool1    = artifacts.require('MockDexPool');
 const mockPool2    = artifacts.require('MockDexPool');
-const brigdePart1  = artifacts.require('MyContract');
-const brigdePart2  = artifacts.require('MyContract');
+const brigdePart1  = artifacts.require('Bridge');
+const brigdePart2  = artifacts.require('Bridge');
 
 const factoryProvider =  checkoutProvider(argv);
 

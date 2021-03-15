@@ -1,4 +1,4 @@
-const MyContract = artifacts.require('MyContract')
+const Bridge = artifacts.require('Bridge')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken');
 const fs = require('fs');
 
@@ -10,7 +10,7 @@ let jobSpecId = fs.readFileSync(`../../build/${process.argv[6]}.id`, 'utf-8');
 module.exports = async callback => {
 try{
   
-      const myContract    = await MyContract.at(env.parsed.CLIENT_ADDRESS);
+      const myContract    = await Bridge.at(env.parsed.CLIENT_ADDRESS);
       let tx = await myContract.setPermissionJobId(await web3.utils.fromAscii(jobSpecId.trim()));
       console.log(`>>>>>>> SET PermissionJobId: ${myContract.address} ON NETWORK ${process.argv[5]}\ntx:${tx.tx}\n\n`);
 

@@ -4,7 +4,7 @@ require('dotenv').config();
 const express    = require('express');
 const bodyParser = require('body-parser');
 
-const bridgeAbi = require("./abi/MyContract.json");
+const bridgeAbi = require("./abi/Bridge.json");
 
 const Worker = require('./modules/worker');
 

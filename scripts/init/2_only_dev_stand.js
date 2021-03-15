@@ -1,4 +1,4 @@
-const MyContract    = artifacts.require('MyContract')
+const Bridge    = artifacts.require('Bridge')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken');
 const { Oracle }    = require('@chainlink/contracts/truffle/v0.6/Oracle');
 

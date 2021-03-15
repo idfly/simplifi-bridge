@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.9;
 
-import "../MyContract.sol";
+import "../Bridge.sol";
 import "../interfaces/IHexstring.sol";
 import "../libraries/Other.sol";
 import "../interfaces/BridgeClientInterface.sol";
@@ -45,7 +45,7 @@ contract MockDexPool is BridgeClientInterface {
 		// ...
 		
 		bytes memory out  = abi.encodeWithSelector(bytes4(keccak256(bytes('receiveRequestTest(uint256)'))), testData);
-		bytes32 requestId = MyContract(brige).transmitRequest(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out), Other.toAsciiString(secondPartPool));
+		bytes32 requestId = Bridge(brige).transmitRequest(SET_REQUEST_TYPE, IHexstring(util).bytesToHexString(out), Other.toAsciiString(secondPartPool));
 
 		pendingRequests[requestId] = "0x1";
 

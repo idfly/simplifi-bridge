@@ -1,6 +1,6 @@
 const { exec } = require('child_process');
 
-const MyContract    = artifacts.require('MyContract')
+const Bridge    = artifacts.require('Bridge')
 //const DexPool       = artifacts.require('DexPool')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
 const { Oracle }    = require('@chainlink/contracts/truffle/v0.6/Oracle')
@@ -38,8 +38,8 @@ module.exports = async (deployer, network, accounts) => {
                               await deployer.deploy(Oracle, LinkToken.address, { from: accounts[0] })
               let oracle    = await Oracle.deployed();
 
-                              await deployer.deploy(MyContract, LinkToken.address, oracle.address, { from: accounts[0] })
-              let client    = await MyContract.deployed();
+                              await deployer.deploy(Bridge, LinkToken.address, oracle.address, { from: accounts[0] })
+              let client    = await Bridge.deployed();
 
               //                 await deployer.deploy(DexPool, tokenpool.address, client.address, hexstring.address);
               // let dexPool   = await DexPool.deployed();
