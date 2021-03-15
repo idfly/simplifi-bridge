@@ -2,7 +2,7 @@
 pragma solidity ^0.6.9;
 
 import "../MyContract.sol";
-import "../IHexstring.sol";
+import "../interfaces/IHexstring.sol";
 import "../libraries/Other.sol";
 import "../interfaces/BridgeClientInterface.sol";
 
