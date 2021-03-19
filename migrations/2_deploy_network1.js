@@ -41,7 +41,7 @@ module.exports = async (deployer, network, accounts) => {
 
               await writeEnv(linkToken.address, oracle.address, client.address, dexPool.address, tokenpool.address);
               let env_file = "env_connect_to_network_1.env";
-              console.log('>> Generate env for external adapter in network2  (i.e. for connect to network 1)')
+``              console.log('>> Generate env for external adapter in network2  (i.e. for connect to network 1)')
               exec(`${process.cwd()}/scripts/bash/update_env_adapter.sh 8082 network1 ${dexPool.address} ${oracle.address} ${tokenpool.address} ${client.address} ${env_file} `, { maxBuffer: 1024 * 100000000 }, (err, stdout, stderr) => {
                 if (err) {
                     console.log('THROW ERROR', err);
