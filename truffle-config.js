@@ -27,12 +27,12 @@ module.exports = {
     },
 
     binancetestnet: {
-       provider: () => new HDWalletProvider(process.env.MNEMONIC_TESTNET_BSC, bscws),
+       provider: () => new HDWalletProvider(process.env.TESTNET_BSC, bscws),
        network_id: 97,
        timeoutBlocks: 200  
     },
     rinkeby: {
-       provider: () => new HDWalletProvider(process.env.MNEMONIC_TESTNET_RINKEBY, rinkebyws),
+       provider: () => new HDWalletProvider(process.env.TESTNET_RINKEBY, rinkebyws),
        network_id: 4,
        timeoutBlocks: 200  
     }  
