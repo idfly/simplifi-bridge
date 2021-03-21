@@ -1,8 +1,7 @@
 const argv = require('minimist')(process.argv.slice(2), {string: ['typenet','net1', 'net2']});
 const Web3 = require('web3');
 const { checkoutProvider, timeout } = require('../../utils/helper');
-const { Hexstring }  = require('../../lib/Hexstring');
-
+1
 const mockPool1    = artifacts.require('MockDexPool');
 const mockPool2    = artifacts.require('MockDexPool');
 const brigdePart1  = artifacts.require('Bridge');
@@ -19,10 +18,10 @@ const { expectEvent } = require('@openzeppelin/test-helpers');
 contract('Brigde', (deployer, accounts) => {
 
   beforeEach(async () => {
-    
+
   });
-  
-  
+
+
   before(async () => {
 
     brigdePart1.setProvider(factoryProvider.web3Net1);
@@ -34,20 +33,15 @@ contract('Brigde', (deployer, accounts) => {
     /** users */
     this.userNet1 = (await brigdePart1.web3.eth.getAccounts())[0];
     this.userNet2 = (await brigdePart2.web3.eth.getAccounts())[0];
-    /** utils */
-    Hexstring.setProvider(factoryProvider.web3Net1);
-    let hexstring1 = await Hexstring.new({from: this.userNet1});
-    Hexstring.setProvider(factoryProvider.web3Net2);
-    let hexstring2 = await Hexstring.new({from: this.userNet2});
     /** mock dexpool in one evm based blockchain and in another evm blockchain */
     mockPool1.setProvider(factoryProvider.web3Net1);
     mockPool2.setProvider(factoryProvider.web3Net2);
-    this.mp1 = await mockPool1.new(this.br1.address, hexstring1.address, {from: this.userNet1});
-    this.mp2 = await mockPool2.new(this.br2.address, hexstring2.address, {from: this.userNet2});
+    this.mp1 = await mockPool1.new(this.br1.address, {from: this.userNet1});
+    this.mp2 = await mockPool2.new(this.br2.address, {from: this.userNet2});
 
   });
 
- 
+
   describe('simple end-to-end test', async () => {
 
     it('change state from first to second sides', async () => {
@@ -58,7 +52,7 @@ contract('Brigde', (deployer, accounts) => {
       let t = await expectEvent(receipt, 'RequestSended'); 
       let result = await this.mp1.getPendingRequests(t.args[0], {from: this.userNet1});
       assert.equal(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'tx in pending on other side');
-      
+
       // wait on the second part the excuted tx
       while(true){
        let result = ~~(await this.mp2.testData({from: this.userNet2})).toString();
@@ -86,7 +80,7 @@ contract('Brigde', (deployer, accounts) => {
       let t = expectEvent(receipt, 'RequestSended');
       let result = await this.mp2.getPendingRequests(t.args[0], {from: this.userNet2});
       assert.equal(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'tx in pending on other side');
-      
+
       // wait on the second part the excuted tx
       while(true){
        let result = ~~(await this.mp1.testData({from: this.userNet1})).toString();
