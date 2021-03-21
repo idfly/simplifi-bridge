@@ -21,9 +21,9 @@ let  ownerAdapter = null;  // this potentially may be bottleneck
     
     bridge      = new worker.web3.eth.Contract(bridgeAbi.abi, process.env.BRIDGE_ADDRESS);
 
-    // for dev stand
-    let num = (process.env.LISTEN_NETWORK === 'network1' || process.env.LISTEN_NETWORK === 'network2') ? ~~process.env.NAME.slice(-1) + 3 : 0;
-    ownerAdapter = (await worker.web3.eth.getAccounts())[num];
+    // obtain the rigth address
+    let num = (await worker.web3.eth.getAccounts()).filter(addr => addr === worker.web3.eth.accounts.privateKeyToAccount(process.env.SK).address);
+    ownerAdapter = num[0];
 
     console.log(`\nSTART SUCCESS\n________________________\n\nOWNER ADAPTER ${ownerAdapter}\nLISTEN_NETWORK: ${process.env.LISTEN_NETWORK}\nCHAIN_ID: ${await worker.web3.eth.getChainId()}\nPOOL_ADDRESS: ${process.env.POOL_ADDRESS}\nORACLE_CONTRACT_ADDRESS: ${process.env.ORACLE_CONTRACT_ADDRESS}\n\n`);
 

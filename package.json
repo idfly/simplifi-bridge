@@ -21,6 +21,8 @@
     "stop": "docker-compose stop && docker-compose rm",
     "truffle:migrate-network1": "npx truffle migrate --reset --network network1",
     "truffle:migrate-network2": "npx truffle migrate --reset --network network2",
+    "truffle:migrate-rinkey": "npx truffle migrate --reset --network rinkeby",
+    "truffle:migrate-binancetestnet": "npx truffle migrate --reset --network binancetestnet",
     "up:all": "docker-compose up -d && docker-compose ps ",
     "depcheck": "echo '@chainlink/box' && depcheck --ignore-dirs=build/contracts || true",
     "migrate:dev": "npx truffle migrate --reset --network network1",
@@ -47,7 +49,12 @@
     "add-liquidity": "npx truffle exec ./scripts/init/4_add_liquidity.js --stand devstand",
     "swap-from-1": "npx truffle exec ./scripts/init/5_swap_deposit.js --network network1",
     "swap-from-2": "npx truffle exec ./scripts/init/5_swap_deposit.js --network network2",
-    "integration:local": " truffle test ./test/integration/e2e.test.js --typenet devstand --net1 network1 --net2 network2"
+    "integration-test:local": " truffle test ./test/integration/e2e.test.js --typenet devstand --net1 network1 --net2 network2",
+    "integration-test:testnet": " truffle test ./test/integration/e2e.test.js --typenet teststand --net1 rinkeby --net2 binancetestnet",
+    "deploy:testnet": "./scripts/bash/deploy_testnet.sh"
+
+
+    
   },
   "license": "MIT",
   "dependencies": {

@@ -23,7 +23,7 @@ let adapterAddreses = require('dotenv').config({ path: `../../adapter/adapterdgu
 module.exports = async callback => {
 try{
 
-   // создаем провайдера
+   // create provider
    const web3Net1 = argv.stand === 'devstand' ? new Web3.providers.WebsocketProvider('ws://'+ networks[net1].host +":"+ networks[net1].port) : networks[net1].provider();
    const web3Net2 = argv.stand === 'devstand' ? new Web3.providers.WebsocketProvider('ws://'+ networks[net2].host +":"+ networks[net2].port) : networks[net2].provider();
    
@@ -36,16 +36,16 @@ try{
    const userNet1 = (await Bridge1.web3.eth.getAccounts())[0];
    const userNet2 = (await Bridge2.web3.eth.getAccounts())[0];
 
-   /** fill white list for signers */
+   /** fill whitelist for signers(adapter chainlink) */
 
-   let res3 = await myContract1.setControl((await Bridge2.web3.eth.getAccounts())[4+3], {from: userNet1});
+   let res3 = await myContract1.setControl('0x2b3cc5fcAC62299520FA96D75f125c33B48E70d7', {from: userNet1});
    console.log('myContract3.setControl: ',res3.tx);
-   let res4 = await myContract1.setControl((await Bridge2.web3.eth.getAccounts())[5+3], {from: userNet1});
+   let res4 = await myContract1.setControl('0x719EF299C8900bF8D53c25cA5a30C86433E506B6', {from: userNet1});
    console.log('myContract4.setControl: ',res4.tx);
 
-   let res5 = await myContract2.setControl((await Bridge1.web3.eth.getAccounts())[4+3], {from: userNet2});
+   let res5 = await myContract2.setControl('0x23a0d8DbDA10A9d4a9a08Ab26f52bC4EaeE41f89', {from: userNet2});
    console.log('myContract5.setControl: ',res5.tx);
-   let res6 = await myContract2.setControl((await Bridge1.web3.eth.getAccounts())[5+3], {from: userNet2});
+   let res6 = await myContract2.setControl('0x201a64752792288D8F1d4697B778c916Bd3c4a8F', {from: userNet2});
    console.log('myContract6.setControl: ',res6.tx);
 
 

@@ -42,9 +42,9 @@ try{
 
   if(network === 'binancetestnet'){
 
-      LINK_CONTRACT_ADDRESS   = '0x56aa83FE311efAA95245bE79C21c9ca4b53774b4';
-      ORACLE_CONTRACT_ADDRESS = '0xA5d6A1CE7a8ffD631170E4882BF7fe210A3945C8';
-      TOKENPOOL_ADDRESS       = '0x55797e477BE468855690c660AA2640d3E9F80Cc6';
+      LINK_CONTRACT_ADDRESS   = env.parsed.LINK_CONTRACT_ADDRESS;
+      ORACLE_CONTRACT_ADDRESS = env.parsed.ORACLE_CONTRACT_ADDRESS;
+      TOKENPOOL_ADDRESS       = env.parsed.TOKENPOOL_ADDRESS;
 
   }
 
@@ -65,7 +65,7 @@ try{
 
   return res;
 
-  }catch(e){console,log(e);}
+  }catch(e){console.log(e);}
 
 }
 

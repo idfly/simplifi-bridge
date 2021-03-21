@@ -55,25 +55,25 @@ contract('Brigde', (deployer, accounts) => {
       let testData = 10;
       /** send end-to-end request */
       let receipt = await this.mp1.sendRequestTest(testData, this.mp2.address, {from: this.userNet1});
-      let t = expectEvent(receipt, 'RequestSended');
-      let result = await this.mp1.getPendingRequests(t.args[0]);
+      let t = await expectEvent(receipt, 'RequestSended'); 
+      let result = await this.mp1.getPendingRequests(t.args[0], {from: this.userNet1});
       assert.equal(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'tx in pending on other side');
       
       // wait on the second part the excuted tx
       while(true){
-       let result = ~~(await this.mp2.testData()).toString();
+       let result = ~~(await this.mp2.testData({from: this.userNet2})).toString();
        if(result === testData) break;
        await timeout(500);
       }
 
       while(true){
-        let result = await this.mp1.getPendingRequests(t.args[0]);  
+        let result = await this.mp1.getPendingRequests(t.args[0], {from: this.userNet1});  
         if(result[1] !== '0x3078310000000000000000000000000000000000000000000000000000000000') break;
         await timeout(500);
       }
 
       // checking out result on started pool the result of execute all process
-      result = await this.mp1.getPendingRequests(t.args[0]);
+      result = await this.mp1.getPendingRequests(t.args[0], {from: this.userNet1});
       assert.notEqual(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'bridge worked on both sides');
 
     });
@@ -84,24 +84,24 @@ contract('Brigde', (deployer, accounts) => {
       /** send end-to-end request */
       let receipt = await this.mp2.sendRequestTest(testData, this.mp1.address, {from: this.userNet2});
       let t = expectEvent(receipt, 'RequestSended');
-      let result = await this.mp2.getPendingRequests(t.args[0]);
+      let result = await this.mp2.getPendingRequests(t.args[0], {from: this.userNet2});
       assert.equal(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'tx in pending on other side');
       
       // wait on the second part the excuted tx
       while(true){
-       let result = ~~(await this.mp1.testData()).toString();
+       let result = ~~(await this.mp1.testData({from: this.userNet1})).toString();
        if(result === testData) break;
        await timeout(500);
       }
 
       while(true){
-        let result = await this.mp2.getPendingRequests(t.args[0]);  
+        let result = await this.mp2.getPendingRequests(t.args[0], {from: this.userNet2});  
         if(result[1] !== '0x3078310000000000000000000000000000000000000000000000000000000000') break;
         await timeout(500);
       }
 
       // checking out result on started pool the result of execute all process
-      result = await this.mp2.getPendingRequests(t.args[0]);
+      result = await this.mp2.getPendingRequests(t.args[0], {from: this.userNet2});
       assert.notEqual(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'bridge worked on both sides');
 
     });
