@@ -120,6 +120,26 @@ contract('Brigde', (deployer, accounts) => {
 
     });
 
+    it('without callback', async () => {
+
+      let testData = 5;
+      /** send end-to-end request */
+      let receipt = await this.mp2.sendRequestTestV2(testData, this.mp1.address, {from: this.userNet2});
+      
+      // wait on the second part the excuted tx
+      let reslt = null;
+      while(true){
+       reslt = ~~(await this.mp1.testData({from: this.userNet1})).toString();
+       if(reslt === testData) break;
+       await timeout(500);
+      }
+
+      assert.equal(reslt.toString(), '5');
+
+      //TODO: check out 0x2431bee4 (bytes4(keccak256(bytes('receiveRequestV2(string,bytes,bytes,bytes32,address)'))))
+
+    });
+
     it('get state', async () => {
 
     });
