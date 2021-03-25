@@ -1,7 +1,8 @@
+const axios = require('axios');
 const argv = require('minimist')(process.argv.slice(2), {string: ['typenet','net1', 'net2']});
 const Web3 = require('web3');
-const { checkoutProvider, timeout } = require('../../utils/helper');
-1
+const { checkoutProvider, timeout, adapters, checkBlock, getCostFromScan } = require('../../utils/helper');
+
 const mockPool1    = artifacts.require('MockDexPool');
 const mockPool2    = artifacts.require('MockDexPool');
 const brigdePart1  = artifacts.require('Bridge');
@@ -52,6 +53,8 @@ contract('Brigde', (deployer, accounts) => {
       let t = await expectEvent(receipt, 'RequestSended'); 
       let result = await this.mp1.getPendingRequests(t.args[0], {from: this.userNet1});
       assert.equal(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'tx in pending on other side');
+      
+            // if(argv.typenet === 'teststand') await getCostFromScan('rinkeby', receipt.tx);
 
       // wait on the second part the excuted tx
       while(true){
@@ -59,6 +62,13 @@ contract('Brigde', (deployer, accounts) => {
        if(result === testData) break;
        await timeout(500);
       }
+
+            // let tx1 = await checkBlock(brigdePart2.web3, adapters().adapter1_net1_1);
+            // if(argv.typenet === 'teststand' && tx1 != null) await getCostFromScan('binance', tx1);
+      
+            // let tx2 = await checkBlock(brigdePart2.web3, adapters().adapter2_net1_1);
+            // if(argv.typenet === 'teststand' && tx2 != null) await getCostFromScan('binance', tx2);
+      
 
       while(true){
         let result = await this.mp1.getPendingRequests(t.args[0], {from: this.userNet1});  
@@ -70,6 +80,16 @@ contract('Brigde', (deployer, accounts) => {
       result = await this.mp1.getPendingRequests(t.args[0], {from: this.userNet1});
       assert.notEqual(result[1], '0x3078310000000000000000000000000000000000000000000000000000000000', 'bridge worked on both sides');
 
+            // let tx3 = await checkBlock(brigdePart1.web3, adapters().adapter1_net2_1);
+            // if(argv.typenet === 'teststand') await getCostFromScan('rinkeby', tx3);
+      
+            // let tx4 = await checkBlock(brigdePart1.web3, adapters().adapter2_net2_1);
+            // if(argv.typenet === 'teststand') await getCostFromScan('rinkeby', tx4);
+      
+      /*Fee = Gas_Used * Gas_Price 
+        = 35531 (unit) * 0.000000008 (eth)
+        = 0.000284248 (eth)
+       */
     });
 
     it('change state from second to first sides', async () => {

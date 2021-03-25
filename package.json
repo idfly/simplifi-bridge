@@ -52,15 +52,13 @@
     "integration-test:local": " truffle test ./test/integration/e2e.test.js --typenet devstand --net1 network1 --net2 network2",
     "integration-test:testnet": " truffle test ./test/integration/e2e.test.js --typenet teststand --net1 rinkeby --net2 binancetestnet",
     "deploy:testnet": "./scripts/bash/deploy_testnet.sh"
-
-
-    
   },
   "license": "MIT",
   "dependencies": {
     "@chainlink/contracts": "^0.0.11",
     "@openzeppelin/contracts": "^3.1.0",
     "@truffle/hdwallet-provider": "^1.2.0",
+    "axios": "^0.21.1",
     "dotenv": "^8.2.0",
     "link_token": "^1.0.6"
   },
