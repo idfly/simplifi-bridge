@@ -75,7 +75,8 @@ app.post('/post', async function (req, res) {
                                                                                                      req.body.data.sign, 
                                                                                                      data,
                                                                                                      req.body.meta.initiator.transactionHash, 
-                                                                                                     req.body.data.receive_side);
+                                                                                                     req.body.data.receive_side,
+                                                                                                     req.body.data.callback);
 
         if(req.body.data.request_type === 'setResponse')  responseData =  await SetTypeAuditorResponse('0x' + req.body.data.correlationId,
                                                                                                        req.body.data.sign, 
@@ -171,9 +172,14 @@ async function SetTypeAuditorResponse(correlationId, sign, _tx, reqId){
         }catch(e){console.log(e); throw Error(e.message);}    
 }
 
-async function SetTypeAuditorRequest(id, sign, data, _tx, adr_receiver){
+async function SetTypeAuditorRequest(id, sign, data, _tx, adr_receiver, cb){
     try{
-        const tx  = await bridge.methods.receiveRequest(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter, gas: 500000});
+        let tx = null;
+        if(cb === 'disable'){
+            tx  = await bridge.methods.receiveRequestV2(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter, gas: 500000});
+        }else{
+            tx  = await bridge.methods.receiveRequest(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter, gas: 500000});
+        }
         //TODO negative variant
         let responseData = {};
 

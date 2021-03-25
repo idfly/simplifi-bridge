@@ -48,6 +48,19 @@ contract MockDexPool is BridgeClientInterface {
 		emit RequestSended(requestId);
 	}
 
+	function sendRequestTestV2(uint256 testData, address secondPartPool) external {
+		require(secondPartPool != address(0), "BAD ADDRESS");
+		// todo some stuff on this part pool
+		// ...
+
+		bytes memory out  = abi.encodeWithSelector(bytes4(keccak256(bytes('receiveRequestTest(uint256)'))), testData);
+		bytes32 requestId = Bridge(bridge).transmitRequestV2(out, secondPartPool);
+
+		pendingRequests[requestId] = "0x1";
+
+		emit RequestSended(requestId);
+	}
+
 
 
 

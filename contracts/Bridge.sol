@@ -84,6 +84,33 @@ contract Bridge is ChainlinkClient, Ownable {
     return chainlinkTokenAddress();
   }
 
+
+  function transmitRequestV2(bytes memory  _selector, address receiveSide)
+    public
+    /*onlyOwner*/
+    returns (bytes32 requestId)
+  {
+
+    //require(msg.sender == myContract, "ONLY PERMISSIONED ADDRESS");
+
+    Chainlink.Request memory req = buildChainlinkRequest(specIdListPermission[0], address(this), this.callback.selector);
+    req.add("selector", Other.bytesToHexString(_selector));
+    req.add("callback", "disable");
+    req.add("request_type", "setRequest");
+    req.add("receive_side", Other.toAsciiString(receiveSide));
+    
+    requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);
+    
+    emitBroadcast(address(this),
+                  requestId,
+                  ORACLE_PAYMENT,
+                  address(this),
+                  this.callback.selector,
+                  EXPIRY_TIME,
+                  ARGS_VERSION,
+                  req.buf.buf);
+  }
+
   /**
     Create request from 1 -> 2 (another side)
   */
@@ -161,6 +188,25 @@ contract Bridge is ChainlinkClient, Ownable {
       require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
       
       transmitResponse(reqId);
+    }
+  }
+  function receiveRequestV2(string memory reqId,
+                          bytes memory signature,
+                          bytes memory b,
+                          bytes32 tx,
+                          address receiveSide) external {
+
+    bytes32 hreqId   = keccak256(abi.encodePacked(reqId));
+    bytes32 hash     = ECDSA.toEthSignedMessageHash(keccak256(abi.encodePacked(reqId, b, tx, receiveSide)));
+    address res      = ECDSA.recover(hash, signature);
+    require(true == whiteList[res], 'SECURITY EVENT');
+    // require receiveSide != 0 || ....
+    
+    agregator[hreqId] = agregator[hreqId] + 1;
+    // HARD code: temporary equals 2
+    if(agregator[hreqId] == 2 /* && NONCE === hash(local nonce, adr mycont_1) && ALL hashs == */){
+      (bool success, bytes memory data) = receiveSide.call(b);
+      require(success && (data.length == 0 || abi.decode(data, (bool))), 'FAILED');
     }
   }
   /** Receive response from other side.
