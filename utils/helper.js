@@ -1,6 +1,7 @@
 "use strict";
 const Web3 = require('web3');
 const web3 = new Web3();
+const axios = require('axios');
 
 const fs = require('fs');
 const path = require('path');
@@ -92,6 +93,60 @@ const timeout = async (ms) => {
         return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const adapters = () => {
+  return { 
+            "adapter1_net1_1": "0xFB51894A3540Be1eD5fD5155A20a379bE31Ef2cd",
+            "adapter2_net1_1": "0x90a3Dc8A52c11a958c67de3B671533707F6A9e82",
+            "adapter1_net2_1": "0x13929fE14F869D6CD0717b779FF2f935B7cc65aD",
+            "adapter2_net2_1": "0x3BcB1323A245EEe08CC5aE1Bf62A1EFb2C109048"
+         }
+}
+
+
+const checkBlock = async (web3, addr) => {
+  try{
+    let block = await web3.eth.getBlock('latest');
+    let number = block.number;
+    let transactions = block.transactions;
+    let h = true;
+    while(h){
+      if (block != null && block.transactions != null) {
+          for (let txHash of block.transactions) {
+              let tx = await web3.eth.getTransaction(txHash);
+              if (addr.toLowerCase() == tx.from.toLowerCase()) {
+                   
+                  return txHash;
+              }
+          }
+      }
+      block = await web3.eth.getBlock(block.number - 1);
+    }
+  }catch(e){console.log('catch unsolved bug'); return null;}  
+}
+
+const getCostFromScan = async (netwk, tx) => {
+  try{
+    let response = null;
+    let from     = null;
+
+    let w = netwk === 'rinkeby' ? `https://rinkeby.etherscan.io/tx/${tx}` : `https://testnet.bscscan.com/tx/${tx}`;
+
+      while(true){
+       response = await axios.get(w);
+       from     = response.data.search('The amount of GAS used by this specific transaction alone');
+       if(from !== -1) break; // the web site was updated
+       await timeout(500);
+      }
+    from = response.data.substring(from);
+    let cut  = from.search(' \\(');
+      
+    console.log(from.substring(0, cut).replace('" data-toggle="tooltip">',': '));
+
+  }catch(e){ console.log(e);}
+}
+
+
+
 module.exports = {
 
     writeEnv,
@@ -99,7 +154,10 @@ module.exports = {
     toWei,
     fromWei,
     checkoutProvider,
-    timeout
+    timeout,
+    adapters,
+    checkBlock,
+    getCostFromScan
 
     
 };

@@ -4,6 +4,7 @@ import "@openzeppelin/contracts/cryptography/ECDSA.sol";
 import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./libraries/Other.sol";
 
 
 
@@ -86,7 +87,7 @@ contract Bridge is ChainlinkClient, Ownable {
   /**
     Create request from 1 -> 2 (another side)
   */
-  function transmitRequest(string memory rqt, string memory  _selector, string memory  receiveSide)
+  function transmitRequest(string memory rqt, bytes memory  _selector, address receiveSide)
     public
     /*onlyOwner*/
     returns (bytes32 requestId)
@@ -95,9 +96,9 @@ contract Bridge is ChainlinkClient, Ownable {
     //require(msg.sender == myContract, "ONLY PERMISSIONED ADDRESS");
 
     Chainlink.Request memory req = buildChainlinkRequest(specIdListPermission[0], address(this), this.callback.selector);
-    req.add("selector", _selector);
+    req.add("selector", Other.bytesToHexString(_selector));
     req.add("request_type", rqt);
-    req.add("receive_side", receiveSide);
+    req.add("receive_side", Other.toAsciiString(receiveSide));
     
     requestId = sendChainlinkRequestTo(oracle, req, ORACLE_PAYMENT);
     routeForCallback[requestId] = msg.sender;

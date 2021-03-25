@@ -2,7 +2,6 @@
 pragma solidity ^0.6.9;
 
 import "../Bridge.sol";
-import "../libraries/Other.sol";
 import "../interfaces/BridgeClientInterface.sol";
 
 /**
@@ -42,7 +41,7 @@ contract MockDexPool is BridgeClientInterface {
 		// ...
 
 		bytes memory out  = abi.encodeWithSelector(bytes4(keccak256(bytes('receiveRequestTest(uint256)'))), testData);
-		bytes32 requestId = Bridge(bridge).transmitRequest(SET_REQUEST_TYPE, Other.bytesToHexString(out), Other.toAsciiString(secondPartPool));
+		bytes32 requestId = Bridge(bridge).transmitRequest(SET_REQUEST_TYPE, out, secondPartPool);
 
 		pendingRequests[requestId] = "0x1";
 
