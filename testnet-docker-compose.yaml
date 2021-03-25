@@ -81,7 +81,7 @@ services:
      - LOG_LEVEL=debug
      - ETH_CHAIN_ID=4
      - MIN_OUTGOING_CONFIRMATIONS=0
-     - MIN_INCOMING_CONFIRMATIONS=0     # only for ganache     
+     - MIN_INCOMING_CONFIRMATIONS=3
      - CHAINLINK_TLS_PORT=0
      - SECURE_COOKIES=false
      - ALLOW_ORIGINS=*
@@ -109,7 +109,7 @@ services:
      - LOG_LEVEL=debug
      - ETH_CHAIN_ID=4
      - MIN_OUTGOING_CONFIRMATIONS=0
-     - MIN_INCOMING_CONFIRMATIONS=0     # only for ganache     
+     - MIN_INCOMING_CONFIRMATIONS=3
      - CHAINLINK_TLS_PORT=0
      - SECURE_COOKIES=false
      - ALLOW_ORIGINS=*
@@ -171,7 +171,7 @@ services:
      - LOG_LEVEL=debug
      - ETH_CHAIN_ID=97
      - MIN_OUTGOING_CONFIRMATIONS=0
-     - MIN_INCOMING_CONFIRMATIONS=0     # only for ganache     
+     - MIN_INCOMING_CONFIRMATIONS=3
      - CHAINLINK_TLS_PORT=0
      - SECURE_COOKIES=false
      - ALLOW_ORIGINS=*
@@ -198,7 +198,7 @@ services:
      - LOG_LEVEL=debug
      - ETH_CHAIN_ID=97
      - MIN_OUTGOING_CONFIRMATIONS=0
-     - MIN_INCOMING_CONFIRMATIONS=0     # only for ganache     
+     - MIN_INCOMING_CONFIRMATIONS=3
      - CHAINLINK_TLS_PORT=0
      - SECURE_COOKIES=false
      - ALLOW_ORIGINS=*
