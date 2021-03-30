@@ -21,7 +21,8 @@ module.exports = {
     },
     rinkeby: {
        //provider: () => new HDWalletProvider(process.env.SK, `wss://rinkeby.infura.io/ws/v3/0f4453c71dd145c6b819bbbf60a96e9d`)
-       provider: () => new HDWalletProvider(process.env.SK, `wss://rinkeby.infura.io/ws/v3/ab95bf9f6dd743e6a8526579b76fe358`)
+       //provider: () => new HDWalletProvider(process.env.SK, `wss://rinkeby.infura.io/ws/v3/ab95bf9f6dd743e6a8526579b76fe358`)
+       provider: () => new HDWalletProvider(process.env.SK, `wss://rinkeby.infura.io/ws/v3/1f520f603c094850aafcb11291818e29`)
     }  
     
   }

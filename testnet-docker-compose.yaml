@@ -85,8 +85,9 @@ services:
      - CHAINLINK_TLS_PORT=0
      - SECURE_COOKIES=false
      - ALLOW_ORIGINS=*
+     - ETH_URL=wss://rinkeby.infura.io/ws/v3/1f520f603c094850aafcb11291818e29     
 #     - ETH_URL=wss://rinkeby.infura.io/ws/v3/0f4453c71dd145c6b819bbbf60a96e9d
-     - ETH_URL=wss://rinkeby.infura.io/ws/v3/ab95bf9f6dd743e6a8526579b76fe358
+#     - ETH_URL=wss://rinkeby.infura.io/ws/v3/ab95bf9f6dd743e6a8526579b76fe358
      - DATABASE_URL=postgresql://postgres:password@172.20.128.14:5432/chainlinkdb?sslmode=disable
     env_file:
     - ./build/addrs_network1.env
@@ -113,8 +114,9 @@ services:
      - CHAINLINK_TLS_PORT=0
      - SECURE_COOKIES=false
      - ALLOW_ORIGINS=*
+     - ETH_URL=wss://rinkeby.infura.io/ws/v3/1f520f603c094850aafcb11291818e29
 #     - ETH_URL=wss://rinkeby.infura.io/ws/v3/0f4453c71dd145c6b819bbbf60a96e9d
-     - ETH_URL=wss://rinkeby.infura.io/ws/v3/ab95bf9f6dd743e6a8526579b76fe358
+#     - ETH_URL=wss://rinkeby.infura.io/ws/v3/ab95bf9f6dd743e6a8526579b76fe358
      - DATABASE_URL=postgresql://postgres:password@172.20.128.16:5432/chainlinkdb?sslmode=disable
     env_file:
     - ./build/addrs_network1.env

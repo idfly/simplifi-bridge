@@ -92,7 +92,7 @@ contract('Brigde', (deployer, accounts) => {
        */
     });
 
-    it('change state from second to first sides', async () => {
+    it.skip('change state from second to first sides', async () => {
 
       let testData = 7;
       /** send end-to-end request */
@@ -120,7 +120,7 @@ contract('Brigde', (deployer, accounts) => {
 
     });
 
-    it('without callback', async () => {
+    it.skip('without callback', async () => {
 
       let testData = 5;
       /** send end-to-end request */

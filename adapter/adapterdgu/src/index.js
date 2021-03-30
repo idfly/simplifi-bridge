@@ -148,7 +148,8 @@ try{
 async function SetTypeAuditorResponse(correlationId, sign, _tx, reqId){
     try{
 
-            const tx  = await bridge.methods.receiveResponse(correlationId, sign, _tx, reqId).send({from: ownerAdapter, gas: 100000});
+            const gasPrice = await worker.web3.eth.getGasPrice();
+            const tx  = await bridge.methods.receiveResponse(correlationId, sign, _tx, reqId).send({from: ownerAdapter, gas: 200000, gasPrice: gasPrice});
             //TODO negative variant
             let responseData = {};
 
@@ -174,11 +175,12 @@ async function SetTypeAuditorResponse(correlationId, sign, _tx, reqId){
 
 async function SetTypeAuditorRequest(id, sign, data, _tx, adr_receiver, cb){
     try{
+        const gasPrice = await worker.web3.eth.getGasPrice();
         let tx = null;
         if(cb === 'disable'){
-            tx  = await bridge.methods.receiveRequestV2(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter, gas: 500000});
+            tx  = await bridge.methods.receiveRequestV2(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter, gas: 500000, gasPrice: gasPrice});
         }else{
-            tx  = await bridge.methods.receiveRequest(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter, gas: 500000});
+            tx  = await bridge.methods.receiveRequest(id, sign, data, _tx, '0x' + adr_receiver).send({from: ownerAdapter, gas: 500000, gasPrice: gasPrice});
         }
         //TODO negative variant
         let responseData = {};
