@@ -1,0 +1,24 @@
+{
+  "initiators": [
+    {
+      "type": "runlog",
+      "params": {
+        "address": "0x0000000000000000000000000000000000000000"
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "type": "control1_net2",
+      "confirmations": null,
+      "params": {}
+    },
+    {
+      "type": "adapter1_net2",
+      "confirmations": null,
+      "params": {}
+    }
+  ],
+  "startAt": null,
+  "endAt": null
+}

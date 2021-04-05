@@ -1,4 +1,4 @@
-const MyContract    = artifacts.require('MyContract')
+const Bridge    = artifacts.require('Bridge')
 const DexPool       = artifacts.require('DexPool')
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken');
 
@@ -19,7 +19,7 @@ try{
 	let activeEnv   = process.argv[5] === 'network1' ? env_net1 : process.argv[5] === 'network2' ? env_net2 : '0x0';
 
 	const dexPool       = await DexPool.at(currentPool);
-	const myContract    = await MyContract.at(activeEnv.parsed.CLIENT_ADDRESS);
+	const myContract    = await Bridge.at(activeEnv.parsed.CLIENT_ADDRESS);
 
 	console.log('myContract.jobId: ', await myContract.jobId());
 	console.log('myContract.oracle: ', await myContract.oracle());

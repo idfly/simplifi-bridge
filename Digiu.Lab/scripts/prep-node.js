@@ -1,6 +1,6 @@
 const { Oracle }    = require('@chainlink/contracts/truffle/v0.6/Oracle');
 const { LinkToken } = require('@chainlink/contracts/truffle/v0.4/LinkToken')
-const MyContract    = artifacts.require('MyContract');
+const Bridge    = artifacts.require('Bridge');
 
 
 let env_net1 = require('dotenv').config({ path: '../build/addrs_network1.env' })
@@ -33,7 +33,7 @@ try{
 
   let adr_cl = process.argv[5] === 'network1' ? env_net1.parsed.CLIENT_ADDRESS : process.argv[5] === 'network2' ? env_net2.parsed.CLIENT_ADDRESS : '0x0';
 
-  const myContract    = await MyContract.at(adr_cl);
+  const myContract    = await Bridge.at(adr_cl);
   const tokenAddress  = await myContract.getChainlinkToken();
   const token         = await LinkToken.at(tokenAddress);
   console.log(`Transfering 100 LINK to ${myContract.address}...`);
