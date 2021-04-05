@@ -1,27 +1,14 @@
 # DexPool - liquidity pool and cross-chain bridge for EVM-based chains with better user experience.
-
- <p align="center"><img src="https://img.shields.io/badge/status-development-yellow.svg"></p>
- <p align="center">Website: <a target='_blank' href = "https://digiu-lab.github.io/MarketMake/">https://digiu-lab.github.io/MarketMake/</a></p>
- <p align="center">ENS + IPFS website (regular browsers): <a target='_blank' href = "https://digiu.eth.link">digiu.eth.link</a></p>
- <p align="center">ENS + IPFS website (required MetaMask): <a target='_blank' href = "https://digiu.eth">digiu.eth</a></p>
+Contined work on https://github.com/digiu-ai/MarketMake 
 
 # **Description**
 
-The goal of our project is to create a **cross-chain*** swap between Ethereum and Binance Smart Chain (BSC) blockchains.
-BSC is a functional clone of Ethereum, but much faster and has a ten times lower transaction cost than Ethereum. Now a DeFi ecosystem originates there.
-Initially we wanted to create our own bridge between these blockchains, and we decided that we would use **Chainlink** for that.
-The first idea that comes to mind is to issue our own peer tokens, secured by assets locked in another blockchain. But if you think about it for a bit, you realise that these tokens will be of little use to anyone and the idea of replacing them with more liquid assets arises.
-In the BSC blockchain, the only liquidity entry point is Binance, the issuer of all traditional assets such as **ETH** or **USDT**. It issues its own so-called pegged tokens.
-Therefore, if you have USDT ERC20 and want to place them at Binance Smart Chain, you have to transfer them to Binance and then send them to BSC. At that point, pegged-USDT tokens, secured by Binance's honest word, are issued to you. The opposite transactions are done in the same way.
-We see this as a potential problem that we want to solve by allowing people to decentralise their assets between these blockchains. To do this, we plan to create a decentralised swap that uses liquidity pools in different blockchains and transmits cross-chain data using Chainlink-based bridging technology.
+The goal of our project is to create a **cross-chain*** swap between hetregenous blockchains.
 
 # **How It's Made**
 
-This project uses Metamask and Binance Smart Wallet extensions to **simultaneously connect to Ethereum and BSC**.
-It improves the user experience for working with our cross-chain swap, because the liquidity provider needs to have an opportunity to easily add and remove liquidity simultaneously across the two blockchains. This problem also arises in a regular swap.
-You could of course do it step by step, like Binance Bridge, but let's be honest, it's not convenient)
-The project architecture includes ChainLink and Binance nodes, smart contracts, and transactions signing and sending external adapters.
-Besides, we use Uniswap technologies as the basis for decentralised swap. We will have to split the pool's smart contract logic between the two blockchains. We plan to do this separation with oracles on each blockchain side.
+For now we have POC V2 version of cross-chain bridge. It utilises decentralization in spite of using chainlink infrastructure to be hosted on.
+
 
 ## Use cases
 - User can swap any Ethereum asset to pegged BSC asset of same type (for example USDT ERC20  <-> USDT BEP20)
@@ -30,7 +17,7 @@ Besides, we use Uniswap technologies as the basis for decentralised swap. We wil
 
 
 
-## Architecture
+## Version 1 Architecture
 
 The prototype will include functionality
 - add **ERC20**-like asset to DexPool of any configured chain
@@ -48,18 +35,26 @@ DexPool is deployed to both Ethereum and Binance Smart Chain networks. The metho
 
 [comment]: <> (![Architecture Diagram]&#40;./img/diagram.png&#41;)
 
-## DexPool cross-chain SwapDeposit Sequence Diagram
+## Version 1 cross-chain SwapDeposit Sequence Diagram
 
-![SwapDeposit Diagram](./doc/DexPoolChainlink_Swap_Sequence.png)
+![SwapDeposit V1 Diagram](./doc/DexPoolChainlink_Swap_Sequence.png)
 
 
-## Local development
 
-To play with DexPool locally go to [Digiu.Lab] (https://github.com/DigiU-Lab/MarketMake/tree/main/Digiu.Lab)
+## V2 Architecture
 
-Main [DexPool.sol](https://github.com/DigiU-Lab/MarketMake/blob/main/Digiu.Lab/contracts/DexPool.sol) contract containing cross-chain operations logic
+V2 brings decentralization into somehow centralized chainlink ecosystem. We added possibility for multiple adapter to process cross-chain request grained with security checks. Adapters register in smart contract to participate. Adaters requests are checked for convinience onchain.
 
-Chainlink adapter [source code](https://github.com/DigiU-Lab/MarketMake/tree/main/Digiu.Lab/adapter/adapterdgu/src)
+
+## Version 2 "whole picture" diagram
+
+![V2 Diagram](./doc/DigiUCrosschain_V2.png)
+
+## DexPool Version 2 integration diagram
+
+![V2 integration diagram](./doc/cross-chain-intergation-diag-V2.png)
+
+
 
 
 
