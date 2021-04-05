@@ -1,11 +1,12 @@
-# DexPool - liquidity pool and cross-chain bridge for EVM-based chains with better user experience.
-Contined work on https://github.com/digiu-ai/MarketMake 
+## Simplifi - liquidity defragmentation solution for heterogemous blockchains.
 
-# **Description**
+The work was originally started at EthGlobal Marketmake hackathone https://github.com/digiu-ai/MarketMake 
+
+## **Description**
 
 The goal of our project is to create a **cross-chain*** swap between hetregenous blockchains.
 
-# **How It's Made**
+## **How It's Made**
 
 For now we have POC V2 version of cross-chain bridge. It utilises decentralization in spite of using chainlink infrastructure to be hosted on.
 
