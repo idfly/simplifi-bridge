@@ -50,7 +50,7 @@ V2 brings decentralization into somehow centralized chainlink ecosystem. We adde
 
 ![V2 Diagram](./doc/DigiUCrosschain_V2.png)
 
-## DexPool Version 2 integration diagram
+## Version 2 integration diagram
 
 ![V2 integration diagram](./doc/cross-chain-intergation-diag-V2.png)
 
