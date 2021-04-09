@@ -1,4 +1,4 @@
-## Simplifi - liquidity defragmentation solution for heterogemous blockchains.
+## Simplifi - liquidity defragmentation solution for heterogeneous blockchains.
 
 The work was originally started at EthGlobal Marketmake hackathone https://github.com/digiu-ai/MarketMake 
 
