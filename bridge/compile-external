@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-npx truffle compile --compiler=solc --contracts_build_directory=build/contracts
-
-echo "var dexPoolABI = $(cat ./build/contracts/DexPool.json | jq '.abi')" > ../js/DexPoolABI.js
-#echo "var dexPoolABI = $(cat ./build/contracts/MyContract.json | jq '.abi')" > ../js/MyContractABI.js

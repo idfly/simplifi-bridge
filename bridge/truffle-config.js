@@ -2,7 +2,9 @@ require('dotenv').config();
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 
 const bscws     = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
-const rinkebyws = 'wss://rinkeby.infura.io/ws/v3/0f4453c71dd145c6b819bbbf60a96e9d';
+// const rinkebyws = 'wss://rinkeby.infura.io/ws/v3/0f4453c71dd145c6b819bbbf60a96e9d';
+const rinkebyws = 'wss://rinkeby.infura.io/ws/v3/ab95bf9f6dd743e6a8526579b76fe358';
+
 
 module.exports = {
   
@@ -27,12 +29,12 @@ module.exports = {
     },
 
     binancetestnet: {
-       provider: () => new HDWalletProvider(process.env.MNEMONIC_TESTNET_BSC, bscws),
+       provider: () => new HDWalletProvider(process.env.TESTNET_BSC, bscws),
        network_id: 97,
        timeoutBlocks: 200  
     },
     rinkeby: {
-       provider: () => new HDWalletProvider(process.env.MNEMONIC_TESTNET_RINKEBY, rinkebyws),
+       provider: () => new HDWalletProvider(process.env.TESTNET_RINKEBY, rinkebyws),
        network_id: 4,
        timeoutBlocks: 200  
     }  

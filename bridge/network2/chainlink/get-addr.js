@@ -1,14 +1,45 @@
 const http = require('http');
 
-module.exports = async () => {
-  return getAddr(await getSessionCookie());
-};
+module.exports = async function getAddr(port) {
+  let sessionCookie = await getSessionCookie(port);
 
-function getSessionCookie() {
+    return new Promise((resolve, reject) => {
+      const opts = {
+        host: 'localhost',
+        port: port,
+        path: '/v2/user/balances',
+        method: 'GET',
+        headers: {
+          'Cookie': sessionCookie
+        }
+      };
+      
+      const req = http.request(opts, (res) => {
+        res.setEncoding('utf-8')
+        
+        let resBody = '';
+        res.on('data', (chunk) => {
+          resBody += chunk;
+        });
+
+        res.on('end', () => {
+          resolve(JSON.parse(resBody).data[0].id);
+        });
+
+        res.on('error', (err) => {
+          reject(err);
+        });
+      });
+
+      req.end();
+    });
+}
+
+function getSessionCookie(port) {
   return new Promise((resolve, reject) => {
     const opts = {
       host: 'localhost',
-      port: '6689',
+      port: port,
       path: '/sessions',
       method: 'POST',
       headers: {
@@ -35,39 +66,6 @@ function getSessionCookie() {
     });
 
     req.write(reqBody);
-    req.end();
-  });
-}
-
-function getAddr(sessionCookie) {
-  return new Promise((resolve, reject) => {
-    const opts = {
-      host: 'localhost',
-      port: '6689',
-      path: '/v2/user/balances',
-      method: 'GET',
-      headers: {
-        'Cookie': sessionCookie
-      }
-    };
-    
-    const req = http.request(opts, (res) => {
-      res.setEncoding('utf-8')
-      
-      let resBody = '';
-      res.on('data', (chunk) => {
-        resBody += chunk;
-      });
-
-      res.on('end', () => {
-        resolve(JSON.parse(resBody).data[0].id);
-      });
-
-      res.on('error', (err) => {
-        reject(err);
-      });
-    });
-
     req.end();
   });
 }
