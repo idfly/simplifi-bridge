@@ -58,5 +58,29 @@ current version brings decentralization into somehow centralized chainlink ecosy
 ![integration diagram](./doc/cross-chain-intergation-diag-V2.png)
 
 
+## Local tests
+
+### Prerequisites
+
+- docker
+- docker-compose
+
+``
+git clone https://github.com/digiu-ai/simplifi-bridge.git
+yarn
+yarn start
+``
+
+After this commands full local stand infrustructure will be rised up
+To test transfer asset from network1 to network2 and vise versa run:
+
+``
+yarn integration-test:local
+``
 
 
+## deploy and test bridge on testnets
+
+``
+yarn integration-test:testnet
+``
