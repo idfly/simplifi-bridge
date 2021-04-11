@@ -58,12 +58,12 @@ current version brings decentralization into somehow centralized chainlink ecosy
 ![integration diagram](./doc/cross-chain-intergation-diag-V2.png)
 
 
-## Local tests
+## Prerequisites to deploy and test
 
-### Prerequisites
+- Ubuntu >= 18, truffle, docker, docker-compose
 
-- docker
-- docker-compose
+
+## Local tests and deployment
 
 ``
 git clone https://github.com/digiu-ai/simplifi-bridge.git
@@ -79,8 +79,27 @@ yarn integration-test:local
 ``
 
 
-## deploy and test bridge on testnets
+## Testnet test and deployment ( Rinkeby and BSC testnet)
+
+
+
+### Deploy
+``
+npm run deploy:testnet
+``
+
+On Rinkeby fill Bridge.sol with Links  ( #CLIENT_ADDRESS field in addrs_rinkeby.env).
+Get Link token from https://rinkeby.chain.link/
+
+### Test
 
 ``
-yarn integration-test:testnet
+yarn integration-test:testnet*
 ``
+
+### Troubleshooting
+
+- check amount of chainlink by addrs_rinkeby.env #CLIENT_ADDRESS
+- check amount of eth: 0x3BcB1323A245EEe08CC5aE1Bf62A1EFb2C109048, 0x13929fE14F869D6CD0717b779FF2f935B7cc65aD
+- check amount of bnb: 0xFB51894A3540Be1eD5fD5155A20a379bE31Ef2cd, 0x90a3Dc8A52c11a958c67de3B671533707F6A9e82
+
